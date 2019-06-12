@@ -1,0 +1,16 @@
+{
+    "name": "brave-site-specific-scripts",
+    "version": "1.0.0",
+    "description": "Site-specific scripts for Brave",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/brave/brave-site-specific-scripts.git"
+    },
+    "author": "Mark Pilgrim <mpilgrim@brave.com>",
+    "license": "MPL-2.0",
+    "gypfile": true,
+    "bugs": {
+        "url": "https://github.com/brave/brave-site-specific-scripts/issues"
+    },
+    "homepage": "https://github.com/brave/brave-site-specific-scripts#brave-site-specific-scripts"
+}
