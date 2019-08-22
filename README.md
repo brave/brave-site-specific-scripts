@@ -86,7 +86,7 @@ Thus:
  3. Run the `brave-core-crx-packager` `upload-local-data-files` script to upload the newly packaged Local Data Files Updater component to the Brave extension server.
  4. To test that the process worked, open a release build of Brave and navigate to `brave://components/`. Under `Brave Local Data Updater`, click the `Check for update` button. It should find and download the newly uploaded component.
 
-Brave automatically checks for updates to its components, so most Brave users should receive your updated Greaselion script within 24 hours. The client-side Greaselion service is designed to refresh itself without relaunching Brave, so changes will go live even if a user is already running Brave at the time. (Open tabs will not be refreshed, but the new Greaselion scripts will be active once the user manually refreshes the tab, or when they open a new tab.)
+Brave automatically checks for updates to its components, so most Brave users should receive your updated Greaselion script within 24 hours. The client-side Greaselion service is designed to refresh itself without relaunching Brave, so changes will go live even if a user is already running Brave at the time. Open tabs will not be refreshed, but the new Greaselion scripts will be active once the user manually refreshes the tab, or when they open a new tab.
 
 ## Troubleshooting
 
