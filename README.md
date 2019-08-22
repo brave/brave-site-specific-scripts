@@ -36,7 +36,7 @@ Add your new rule in the `Greaselion.json` file, then create your script file in
 
 ## Script capabilities
 
-You can think of Greaselion scripts as single-file Chromium extensions. (In fact, they are treated internally as component extensions, although this is an implementation detail that should not affect you during development.) All of the [Chromium APIs](https://developer.chrome.com/extensions/content_scripts#capabilities) are available to Greaselion scripts, including [`chrome.runtime`](https://developer.chrome.com/extensions/runtime).
+You can think of Greaselion scripts as single-file Chromium extensions. In fact, they are treated internally as component extensions, although this is an implementation detail that should not affect you during development. All of the [Chromium APIs](https://developer.chrome.com/extensions/content_scripts#capabilities) are available to Greaselion scripts, including [`chrome.runtime`](https://developer.chrome.com/extensions/runtime).
 
 Greaselion scripts are executed as soon as the page DOM is available, but before images have loaded. This is equivalent to an extension that specifies `"run_at": "document_end"` in its manifest.
 
