@@ -1,2 +1,36 @@
 [
+  {
+    "urls": [
+      "https://*.washingtonpost.com/*"
+    ],
+    "scripts": [
+      "publisher-ads/washingtonpost.bundle.js"
+    ]
+  },
+  {
+    "urls": [
+      "https://*.marketwatch.com/*"
+    ],
+    "scripts": [
+      "publisher-ads/marketwatch.bundle.js"
+    ]
+  },
+  {
+    "urls": [
+      "https://*.wsj.com/*",
+      "https://*.barrons.com/*"
+    ],
+    "scripts": [
+      "publisher-ads/wsjgroup.bundle.js"
+    ]
+  },
+  {
+    "urls": [
+      "http://*/*",
+      "https://*/*"
+    ],
+    "scripts": [
+      "publisher-ads/gpt-site.bundle.js"
+    ]
+  }
 ]

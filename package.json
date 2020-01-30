@@ -12,5 +12,21 @@
     "bugs": {
         "url": "https://github.com/brave/brave-site-specific-scripts/issues"
     },
-    "homepage": "https://github.com/brave/brave-site-specific-scripts#brave-site-specific-scripts"
+    "homepage": "https://github.com/brave/brave-site-specific-scripts#brave-site-specific-scripts",
+    "scripts": {
+        "build": "webpack",
+        "watch": "webpack --mode=development --watch"
+    },
+    "devDependencies": {
+        "clean-webpack-plugin": "^3.0.0",
+        "copy-webpack-plugin": "^5.1.1",
+        "ts-loader": "^6.2.1",
+        "typescript": "^3.7.5",
+        "webpack": "^4.41.5",
+        "webpack-cli": "^3.3.10"
+    },
+    "dependencies": {
+        "@types/chrome": "0.0.93",
+        "@types/doubleclick-gpt": "^2019041801.0.2"
+    }
 }
