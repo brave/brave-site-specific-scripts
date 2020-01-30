@@ -26,6 +26,7 @@
         "webpack-cli": "^3.3.10"
     },
     "dependencies": {
-        "@types/chrome": "0.0.93"
+        "@types/chrome": "0.0.93",
+        "@types/doubleclick-gpt": "^2019041801.0.2"
     }
 }

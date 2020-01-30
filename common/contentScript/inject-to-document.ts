@@ -18,10 +18,5 @@ export default function injectToDocument (isolatedFn: Function, ...codeVars: any
       scriptEl.remove()
     })
   }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', inject)
-  } else {
-    inject()
-  }
+  inject()
 }

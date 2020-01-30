@@ -4,6 +4,7 @@
 // you can obtain one at http://mozilla.org/MPL/2.0/.
 
 import injectToDocument from '../contentScript/inject-to-document'
+import runOnPageLoaded from './run-on-loaded'
 
 const customEventName = 'brave-url-changed'
 
@@ -29,5 +30,7 @@ export default function runOnUrlChange(fn: Function) {
       return prevReplaceState.call(this, ...args)
     }
   }
-  injectToDocument(fnPageInjectionCode, customEventName)
+  runOnPageLoaded(() =>
+    injectToDocument(fnPageInjectionCode, customEventName)
+  )
 }
