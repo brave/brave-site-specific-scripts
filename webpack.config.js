@@ -12,6 +12,9 @@ const CopyPlugin = require('copy-webpack-plugin');
 module.exports = (env, argv) => ({
   devtool: argv.mode === 'development' ? 'inline-source-map' : false,
   entry: {
+    ['publisher-ads/wsjgroup']: './publisher-ads/wsjgroup',
+    ['publisher-ads/washingtonpost']: './publisher-ads/washingtonpost',
+    ['publisher-ads/marketwatch']: './publisher-ads/marketwatch',
   },
   plugins: [
     new CleanWebpackPlugin(),
