@@ -16,6 +16,7 @@ module.exports = (env, argv) => {
     ['publisher-ads/wsjgroup']: './publisher-ads/wsjgroup',
     ['publisher-ads/washingtonpost']: './publisher-ads/washingtonpost',
     ['publisher-ads/marketwatch']: './publisher-ads/marketwatch',
+    ['publisher-ads/gpt-site']: './publisher-ads/gpt-site'
     },
     plugins: [
       new CopyPlugin([

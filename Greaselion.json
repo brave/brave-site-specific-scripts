@@ -23,5 +23,14 @@
     "scripts": [
       "publisher-ads/wsjgroup.bundle.js"
     ]
+  },
+  {
+    "urls": [
+      "http://*/*",
+      "https://*/*"
+    ],
+    "scripts": [
+      "publisher-ads/gpt-site.bundle.js"
+    ]
   }
 ]

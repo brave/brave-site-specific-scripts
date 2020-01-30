@@ -4,6 +4,7 @@
 // you can obtain one at http://mozilla.org/MPL/2.0/.
 
 import injectToDocument from '../contentScript/inject-to-document'
+import runOnPageLoaded from './run-on-loaded'
 
 type OnValueFunction = (varValue: any) => void
 type VarValueCustomEvent = CustomEvent<{ varValue: any}>
@@ -51,6 +52,7 @@ export default function waitForWindowVar(varName: string, onValue: OnValueFuncti
       }
     })
   }
-
-  injectToDocument(fnPageInjectionCode, varName, customEventName)
+  runOnPageLoaded(() => 
+    injectToDocument(fnPageInjectionCode, varName, customEventName)
+  )
 }
