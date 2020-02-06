@@ -22,6 +22,22 @@ export default class BATAd {
     if (!adTemplate) adTemplate = createTemplate()
     this.shadowRoot = this.element.attachShadow({mode: 'open'})
     this.shadowRoot.appendChild(adTemplate.content.cloneNode(true))
+    const dialogTrigger = this.shadowRoot.querySelector('.controls__header')
+    const dialog = this.shadowRoot.querySelector('dialog')
+    dialog?.addEventListener('click', () => {
+      dialog.close()
+    })
+    dialogTrigger?.addEventListener('click', () => {
+      dialog?.showModal()
+    })
+    const targetTrigger = this.shadowRoot.querySelector('.interaction-handler')
+    targetTrigger?.addEventListener('click', () => {
+      console.log('creative clicked')
+      if (this.publisherAd) {
+        this.triggerInteracted(this.publisherAd)
+      }
+    })
+
     this.elementObserver = new MutationObserver(this.elementMutatedCallback.bind(this))
     this.elementObserver.observe(this.element, { attributes: true })
     this.onAdPositionReady = onAdPositionReady
