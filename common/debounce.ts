@@ -3,7 +3,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this file,
 // you can obtain one at http://mozilla.org/MPL/2.0/.
 
-export const debounce = function<T>(fn: (data: T) => void, bufferInterval: number, ...args: Array<any>) {
+export default function debounce<T>(fn: (data: T) => void, bufferInterval: number, ...args: Array<any>) {
   let timeout: any
   return (...args2: any[]) => {
     clearTimeout(timeout)
