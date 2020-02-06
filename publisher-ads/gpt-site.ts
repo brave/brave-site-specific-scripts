@@ -6,7 +6,7 @@
 import injectToDocument from '../common/contentScript/inject-to-document'
 import BATAd from './bat-ad'
 import fetchAdCreatives from './creativeFetch/same-context'
-import { AdSize, stringToAdSize } from './'
+import { AdSize, stringToAdSize, triggerInteraction, triggerView } from './'
 import runOnPageLoaded from '../common/pageLifecycle/run-on-loaded'
 
 console.log("content script")
@@ -69,7 +69,7 @@ window.addEventListener(eventName, function (e: CustomEvent<PageSlotsEventData>)
         console.error('Brave Publisher Ads: could not find element for slot', slot)
         continue
       }
-      new BATAd(element, fetchAdCreatives).sizes = sizes
+      new BATAd(element, fetchAdCreatives, triggerView, triggerInteraction).sizes = sizes
     }
   })
 })

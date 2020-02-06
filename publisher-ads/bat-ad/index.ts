@@ -1,23 +1,34 @@
 import createTemplate from './createTemplate'
 import { OnAdPositionReadyFunction } from '../slotTargeting'
-import { AdSize } from '../'
+import { AdSize, PublisherAd, TriggerInteractionFunction, TriggerViewFunction } from '../'
+import debounce from '../../common/debounce'
 
 let adTemplate: HTMLTemplateElement
+
+
 
 // BATAd is generic - it should render an ad on any site
 // When provided with required data (target ad sizes),
 // it communicates with content script and backend to ask
 // for an ad.
 export default class BATAd {
-  static get observedAttributes() { return ['responsive', 'id', 'creative-dimensions', 'creative-url'] }
+  static get observedAttributes() { return ['responsive', 'id', 'creative-dimensions', 'creative-url', 'target-url'] }
   protected element: HTMLElement
   private shadowRoot: ShadowRoot
   private elementObserver: MutationObserver
   private onAdPositionReady: OnAdPositionReadyFunction
+  private triggerViewed: TriggerViewFunction
+  private triggerInteracted: TriggerInteractionFunction
   private sizes_: AdSize[]
   private isResponsive_: boolean
+  private publisherAd: PublisherAd
 
-  constructor(adContainer: HTMLElement, onAdPositionReady: OnAdPositionReadyFunction) {
+  constructor(
+    adContainer: HTMLElement,
+    onAdPositionReady: OnAdPositionReadyFunction,
+    triggerView: TriggerViewFunction,
+    triggerInteraction: TriggerInteractionFunction
+  ) {
     this.element = adContainer
     if (!adTemplate) adTemplate = createTemplate()
     this.shadowRoot = this.element.attachShadow({mode: 'open'})
@@ -41,7 +52,19 @@ export default class BATAd {
     this.elementObserver = new MutationObserver(this.elementMutatedCallback.bind(this))
     this.elementObserver.observe(this.element, { attributes: true })
     this.onAdPositionReady = onAdPositionReady
+    this.triggerViewed = triggerView
+    this.triggerInteracted = triggerInteraction
     this.broadcastReadyForContent()
+  }
+
+  private isInViewport() {
+    const rect = this.element.getBoundingClientRect()
+    return (
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <= window.innerHeight &&
+      rect.right <= window.innerWidth
+    )
   }
 
   get batAdId() {
@@ -67,6 +90,33 @@ export default class BATAd {
     console.log('Batad isR change')
     this.isResponsive_ = Boolean(value)
     this.broadcastReadyForContent()
+  }
+
+  set adToDisplay (ad: PublisherAd) {
+    this.publisherAd = ad
+    this.element.setAttribute('creative-url', ad.creative_url)
+    this.element.setAttribute('creative-dimensions', ad.size)
+    this.element.setAttribute('target-url', ad.target_url)
+    if (ad.category) {
+      this.element.setAttribute('has-category', 'true')
+    } else {
+      this.element.removeAttribute('has-category')
+    }
+    const trackViewed = () => {
+      if (this.isInViewport()) {
+        this.triggerViewed(ad)    
+      } else {
+        const debounced = debounce(() => {
+          if (this.isInViewport()) {
+            window.removeEventListener('scroll', debounced)
+            this.triggerViewed(ad)
+          }
+        }, 100)
+        // TODO: remove event listener if adToDisplay is called again.
+        window.addEventListener('scroll', debounced)
+      }
+    }
+    window.requestAnimationFrame(trackViewed)
   }
 
   get style() {

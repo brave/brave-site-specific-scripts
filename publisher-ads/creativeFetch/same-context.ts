@@ -1,20 +1,23 @@
 import sendMessageToBrave from '../../common/contentScript/sendMessageToBrave'
-import slotFilteringAll from '../slotFiltering/all'
+// import slotFilteringAll from '../slotFiltering/all'
+import BATAd from '../bat-ad'
 import slotFilteringBest from '../slotFiltering/one-best-on-page'
+import adFiltering from '../adSelecting'
+import { PublisherAd, adSizeToString } from '../'
 
 const slotFilterStrategy = slotFilteringBest
 
-let accumulatorTimeoutId
-let accumulations = []
-export default function adSlotReady (batAd) {
+let accumulatorTimeoutId: number | null
+let accumulations: BATAd[] = []
+export default function adSlotReady (batAd: BATAd) {
   // accumulate so we can use a picking strategy
   accumulations.push(batAd)
   if (!accumulatorTimeoutId) {
-    accumulatorTimeoutId = setTimeout(accumulationDone, 1000)
+    accumulatorTimeoutId = window.setTimeout(accumulationDone, 1000)
   }
 }
 
-function filterUnsuitableSizes (batAds) {
+function filterUnsuitableSizes (batAds: BATAd[]) {
   return batAds.filter(batAd => batAd.sizes.some(size => {
     if (size.length !== 2)
       return false
@@ -24,7 +27,7 @@ function filterUnsuitableSizes (batAds) {
   }))
 }
 
-function accumulationDone () {
+async function accumulationDone () {
   accumulatorTimeoutId = null
   let batAds = accumulations
   accumulations = []
@@ -34,31 +37,28 @@ function accumulationDone () {
   batAds = slotFilterStrategy(batAds)
   console.log(`BATSense: filter strategy done, got ${batAds.length} slots`, batAds)
   for (const batAd of batAds) {
-    fetchCreativeFromBackend(batAd)
-    .then(adDetail => {
-      const adElement = batAd.element
-      const adId = batAd.batAdId
-      console.log('BATSense got response for ad', adId, adDetail)
-      if (adDetail) {
-        const dimensions = adDetail.size.join('x')
-        adElement.setAttribute('creative-dimensions', dimensions)
-        adElement.setAttribute('creative-url', adDetail.creativeUrl)
-      }
-    })
+    const ads: PublisherAd[] = await fetchCreativeFromBackend(batAd)
+    if (!ads.length) {
+      return
+    }
+    const adId = batAd.batAdId
+    console.log('BATSense got response for ad', adId, ads)
+    batAd.adToDisplay = adFiltering(ads)
   }
 }
 
-function fetchCreativeFromBackend (batAd) {
-  return new Promise((resolve, reject)  => {
+function fetchCreativeFromBackend (batAd: BATAd) {
+  return new Promise<PublisherAd[]>((resolve, reject)  => {
     sendMessageToBrave(
       {
         type: 'ad-request',
-        sizes: batAd.sizes,
-        isResponsive: batAd.isResponsive
+        sizes: batAd.sizes.map(adSizeToString),
+        isResponsive: batAd.isResponsive,
+        url: window.location.href
       },
       (response) => {
-        const { adDetail } = response
-        resolve(adDetail)
+        const { ads }: { ads: PublisherAd[] } = response
+        resolve(ads)
       }
     )
   })

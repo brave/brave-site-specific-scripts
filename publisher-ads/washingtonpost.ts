@@ -2,6 +2,7 @@ import BATAd from './bat-ad'
 import fetchAdCreatives from './creativeFetch/same-context'
 import waitForWindowVar from '../common/pageLifecycle/wait-for-window-var'
 import runOnPageLoaded from '../common/pageLifecycle/run-on-loaded'
+import { triggerInteraction, triggerView } from './'
 
 type WPAdSize = [number, number] | 'fluid'
 
@@ -90,7 +91,7 @@ runOnPageLoaded(function () {
     // We can't parse ad size data until we have window.wpAds, so store
     // refs to WPAd elements until that is defined.
     for (const element of Array.from(adElements)) {
-      new WPAd(element, fetchAdCreatives).setMatchingInventory()
+      new WPAd(element, fetchAdCreatives, triggerView, triggerInteraction).setMatchingInventory()
     }
   }
 

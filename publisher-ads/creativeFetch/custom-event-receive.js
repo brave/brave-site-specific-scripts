@@ -11,7 +11,8 @@ export default function listenForAdSlots() {
         {
           type: 'ad-request',
           sizes,
-          isResponsive
+          isResponsive,
+          url: window.location.url
         },
         (response) => {
           const { adDetail } = response
