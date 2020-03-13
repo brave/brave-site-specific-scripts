@@ -1,2 +1,10 @@
 [
+  {
+    "urls": [
+      "https://support.brave.com/*"
+    ],
+    "scripts": [
+      "webcompat/zendesk-events.bundle.js"
+    ]
+  }
 ]

@@ -13,6 +13,7 @@ module.exports = (env, argv) => {
   const config = {
     devtool: argv.mode === 'development' ? 'inline-source-map' : false,
     entry: {
+      ['webcompat/zendesk-events']: './webcompat/zendesk-events'
     },
     plugins: [
       new CopyPlugin([
