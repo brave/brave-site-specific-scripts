@@ -31,7 +31,7 @@ export default class BATAd {
   ) {
     this.element = adContainer
     if (!adTemplate) adTemplate = createTemplate()
-    this.shadowRoot = this.element.attachShadow({mode: 'open'})
+    this.shadowRoot = this.element.attachShadow({mode: 'closed'})
     this.shadowRoot.appendChild(adTemplate.content.cloneNode(true))
     const dialogTrigger = this.shadowRoot.querySelector('.controls__header')
     const dialog = this.shadowRoot.querySelector('dialog')
@@ -146,8 +146,8 @@ export default class BATAd {
         console.error('BATAd invalid dimension syntax', dimensions)
         return
       }
-      this.style.width = `${dimensions[0]}px`
-      this.style.height = `${dimensions[1]}px`
+      this.style.width = this.style.minWidth = this.style.maxWidth = `${dimensions[0]}px`
+      this.style.height = this.style.minHeight = this.style.maxHeight = `${dimensions[1]}px`
     }
     if (name === 'creative-url' && newValue) {
       const creativeElement = this.shadowRoot.querySelector('.creative')
