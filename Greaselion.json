@@ -1,2 +1,10 @@
 [
+  {
+    "urls": [
+      "https://*.youtube.com/*"
+    ],
+    "scripts": [
+      "scripts/brave_rewards/publisher/youtube/youtube.bundle.js"
+    ]
+  }
 ]

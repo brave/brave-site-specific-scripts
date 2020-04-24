@@ -13,6 +13,7 @@ module.exports = (env, argv) => {
   const config = {
     devtool: argv.mode === 'development' ? 'inline-source-map' : false,
     entry: {
+      ['scripts/brave_rewards/publisher_youtube']: './scripts/brave_rewards/publisher_youtube'
     },
     plugins: [
       new CopyPlugin({
