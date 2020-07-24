@@ -14,7 +14,7 @@
     },
     "homepage": "https://github.com/brave/brave-site-specific-scripts#brave-site-specific-scripts",
     "scripts": {
-        "build": "webpack",
+        "build": "webpack --mode production",
         "lint": "tslint --project tsconfig-lint.json \"scripts/**/*.{ts,tsx}\"",
         "watch": "webpack --mode=development --watch"
     },
