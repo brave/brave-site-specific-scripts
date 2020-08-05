@@ -30,7 +30,7 @@ module.exports = (env, argv) => {
       rules: [
         {
           test: /\.tsx?$/,
-          use: 'ts-loader',
+          use: [{loader: 'ts-loader', options: {onlyCompileBundledFiles: true}}],
           exclude: /node_modules/,
         },
       ],
