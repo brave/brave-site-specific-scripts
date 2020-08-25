@@ -15,9 +15,11 @@ module.exports = (env, argv) => {
     entry: {
     },
     plugins: [
-      new CopyPlugin([
-        { from: 'Greaselion.json' },
-      ])
+      new CopyPlugin({
+        patterns: [
+          { from: 'Greaselion.json' },
+        ]
+      })
     ],
     output: {
       filename: '[name].bundle.js',
