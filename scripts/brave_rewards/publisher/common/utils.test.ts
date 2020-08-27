@@ -1,4 +1,4 @@
-import * as utils from './publisher_utils'
+import * as utils from './utils'
 
 test('extracts data from empty string', () => {
   expect(utils.extractData('', '/', '!')).toBe('')
