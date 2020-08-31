@@ -240,7 +240,10 @@ const registerMediaDurationHandler = () => {
     return
   }
 
-  port = chrome.runtime.connect(braveRewardsExtensionId, { name: 'Greaselion' })
+  if (!port) {
+    return
+  }
+
   port.postMessage({
     type: 'MediaDurationHandlerRegistrationRequest',
     mediaType: mediaType,
@@ -265,6 +268,8 @@ const initScript = () => {
   if (chrome.extension.inIncognitoContext) {
     return
   }
+
+  port = chrome.runtime.connect(braveRewardsExtensionId, { name: 'Greaselion' })
 
   // Load publisher info and register media duration handler when document finishes loading
   // Note: Not needed for video paths, as 'yt-page-data-updated' handles those
