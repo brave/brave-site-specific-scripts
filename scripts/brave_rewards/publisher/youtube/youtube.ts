@@ -7,6 +7,8 @@ import * as ytUtils from './utils'
 const braveRewardsExtensionId = 'jidkidbbcafjabdphckchenhfomhnfma'
 
 const mediaType = 'youtube'
+const mediaDomain = 'youtube.com'
+
 const mediaDurationUrlRegex = 'https://www.youtube.com/api/stats/watchtime?*'
 
 let port: chrome.runtime.Port | null = null
@@ -57,6 +59,25 @@ const sendPublisherInfoForChannel = (channelId: string) => {
         publisherKey,
         publisherName,
         mediaKey,
+        favIconUrl
+      }
+    })
+}
+
+const sendPublisherInfoForPredefined = () => {
+  const url = mediaDomain
+  const publisherKey = mediaDomain
+  const publisherName = mediaType
+  const favIconUrl = ''
+
+  chrome.runtime.sendMessage(
+    braveRewardsExtensionId, {
+      type: 'SavePublisherVisit',
+      mediaType: mediaType,
+      data: {
+        url: url,
+        publisherKey,
+        publisherName,
         favIconUrl
       }
     })
@@ -206,7 +227,9 @@ const maybeSendPublisherInfo = () => {
     sendPublisherInfoForChannel(channelId)
   } else if (ytUtils.isUserPath(location.pathname)) {
     sendPublisherInfoForUser()
-  } else if (!ytUtils.isPredefinedPath(location.pathname)) {
+  } else if (ytUtils.isPredefinedPath(location.pathname)) {
+    sendPublisherInfoForPredefined()
+  } else {
     const channelId = ytUtils.getChannelIdFromChannelPage()
     sendPublisherInfoForChannel(channelId)
   }

@@ -235,24 +235,25 @@ export const isUserPath = (path: string) => {
 
 export const isPredefinedPath = (path: string) => {
   const paths = [
-    '/feed',
-    '/channel',
-    '/user',
-    '/watch',
+    '/',
     '/account',
-    '/gaming',
-    '/playlist',
-    '/premium',
-    '/reporthistory',
-    '/pair',
+    '/account_advanced',
+    '/account_billing',
     '/account_notifications',
     '/account_playback',
     '/account_privacy',
     '/account_sharing',
-    '/account_billing',
-    '/account_advanced',
+    '/channel',
+    '/feed',
+    '/gaming',
+    '/oops',
+    '/pair',
+    '/playlist',
+    '/premium',
+    '/reporthistory',
     '/subscription_manager',
-    '/oops'
+    '/user',
+    '/watch'
   ]
 
   const cleanPath = getBasicPath(path)
