@@ -2,12 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import * as ytUtils from './utils'
+import * as types from './types'
+import * as utils from './utils'
 
 const braveRewardsExtensionId = 'jidkidbbcafjabdphckchenhfomhnfma'
-
-const mediaType = 'youtube'
-const mediaDomain = 'youtube.com'
 
 const mediaDurationUrlRegex = 'https://www.youtube.com/api/stats/watchtime?*'
 
@@ -19,7 +17,7 @@ const sendErrorResponse = (errorMessage: string) => {
   chrome.runtime.sendMessage(
     braveRewardsExtensionId, {
       type: 'GreaselionError',
-      mediaType: mediaType,
+      mediaType: types.mediaType,
       data: {
         errorMessage
       }
@@ -32,15 +30,15 @@ const sendPublisherInfoForChannel = (channelId: string) => {
     return
   }
 
-  const publisherKey = ytUtils.buildPublisherKey(channelId)
-  const publisherName = ytUtils.getChannelNameFromChannelPage()
-  const favIconUrl = ytUtils.getFavIconUrlFromPage()
+  const publisherKey = utils.buildPublisherKey(channelId)
+  const publisherName = utils.getChannelNameFromChannelPage()
+  const favIconUrl = utils.getFavIconUrlFromPage()
 
   // This media key represents the channel trailer video
   let mediaKey = ''
-  const mediaId = ytUtils.getMediaIdFromChannelPage()
+  const mediaId = utils.getMediaIdFromChannelPage()
   if (mediaId) {
-    mediaKey = ytUtils.buildMediaKey(mediaId)
+    mediaKey = utils.buildMediaKey(mediaId)
   }
 
   const url = new URL(location.href)
@@ -53,7 +51,7 @@ const sendPublisherInfoForChannel = (channelId: string) => {
   chrome.runtime.sendMessage(
     braveRewardsExtensionId, {
       type: 'SavePublisherVisit',
-      mediaType: mediaType,
+      mediaType: types.mediaType,
       data: {
         url: url.href,
         publisherKey,
@@ -65,15 +63,15 @@ const sendPublisherInfoForChannel = (channelId: string) => {
 }
 
 const sendPublisherInfoForPredefined = () => {
-  const url = mediaDomain
-  const publisherKey = mediaDomain
-  const publisherName = mediaType
+  const url = `https://${types.mediaDomain}`
+  const publisherKey = types.mediaDomain
+  const publisherName = types.mediaType
   const favIconUrl = ''
 
   chrome.runtime.sendMessage(
     braveRewardsExtensionId, {
       type: 'SavePublisherVisit',
-      mediaType: mediaType,
+      mediaType: types.mediaType,
       data: {
         url: url,
         publisherKey,
@@ -84,34 +82,34 @@ const sendPublisherInfoForPredefined = () => {
 }
 
 const sendPublisherInfoForUser = () => {
-  const channelId = ytUtils.getChannelIdFromChannelPage()
+  const channelId = utils.getChannelIdFromChannelPage()
   if (!channelId) {
     sendErrorResponse('Unable to scrape channel id')
     return
   }
 
-  const user = ytUtils.getUserFromUrl(location.pathname)
+  const user = utils.getUserFromUrl(location.pathname)
   if (!user) {
     sendErrorResponse('Unable to extract user from url')
     return
   }
 
-  const publisherKey = ytUtils.buildPublisherKey(channelId)
-  const publisherName = ytUtils.getChannelNameFromChannelPage()
+  const publisherKey = utils.buildPublisherKey(channelId)
+  const publisherName = utils.getChannelNameFromChannelPage()
 
   // This media key represents the channel trailer video
   let mediaKey = ''
-  const mediaId = ytUtils.getMediaIdFromChannelPage()
+  const mediaId = utils.getMediaIdFromChannelPage()
   if (mediaId) {
-    mediaKey = ytUtils.buildMediaKey(mediaId)
+    mediaKey = utils.buildMediaKey(mediaId)
   }
 
-  const publisherUrl = ytUtils.buildChannelUrl(channelId)
+  const publisherUrl = utils.buildChannelUrl(channelId)
 
   chrome.runtime.sendMessage(
     braveRewardsExtensionId, {
       type: 'SavePublisherVisit',
-      mediaType: mediaType,
+      mediaType: types.mediaType,
       data: {
         url: publisherUrl,
         publisherKey,
@@ -122,29 +120,29 @@ const sendPublisherInfoForUser = () => {
 }
 
 const sendPublisherInfoForVideoHelper = (url: string, responseText: string, publisherName: string, publisherUrl: string) => {
-  const favIconUrl = ytUtils.getFavIconUrlFromResponse(responseText)
-  const channelId = ytUtils.getChannelIdFromResponse(responseText)
-  const publisherKey = ytUtils.buildPublisherKey(channelId)
+  const favIconUrl = utils.getFavIconUrlFromResponse(responseText)
+  const channelId = utils.getChannelIdFromResponse(responseText)
+  const publisherKey = utils.buildPublisherKey(channelId)
 
-  const mediaId = ytUtils.getMediaIdFromUrl(new URL(url))
+  const mediaId = utils.getMediaIdFromUrl(new URL(url))
   if (!mediaId) {
     return
   }
 
-  const mediaKey = ytUtils.buildMediaKey(mediaId)
+  const mediaKey = utils.buildMediaKey(mediaId)
 
   if (!publisherName) {
-    publisherName = ytUtils.getPublisherNameFromResponse(responseText)
+    publisherName = utils.getPublisherNameFromResponse(responseText)
   }
 
   if (!publisherUrl) {
-    publisherUrl = ytUtils.buildChannelUrl(channelId)
+    publisherUrl = utils.buildChannelUrl(channelId)
   }
 
   chrome.runtime.sendMessage(
     braveRewardsExtensionId, {
       type: 'SavePublisherVisit',
-      mediaType: mediaType,
+      mediaType: types.mediaType,
       data: {
         url: publisherUrl,
         publisherKey,
@@ -174,12 +172,12 @@ const scrapePublisherInfoFromPage = (url: string) => {
 const sendPublisherInfoForVideo = () => {
   const url = location.href
 
-  const mediaId = ytUtils.getMediaIdFromUrl(new URL(url))
+  const mediaId = utils.getMediaIdFromUrl(new URL(url))
   if (!mediaId) {
     return
   }
 
-  const videoUrl = ytUtils.buildVideoUrl(mediaId)
+  const videoUrl = utils.buildVideoUrl(mediaId)
   const encodedVideoUrl = encodeURI(videoUrl)
 
   const fetchData: any = {}
@@ -219,18 +217,18 @@ const sendPublisherInfoForVideo = () => {
     })
 }
 
-const maybeSendPublisherInfo = () => {
-  if (ytUtils.isVideoPath(location.pathname)) {
+const sendPublisherInfo = () => {
+  if (utils.isVideoPath(location.pathname)) {
     sendPublisherInfoForVideo()
-  } else if (ytUtils.isChannelPath(location.pathname)) {
-    const channelId = ytUtils.getChannelIdFromUrl(location.pathname)
+  } else if (utils.isChannelPath(location.pathname)) {
+    const channelId = utils.getChannelIdFromUrl(location.pathname)
     sendPublisherInfoForChannel(channelId)
-  } else if (ytUtils.isUserPath(location.pathname)) {
+  } else if (utils.isUserPath(location.pathname)) {
     sendPublisherInfoForUser()
-  } else if (ytUtils.isPredefinedPath(location.pathname)) {
+  } else if (utils.isPredefinedPath(location.pathname)) {
     sendPublisherInfoForPredefined()
   } else {
-    const channelId = ytUtils.getChannelIdFromChannelPage()
+    const channelId = utils.getChannelIdFromChannelPage()
     sendPublisherInfoForChannel(channelId)
   }
 }
@@ -238,10 +236,10 @@ const maybeSendPublisherInfo = () => {
 const sendMediaDurationMetadataResponse = (url: URL) => {
   const searchParams = new URLSearchParams(url.search)
 
-  const mediaId = ytUtils.getMediaIdFromParts(searchParams)
-  const mediaKey = ytUtils.buildMediaKey(mediaId)
+  const mediaId = utils.getMediaIdFromParts(searchParams)
+  const mediaKey = utils.buildMediaKey(mediaId)
 
-  const duration = ytUtils.getMediaDurationFromParts(searchParams)
+  const duration = utils.getMediaDurationFromParts(searchParams)
 
   if (!port) {
     return
@@ -249,7 +247,7 @@ const sendMediaDurationMetadataResponse = (url: URL) => {
 
   port.postMessage({
     type: 'MediaDurationMetadataResponse',
-    mediaType: mediaType,
+    mediaType: types.mediaType,
     data: {
       mediaKey,
       duration
@@ -269,13 +267,13 @@ const registerMediaDurationHandler = () => {
 
   port.postMessage({
     type: 'MediaDurationHandlerRegistrationRequest',
-    mediaType: mediaType,
+    mediaType: types.mediaType,
     data: {
       urlRegex: mediaDurationUrlRegex
     }
   })
 
-  port.onMessage.addListener(function (msg) {
+  port.onMessage.addListener((msg) => {
     switch (msg.type) {
       case 'MediaDurationMetadataRequest': {
         const url = new URL(msg.url)
@@ -299,10 +297,11 @@ const initScript = () => {
   document.addEventListener('readystatechange', function () {
     if (document.readyState === 'complete' &&
         document.visibilityState === 'visible' &&
-        !ytUtils.isVideoPath(location.pathname)) {
+        !utils.isVideoPath(location.pathname)) {
+      console.debug('readystatechange event triggered')
       setTimeout(() => {
         registerMediaDurationHandler()
-        maybeSendPublisherInfo()
+        sendPublisherInfo()
       }, 200)
     }
   })
@@ -311,7 +310,7 @@ const initScript = () => {
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState === 'visible') {
       registerMediaDurationHandler()
-      maybeSendPublisherInfo()
+      sendPublisherInfo()
     }
   })
 
@@ -321,7 +320,7 @@ const initScript = () => {
   document.addEventListener('yt-page-data-updated', function () {
     if (document.visibilityState === 'visible') {
       registerMediaDurationHandler()
-      maybeSendPublisherInfo()
+      sendPublisherInfo()
     }
   })
 

@@ -2,20 +2,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import * as types from './types'
 import * as utils from '../common/utils'
-
-const mediaType = 'youtube'
 
 export const buildChannelUrl = (channelId: string) => {
   return `https://www.youtube.com/channel/${channelId}`
 }
 
 export const buildMediaKey = (mediaId: string) => {
-  return `${mediaType}_${mediaId}`
+  return `${types.mediaType}_${mediaId}`
 }
 
 export const buildPublisherKey = (key: string) => {
-  return `${mediaType}#channel:${key}`
+  return `${types.mediaType}#channel:${key}`
 }
 
 export const buildVideoUrl = (mediaId: string) => {
