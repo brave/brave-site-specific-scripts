@@ -6,7 +6,7 @@ import * as types from './types'
 import * as utils from '../common/utils'
 
 export const buildChannelUrl = (channelId: string) => {
-  return `https://www.youtube.com/channel/${channelId}`
+  return `https://www.youtube.com/channel/${channelId}/videos`
 }
 
 export const buildMediaKey = (mediaId: string) => {
@@ -21,16 +21,9 @@ export const buildVideoUrl = (mediaId: string) => {
   return `https://www.youtube.com/watch?v=${mediaId}`
 }
 
-export const getFavIconUrlFromPage = () => {
-  const scripts = document.scripts
-
+export const getFavIconUrlFromPage = (scripts: HTMLCollectionOf<HTMLScriptElement>) => {
   for (const script of scripts) {
-    let match = utils.extractData(script.text, '"avatar":{"thumbnails":[{"url":"', '"')
-    if (match) {
-      return match
-    }
-
-    match = utils.extractData(script.text, '"width":88,"height":88},{"url":"', '"')
+    const match = getFavIconUrlFromResponse(script.text)
     if (match) {
       return match
     }
@@ -40,6 +33,10 @@ export const getFavIconUrlFromPage = () => {
 }
 
 export const getFavIconUrlFromResponse = (data: string) => {
+  if (!data) {
+    return ''
+  }
+
   let match = utils.extractData(data, '"avatar":{"thumbnails":[{"url":"', '"')
   if (match) {
     return match
@@ -71,26 +68,9 @@ export const getChannelIdFromUrl = (path: string) => {
   return params[0]
 }
 
-export const getChannelIdFromChannelPage = () => {
-  const scripts = document.scripts
-
+export const getChannelIdFromChannelPage = (scripts: HTMLCollectionOf<HTMLScriptElement>) => {
   for (const script of scripts) {
-    let match = utils.extractData(script.text, '"ucid":"', '"')
-    if (match) {
-      return match
-    }
-
-    match = utils.extractData(script.text, 'HeaderRenderer":{"channelId":"', '"')
-    if (match) {
-      return match
-    }
-
-    match = utils.extractData(script.text, '<link rel="canonical" href="https://www.youtube.com/channel/', '">')
-    if (match) {
-      return match
-    }
-
-    match = utils.extractData(script.text, 'browseEndpoint":{"browseId":"', '"')
+    let match = getChannelIdFromResponse(script.text)
     if (match) {
       return match
     }
@@ -100,6 +80,10 @@ export const getChannelIdFromChannelPage = () => {
 }
 
 export const getChannelIdFromResponse = (data: string) => {
+  if (!data) {
+    return ''
+  }
+
   let match = utils.extractData(data, '"ucid":"', '"')
   if (match) {
     return match
@@ -123,31 +107,24 @@ export const getChannelIdFromResponse = (data: string) => {
   return ''
 }
 
-export const getChannelNameFromChannelPage = () => {
-  const channelName = document.querySelector('#channel-container #text-container') as HTMLElement
-  if (!channelName) {
-    return ''
-  }
-
-  return channelName.innerText.trim()
+export const getChannelNameElementFromChannelPage = () => {
+  return document.querySelector('#channel-container #text-container') as HTMLElement
 }
 
-export const getMediaIdFromUrl = (url: URL) => {
-  const searchParams = new URLSearchParams(url.search)
-  if (!searchParams) {
+export const getChannelNameFromElement = (element: HTMLElement) => {
+  if (!element) {
     return ''
   }
 
-  return searchParams.get('v') || ''
+  return element.innerText.trim()
 }
 
-export const getMediaIdFromChannelPage = () => {
-  const anchor = document.querySelector('#contents .ytp-title-link') as HTMLAnchorElement
-  if (!anchor) {
-    return ''
-  }
+export const getMediaIdAnchorFromChannelPage = () => {
+  return document.querySelector('#contents .ytp-title-link') as HTMLAnchorElement
+}
 
-  if (!anchor.href) {
+export const getMediaIdFromAnchor = (anchor: HTMLAnchorElement) => {
+  if (!anchor || !anchor.href) {
     return ''
   }
 
@@ -159,11 +136,31 @@ export const getMediaIdFromChannelPage = () => {
   return getMediaIdFromUrl(url)
 }
 
+export const getMediaIdFromUrl = (url: URL) => {
+  if (!url) {
+    return ''
+  }
+
+  const searchParams = new URLSearchParams(url.search)
+  if (!searchParams) {
+    return ''
+  }
+
+  return searchParams.get('v') || ''
+}
+
 export const getMediaIdFromParts = (searchParams: URLSearchParams) => {
+  if (!searchParams) {
+    return ''
+  }
   return searchParams.get('docid') || ''
 }
 
 export const getMediaDurationFromParts = (searchParams: URLSearchParams) => {
+  if (!searchParams) {
+    return 0
+  }
+
   const stParam = searchParams.get('st')
   const etParam = searchParams.get('et')
   if (!stParam || !etParam) {
@@ -196,6 +193,10 @@ export const getMediaDurationFromParts = (searchParams: URLSearchParams) => {
 }
 
 export const getBasicPath = (path: string) => {
+  if (!path) {
+    return ''
+  }
+
   let ytPath = path.substring(0, path.indexOf('/', 1))
 
   if (!ytPath || ytPath === path) {
@@ -209,7 +210,7 @@ export const getBasicPath = (path: string) => {
 }
 
 export const isVideoPath = (path: string) => {
-  if (location.pathname.endsWith('/watch')) {
+  if (path && path.endsWith('/watch')) {
     return true
   }
 
@@ -217,7 +218,7 @@ export const isVideoPath = (path: string) => {
 }
 
 export const isChannelPath = (path: string) => {
-  if (location.pathname.includes('/channel/')) {
+  if (path && path.includes('/channel/')) {
     return true
   }
 
@@ -225,7 +226,7 @@ export const isChannelPath = (path: string) => {
 }
 
 export const isUserPath = (path: string) => {
-  if (location.pathname.includes('/user/')) {
+  if (path && path.includes('/user/')) {
     return true
   }
 
@@ -255,6 +256,10 @@ export const isPredefinedPath = (path: string) => {
     '/watch'
   ]
 
+  if (!path) {
+    return false
+  }
+
   const cleanPath = getBasicPath(path)
   for (const strPath of paths) {
     if (cleanPath === strPath) {
@@ -266,6 +271,10 @@ export const isPredefinedPath = (path: string) => {
 }
 
 export const getPublisherNameFromResponse = (data: string) => {
+  if (!data) {
+    return ''
+  }
+
   const publisherNameJson = utils.extractData(data, '"author":"', '"')
   if (!publisherNameJson) {
     return ''

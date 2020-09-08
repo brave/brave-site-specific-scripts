@@ -3,7 +3,7 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 export const extractData = (data: string, matchAfter: string, matchUntil: string) => {
-  if (data.length < matchAfter.length) {
+  if (data === undefined || matchAfter === undefined || data.length < matchAfter.length) {
     return ''
   }
 

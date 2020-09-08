@@ -2,7 +2,7 @@ import * as utils from './utils'
 
 test('builds channel url', () => {
   expect(utils.buildChannelUrl('UCxVXX2JqatsN4xwtjd3W5Kg'))
-    .toBe('https://www.youtube.com/channel/UCxVXX2JqatsN4xwtjd3W5Kg')
+    .toBe('https://www.youtube.com/channel/UCxVXX2JqatsN4xwtjd3W5Kg/videos')
 })
 
 test('builds media key', () => {

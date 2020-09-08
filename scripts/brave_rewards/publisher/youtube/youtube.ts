@@ -6,22 +6,24 @@ import * as types from './types'
 import * as utils from './utils'
 
 const braveRewardsExtensionId = 'jidkidbbcafjabdphckchenhfomhnfma'
-
-const mediaDurationUrlRegex = 'https://www.youtube.com/api/stats/watchtime?*'
+const mediaDurationUrlPattern = 'https://www.youtube.com/api/stats/watchtime?*'
 
 let port: chrome.runtime.Port | null = null
 
-let registeredMediaDurationHandler = false
+let registeredOnCompletedWebRequestHandler = false
 
 const sendErrorResponse = (errorMessage: string) => {
-  chrome.runtime.sendMessage(
-    braveRewardsExtensionId, {
-      type: 'GreaselionError',
-      mediaType: types.mediaType,
-      data: {
-        errorMessage
-      }
-    })
+  if (!port) {
+    return
+  }
+
+  port.postMessage({
+    type: 'GreaselionError',
+    mediaType: types.mediaType,
+    data: {
+      errorMessage
+    }
+  })
 }
 
 const sendPublisherInfoForChannel = (channelId: string) => {
@@ -30,59 +32,67 @@ const sendPublisherInfoForChannel = (channelId: string) => {
     return
   }
 
+  const channelNameElement = utils.getChannelNameElementFromChannelPage()
+  if (!channelNameElement) {
+    sendErrorResponse('Unable to extract channel name from page')
+    return
+  }
+
   const publisherKey = utils.buildPublisherKey(channelId)
-  const publisherName = utils.getChannelNameFromChannelPage()
-  const favIconUrl = utils.getFavIconUrlFromPage()
+  const publisherName = utils.getChannelNameFromElement(channelNameElement)
+  const favIconUrl = utils.getFavIconUrlFromPage(document.scripts)
 
   // This media key represents the channel trailer video
   let mediaKey = ''
-  const mediaId = utils.getMediaIdFromChannelPage()
+  const mediaIdAnchor = utils.getMediaIdAnchorFromChannelPage()
+  const mediaId = utils.getMediaIdFromAnchor(mediaIdAnchor)
   if (mediaId) {
     mediaKey = utils.buildMediaKey(mediaId)
   }
 
-  const url = new URL(location.href)
-  if (!url) {
+  const publisherUrl = utils.buildChannelUrl(channelId)
+
+  if (!port) {
     return
   }
 
-  url.pathname = url.pathname + '/videos'
-
-  chrome.runtime.sendMessage(
-    braveRewardsExtensionId, {
-      type: 'SavePublisherVisit',
-      mediaType: types.mediaType,
-      data: {
-        url: url.href,
-        publisherKey,
-        publisherName,
-        mediaKey,
-        favIconUrl
-      }
-    })
+  port.postMessage({
+    type: 'SavePublisherVisit',
+    mediaType: types.mediaType,
+    data: {
+      url: publisherUrl,
+      publisherKey,
+      publisherName,
+      mediaKey,
+      favIconUrl
+    }
+  })
 }
 
 const sendPublisherInfoForPredefined = () => {
   const url = `https://${types.mediaDomain}`
   const publisherKey = types.mediaDomain
-  const publisherName = types.mediaType
+  const publisherName = types.mediaDomain
   const favIconUrl = ''
 
-  chrome.runtime.sendMessage(
-    braveRewardsExtensionId, {
-      type: 'SavePublisherVisit',
-      mediaType: types.mediaType,
-      data: {
-        url: url,
-        publisherKey,
-        publisherName,
-        favIconUrl
-      }
-    })
+  if (!port) {
+    return
+  }
+
+  port.postMessage({
+    type: 'SavePublisherVisit',
+    mediaType: '',
+    data: {
+      url: url,
+      publisherKey,
+      publisherName,
+      favIconUrl
+    }
+  })
 }
 
 const sendPublisherInfoForUser = () => {
-  const channelId = utils.getChannelIdFromChannelPage()
+  const channelId = utils.getChannelIdFromChannelPage(document.scripts)
   if (!channelId) {
     sendErrorResponse('Unable to scrape channel id')
     return
@@ -94,29 +104,39 @@ const sendPublisherInfoForUser = () => {
     return
   }
 
+  const channelNameElement = utils.getChannelNameElementFromChannelPage()
+  if (!channelNameElement) {
+    sendErrorResponse('Unable to extract channel name from page')
+    return
+  }
+
   const publisherKey = utils.buildPublisherKey(channelId)
-  const publisherName = utils.getChannelNameFromChannelPage()
+  const publisherName = utils.getChannelNameFromElement(channelNameElement)
 
   // This media key represents the channel trailer video
   let mediaKey = ''
-  const mediaId = utils.getMediaIdFromChannelPage()
+  const mediaIdAnchor = utils.getMediaIdAnchorFromChannelPage()
+  const mediaId = utils.getMediaIdFromAnchor(mediaIdAnchor)
   if (mediaId) {
     mediaKey = utils.buildMediaKey(mediaId)
   }
 
   const publisherUrl = utils.buildChannelUrl(channelId)
 
-  chrome.runtime.sendMessage(
-    braveRewardsExtensionId, {
-      type: 'SavePublisherVisit',
-      mediaType: types.mediaType,
-      data: {
-        url: publisherUrl,
-        publisherKey,
-        publisherName,
-        mediaKey
-      }
-    })
+  if (!port) {
+    return
+  }
+
+  port.postMessage({
+    type: 'SavePublisherVisit',
+    mediaType: types.mediaType,
+    data: {
+      url: publisherUrl,
+      publisherKey,
+      publisherName,
+      mediaKey
+    }
+  })
 }
 
 const sendPublisherInfoForVideoHelper = (url: string, responseText: string, publisherName: string, publisherUrl: string) => {
@@ -139,18 +159,21 @@ const sendPublisherInfoForVideoHelper = (url: string, responseText: string, publ
     publisherUrl = utils.buildChannelUrl(channelId)
   }
 
-  chrome.runtime.sendMessage(
-    braveRewardsExtensionId, {
-      type: 'SavePublisherVisit',
-      mediaType: types.mediaType,
-      data: {
-        url: publisherUrl,
-        publisherKey,
-        publisherName,
-        mediaKey,
-        favIconUrl
-      }
-    })
+  if (!port) {
+    return
+  }
+
+  port.postMessage({
+    type: 'SavePublisherVisit',
+    mediaType: types.mediaType,
+    data: {
+      url: publisherUrl,
+      publisherKey,
+      publisherName,
+      mediaKey,
+      favIconUrl
+    }
+  })
 }
 
 const scrapePublisherInfoFromPage = (url: string) => {
@@ -220,25 +243,34 @@ const sendPublisherInfoForVideo = () => {
 const sendPublisherInfo = () => {
   if (utils.isVideoPath(location.pathname)) {
     sendPublisherInfoForVideo()
-  } else if (utils.isChannelPath(location.pathname)) {
+    return
+  }
+
+  if (utils.isChannelPath(location.pathname)) {
     const channelId = utils.getChannelIdFromUrl(location.pathname)
     sendPublisherInfoForChannel(channelId)
-  } else if (utils.isUserPath(location.pathname)) {
-    sendPublisherInfoForUser()
-  } else if (utils.isPredefinedPath(location.pathname)) {
-    sendPublisherInfoForPredefined()
-  } else {
-    const channelId = utils.getChannelIdFromChannelPage()
-    sendPublisherInfoForChannel(channelId)
+    return
   }
+
+  if (utils.isUserPath(location.pathname)) {
+    sendPublisherInfoForUser()
+    return
+  }
+
+  if (utils.isPredefinedPath(location.pathname)) {
+    sendPublisherInfoForPredefined()
+    return
+  }
+
+  const channelId = utils.getChannelIdFromChannelPage(document.scripts)
+  sendPublisherInfoForChannel(channelId)
 }
 
-const sendMediaDurationMetadataResponse = (url: URL) => {
+const sendMediaDurationMetadata = (url: URL) => {
   const searchParams = new URLSearchParams(url.search)
 
   const mediaId = utils.getMediaIdFromParts(searchParams)
   const mediaKey = utils.buildMediaKey(mediaId)
-
   const duration = utils.getMediaDurationFromParts(searchParams)
 
   if (!port) {
@@ -246,7 +278,7 @@ const sendMediaDurationMetadataResponse = (url: URL) => {
   }
 
   port.postMessage({
-    type: 'MediaDurationMetadataResponse',
+    type: 'MediaDurationMetadata',
     mediaType: types.mediaType,
     data: {
       mediaKey,
@@ -255,29 +287,33 @@ const sendMediaDurationMetadataResponse = (url: URL) => {
   })
 }
 
-// Register a media duration handler for this script
-const registerMediaDurationHandler = () => {
-  if (registeredMediaDurationHandler) {
+// Register an OnCompleted webRequest handler for this script
+const registerOnCompletedWebRequestHandler = () => {
+  if (registeredOnCompletedWebRequestHandler) {
     return
   }
+
+  registeredOnCompletedWebRequestHandler = true
 
   if (!port) {
     return
   }
 
   port.postMessage({
-    type: 'MediaDurationHandlerRegistrationRequest',
+    type: 'RegisterOnCompletedWebRequest',
     mediaType: types.mediaType,
     data: {
-      urlRegex: mediaDurationUrlRegex
+      urlPattern: mediaDurationUrlPattern
     }
   })
 
   port.onMessage.addListener((msg) => {
     switch (msg.type) {
-      case 'MediaDurationMetadataRequest': {
-        const url = new URL(msg.url)
-        sendMediaDurationMetadataResponse(url)
+      case 'MediaDurationMetadata': {
+        if (msg.mediaType === types.mediaType) {
+          const url = new URL(msg.url)
+          sendMediaDurationMetadata(url)
+        }
         break
       }
     }
@@ -292,34 +328,33 @@ const initScript = () => {
 
   port = chrome.runtime.connect(braveRewardsExtensionId, { name: 'Greaselion' })
 
-  // Load publisher info and register media duration handler when document finishes loading
+  // Load publisher info and register webRequest.OnCompleted handler when document finishes loading
   // Note: Not needed for video paths, as 'yt-page-data-updated' handles those
   document.addEventListener('readystatechange', function () {
     if (document.readyState === 'complete' &&
         document.visibilityState === 'visible' &&
         !utils.isVideoPath(location.pathname)) {
-      console.debug('readystatechange event triggered')
       setTimeout(() => {
-        registerMediaDurationHandler()
+        registerOnCompletedWebRequestHandler()
         sendPublisherInfo()
       }, 200)
     }
   })
 
-  // Load publisher info and register media duration handler on visibility change
+  // Load publisher info and register webRequest.OnCompleted handler on visibility change
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState === 'visible') {
-      registerMediaDurationHandler()
+      registerOnCompletedWebRequestHandler()
       sendPublisherInfo()
     }
   })
 
-  // Load publisher info and register media duartion handler on page data update
+  // Load publisher info and register webRequest.OnCompleted handler on page data update
   // Note: Can't use 'yt-navigate-finish' for this, as data may not have
   // finished loading by then
   document.addEventListener('yt-page-data-updated', function () {
     if (document.visibilityState === 'visible') {
-      registerMediaDurationHandler()
+      registerOnCompletedWebRequestHandler()
       sendPublisherInfo()
     }
   })
