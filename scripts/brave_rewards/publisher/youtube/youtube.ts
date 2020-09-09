@@ -12,6 +12,8 @@ let port: chrome.runtime.Port | null = null
 
 let registeredOnCompletedWebRequestHandler = false
 
+let firstVisit = true
+
 const sendErrorResponse = (errorMessage: string) => {
   if (!port) {
     return
@@ -282,9 +284,12 @@ const sendMediaDurationMetadata = (url: URL) => {
     mediaType: types.mediaType,
     data: {
       mediaKey,
-      duration
+      duration,
+      firstVisit
     }
   })
+
+  firstVisit = false
 }
 
 // Register an OnCompleted webRequest handler for this script
@@ -357,6 +362,7 @@ const initScript = () => {
       registerOnCompletedWebRequestHandler()
       sendPublisherInfo()
     }
+    firstVisit = true
   })
 
   console.info('Greaselion script loaded: youtube.ts')
