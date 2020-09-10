@@ -294,6 +294,19 @@ const sendMediaDurationMetadata = (url: URL) => {
   firstVisit = false
 }
 
+const handleOnCompletedWebRequest = (mediaType: string, details: any) => {
+  if (mediaType !== types.mediaType) {
+    return
+  }
+
+  if (!details || !details.url) {
+    return
+  }
+
+  const url = new URL(details.url)
+  sendMediaDurationMetadata(url)
+}
+
 // Register an OnCompleted webRequest handler for this script
 const registerOnCompletedWebRequestHandler = () => {
   if (registeredOnCompletedWebRequestHandler) {
@@ -310,17 +323,14 @@ const registerOnCompletedWebRequestHandler = () => {
     type: 'RegisterOnCompletedWebRequest',
     mediaType: types.mediaType,
     data: {
-      urlPattern: mediaDurationUrlPattern
+      urlPatterns: [ mediaDurationUrlPattern ]
     }
   })
 
   port.onMessage.addListener((msg) => {
     switch (msg.type) {
-      case 'MediaDurationMetadata': {
-        if (msg.mediaType === types.mediaType) {
-          const url = new URL(msg.url)
-          sendMediaDurationMetadata(url)
-        }
+      case 'OnCompletedWebRequest': {
+        handleOnCompletedWebRequest(msg.mediaType, msg.details)
         break
       }
     }
@@ -333,6 +343,7 @@ const initScript = () => {
     return
   }
 
+  // Connect port for communications with Rewards background page
   port = chrome.runtime.connect(braveRewardsExtensionId, { name: 'Greaselion' })
 
   // Load publisher info and register webRequest.OnCompleted handler when document finishes loading
