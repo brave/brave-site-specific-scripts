@@ -94,51 +94,53 @@ const sendPublisherInfoForPredefined = () => {
 }
 
 const sendPublisherInfoForUser = () => {
-  const channelId = utils.getChannelIdFromChannelPage(document.scripts)
-  if (!channelId) {
-    sendErrorResponse('Unable to scrape channel id')
-    return
-  }
+  const url = location.href
 
-  const user = utils.getUserFromUrl(location.pathname)
-  if (!user) {
-    sendErrorResponse('Unable to extract user from url')
-    return
-  }
+  fetch(url)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`YouTube publisher request failed: ${response.statusText} (${response.status})`)
+      }
+      return response.text()
+    })
+    .then((responseText) => {
+      const channelId = utils.getChannelIdFromResponse(responseText)
+      if (!channelId) {
+        sendErrorResponse('Unable to scrape channel id')
+        return
+      }
 
-  const channelNameElement = utils.getChannelNameElementFromChannelPage()
-  if (!channelNameElement) {
-    sendErrorResponse('Unable to extract channel name from page')
-    return
-  }
+      const publisherKey = utils.buildPublisherKey(channelId)
+      const publisherName = utils.getChannelNameFromResponse(responseText)
 
-  const publisherKey = utils.buildPublisherKey(channelId)
-  const publisherName = utils.getChannelNameFromElement(channelNameElement)
+      // This media key represents the channel trailer video
+      let mediaKey = ''
+      const mediaIdAnchor = utils.getMediaIdAnchorFromChannelPage()
+      const mediaId = utils.getMediaIdFromAnchor(mediaIdAnchor)
+      if (mediaId) {
+        mediaKey = utils.buildMediaKey(mediaId)
+      }
 
-  // This media key represents the channel trailer video
-  let mediaKey = ''
-  const mediaIdAnchor = utils.getMediaIdAnchorFromChannelPage()
-  const mediaId = utils.getMediaIdFromAnchor(mediaIdAnchor)
-  if (mediaId) {
-    mediaKey = utils.buildMediaKey(mediaId)
-  }
+      const publisherUrl = utils.buildChannelUrl(channelId)
 
-  const publisherUrl = utils.buildChannelUrl(channelId)
+      if (!port) {
+        return
+      }
 
-  if (!port) {
-    return
-  }
-
-  port.postMessage({
-    type: 'SavePublisherVisit',
-    mediaType: types.mediaType,
-    data: {
-      url: publisherUrl,
-      publisherKey,
-      publisherName,
-      mediaKey
-    }
-  })
+      port.postMessage({
+        type: 'SavePublisherVisit',
+        mediaType: types.mediaType,
+        data: {
+          url: publisherUrl,
+          publisherKey,
+          publisherName,
+          mediaKey
+        }
+      })
+    })
+    .catch((error) => {
+      throw new Error(`YouTube fetch request failed: ${error}`)
+    })
 }
 
 const sendPublisherInfoForVideoHelper = (url: string, responseText: string, publisherName: string, publisherUrl: string) => {

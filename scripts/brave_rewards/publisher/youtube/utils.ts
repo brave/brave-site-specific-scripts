@@ -107,6 +107,19 @@ export const getChannelIdFromResponse = (data: string) => {
   return ''
 }
 
+export const getChannelNameFromResponse = (data: string) => {
+  if (!data) {
+    return ''
+  }
+
+  const match = utils.extractData(data, '<meta itemprop="name" content="', '"')
+  if (match) {
+    return match
+  }
+
+  return ''
+}
+
 export const getChannelNameElementFromChannelPage = () => {
   return document.querySelector('#channel-container #text-container') as HTMLElement
 }
