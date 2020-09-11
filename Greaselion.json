@@ -1,2 +1,14 @@
 [
+  {
+    "urls": [
+      "https://m.youtube.com/*",
+      "https://www.youtube.com/*"
+    ],
+    "scripts": [
+      "scripts/brave_rewards/publisher/youtube/youtube.bundle.js"
+    ],
+    "preconditions": {
+      "rewards-enabled": true
+    }
+  }
 ]

@@ -13,6 +13,7 @@ module.exports = (env, argv) => {
   const config = {
     devtool: argv.mode === 'development' ? 'inline-source-map' : false,
     entry: {
+      ['scripts/brave_rewards/publisher/youtube/youtube']: './scripts/brave_rewards/publisher/youtube/youtube'
     },
     plugins: [
       new CopyPlugin({
@@ -29,7 +30,7 @@ module.exports = (env, argv) => {
       rules: [
         {
           test: /\.tsx?$/,
-          use: 'ts-loader',
+          use: [{loader: 'ts-loader', options: {onlyCompileBundledFiles: true}}],
           exclude: /node_modules/,
         },
       ],
