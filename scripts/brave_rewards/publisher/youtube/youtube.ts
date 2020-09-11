@@ -72,7 +72,7 @@ const sendPublisherInfoForChannel = (channelId: string) => {
 }
 
 const sendPublisherInfoForPredefined = () => {
-  const url = `https://${types.mediaDomain}`
+  const url = `https://www.${types.mediaDomain}`
   const publisherKey = types.mediaDomain
   const publisherName = types.mediaDomain
   const favIconUrl = ''
