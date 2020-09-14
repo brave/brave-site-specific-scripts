@@ -26,8 +26,8 @@
   },
   {
     "urls": [
-      "http://*/*",
-      "https://*/*"
+      "https://venturebeat.com/*",
+      "*://www.mlssoccer.com/*"
     ],
     "scripts": [
       "publisher-ads/gpt-site.bundle.js"
