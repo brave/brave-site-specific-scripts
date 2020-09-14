@@ -3,7 +3,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this file,
 // you can obtain one at http://mozilla.org/MPL/2.0/.
 
-export default function injectToDocument (isolatedFn: Function, ...codeVars: any[]) {
+export default function injectToDocument (isolatedFn: Function | string, ...codeVars: any[]) {
   // Convert function to single-scope and stringify
   const codeToEval = `(
     ${isolatedFn.toString()}
