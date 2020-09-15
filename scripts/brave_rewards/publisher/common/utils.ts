@@ -31,3 +31,21 @@ export const extractData = (data: string, matchAfter: string, matchUntil: string
 
   return match
 }
+
+export const areObjectsEqualShallow = (firstObj: {}, secondObj: {}) => {
+  const firstObjPropertyNames = Object.getOwnPropertyNames(firstObj)
+  const secondObjPropertyNames = Object.getOwnPropertyNames(secondObj)
+
+  if (firstObjPropertyNames.length !== secondObjPropertyNames.length) {
+    return false
+  }
+
+  for (let i = 0; i < firstObjPropertyNames.length; i++) {
+    const propertyName = firstObjPropertyNames[i]
+    if (firstObj[propertyName] !== secondObj[propertyName]) {
+      return false
+    }
+  }
+
+  return true
+}

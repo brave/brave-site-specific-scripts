@@ -13,6 +13,7 @@ module.exports = (env, argv) => {
   const config = {
     devtool: argv.mode === 'development' ? 'inline-source-map' : false,
     entry: {
+      ['scripts/brave_rewards/publisher/twitter/twitter']: './scripts/brave_rewards/publisher/twitter/twitter',
       ['scripts/brave_rewards/publisher/youtube/youtube']: './scripts/brave_rewards/publisher/youtube/youtube'
     },
     plugins: [

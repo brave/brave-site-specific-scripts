@@ -1,6 +1,18 @@
 [
   {
     "urls": [
+      "https://twitter.com/*",
+      "https://*.twitter.com/*"
+    ],
+    "scripts": [
+      "scripts/brave_rewards/publisher/twitter/twitter.bundle.js"
+    ],
+    "preconditions": {
+      "twitter-tips-enabled": true
+    }
+  },
+  {
+    "urls": [
       "https://m.youtube.com/*",
       "https://www.youtube.com/*"
     ],
