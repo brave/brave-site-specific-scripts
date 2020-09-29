@@ -112,6 +112,7 @@ const sendPublisherInfoForUser = () => {
 
       const publisherKey = utils.buildPublisherKey(channelId)
       const publisherName = utils.getChannelNameFromResponse(responseText)
+      const favIconUrl = utils.getFavIconUrlFromResponse(responseText)
 
       // This media key represents the channel trailer video
       let mediaKey = ''
@@ -134,7 +135,8 @@ const sendPublisherInfoForUser = () => {
           url: publisherUrl,
           publisherKey,
           publisherName,
-          mediaKey
+          mediaKey,
+          favIconUrl
         }
       })
     })
