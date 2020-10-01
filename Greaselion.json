@@ -1,6 +1,20 @@
 [
   {
     "urls": [
+      "https://github.com/*",
+      "https://www.github.com/*",
+      "https://gist.github.com/*"
+    ],
+    "scripts": [
+      "scripts/brave_rewards/publisher/github/github.bundle.js"
+    ],
+    "preconditions": {
+      "github-tips-enabled": true
+    },
+    "messages": "scripts/brave_rewards/publisher/github/_locales"
+  },
+  {
+    "urls": [
       "https://twitter.com/*",
       "https://*.twitter.com/*"
     ],

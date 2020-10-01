@@ -532,6 +532,7 @@ const tipUser = (mediaMetaData: MediaMetaData) => {
   const profileUrl = utils.buildProfileUrl(mediaMetaData.user.screenName, mediaMetaData.user.id)
   const publisherKey = utils.buildPublisherKey(mediaMetaData.user.id)
   const publisherName = mediaMetaData.user.screenName
+  const publisherScreenName = mediaMetaData.user.screenName
 
   if (!port) {
     return
@@ -544,6 +545,7 @@ const tipUser = (mediaMetaData: MediaMetaData) => {
       url: profileUrl,
       publisherKey,
       publisherName,
+      publisherScreenName,
       favIconUrl: mediaMetaData.user.favIconUrl,
       postId: mediaMetaData.post.id,
       postTimestamp: mediaMetaData.post.timestamp,
