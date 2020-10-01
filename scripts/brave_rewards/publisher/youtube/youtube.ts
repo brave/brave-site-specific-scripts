@@ -42,7 +42,10 @@ const sendPublisherInfoForChannel = (channelId: string) => {
 
   const publisherKey = utils.buildPublisherKey(channelId)
   const publisherName = utils.getChannelNameFromElement(channelNameElement)
-  const favIconUrl = utils.getFavIconUrlFromPage(document.scripts)
+  if (!publisherName) {
+    sendErrorResponse('Invalid publisher name')
+    return
+  }
 
   // This media key represents the channel trailer video
   let mediaKey = ''
@@ -53,6 +56,7 @@ const sendPublisherInfoForChannel = (channelId: string) => {
   }
 
   const publisherUrl = utils.buildChannelUrl(channelId)
+  const favIconUrl = utils.getFavIconUrlFromPage(document.scripts)
 
   if (!port) {
     return
@@ -106,13 +110,16 @@ const sendPublisherInfoForUser = () => {
     .then((responseText) => {
       const channelId = utils.getChannelIdFromResponse(responseText)
       if (!channelId) {
-        sendErrorResponse('Unable to scrape channel id')
+        sendErrorResponse('Invalid channel id')
         return
       }
 
       const publisherKey = utils.buildPublisherKey(channelId)
       const publisherName = utils.getChannelNameFromResponse(responseText)
-      const favIconUrl = utils.getFavIconUrlFromResponse(responseText)
+      if (!publisherName) {
+        sendErrorResponse('Invalid publisher name')
+        return
+      }
 
       // This media key represents the channel trailer video
       let mediaKey = ''
@@ -122,6 +129,7 @@ const sendPublisherInfoForUser = () => {
         mediaKey = utils.buildMediaKey(mediaId)
       }
 
+      const favIconUrl = utils.getFavIconUrlFromResponse(responseText)
       const publisherUrl = utils.buildChannelUrl(channelId)
 
       if (!port) {
@@ -146,12 +154,17 @@ const sendPublisherInfoForUser = () => {
 }
 
 const sendPublisherInfoForVideoHelper = (url: string, responseText: string, publisherName: string, publisherUrl: string) => {
-  const favIconUrl = utils.getFavIconUrlFromResponse(responseText)
   const channelId = utils.getChannelIdFromResponse(responseText)
+  if (!channelId) {
+    sendErrorResponse('Invalid channel id')
+    return
+  }
+
   const publisherKey = utils.buildPublisherKey(channelId)
 
   const mediaId = utils.getMediaIdFromUrl(new URL(url))
   if (!mediaId) {
+    sendErrorResponse('Invalid media id')
     return
   }
 
@@ -159,11 +172,17 @@ const sendPublisherInfoForVideoHelper = (url: string, responseText: string, publ
 
   if (!publisherName) {
     publisherName = utils.getPublisherNameFromResponse(responseText)
+    if (!publisherName) {
+      sendErrorResponse('Invalid publisher name')
+      return
+    }
   }
 
   if (!publisherUrl) {
     publisherUrl = utils.buildChannelUrl(channelId)
   }
+
+  const favIconUrl = utils.getFavIconUrlFromResponse(responseText)
 
   if (!port) {
     return
@@ -203,6 +222,7 @@ const sendPublisherInfoForVideo = () => {
 
   const mediaId = utils.getMediaIdFromUrl(new URL(url))
   if (!mediaId) {
+    sendErrorResponse('Invalid media id')
     return
   }
 
