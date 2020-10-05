@@ -9,7 +9,8 @@
     ],
     "preconditions": {
       "twitter-tips-enabled": true
-    }
+    },
+    "messages": "scripts/brave_rewards/publisher/twitter/_locales"
   },
   {
     "urls": [

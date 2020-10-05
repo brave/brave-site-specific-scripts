@@ -5,6 +5,7 @@
 import * as auth from './auth'
 import * as commonTypes from '../common/types'
 import * as commonUtils from '../common/utils'
+import * as locale from '../common/locale'
 import * as types from './types'
 import * as utils from './utils'
 
@@ -35,18 +36,6 @@ interface MediaMetaData {
     timestamp: string
     text: string
   }
-}
-
-// Remove when https://github.com/brave/brave-browser/issues/11890 is resolved
-const getMessage = (id: string) => {
-  switch (id) {
-    case 'twitterTipsHoverText':
-      return 'Tip this tweet'
-    case 'twitterTipsIconLabel':
-      return 'Tip'
-  }
-
-  return ''
 }
 
 const sendAPIRequest = (name: string, url: string) => {
@@ -235,7 +224,7 @@ const createTipAction = (tweet: Element, tweetId: string, hasUserActions: boolea
   tipAction.style.textAlign = hasUserActions ? 'right' : 'start'
   tipAction.setAttribute('role', 'button')
   tipAction.setAttribute('tabindex', '0')
-  tipAction.setAttribute('data-original-title', getMessage('twitterTipsHoverText'))
+  tipAction.setAttribute('data-original-title', locale.getMessage('twitterTipsHoverText'))
   tipAction.addEventListener('keydown', onTipActionKey)
 
   // Create the tip button
@@ -319,7 +308,7 @@ const createTipAction = (tweet: Element, tweetId: string, hasUserActions: boolea
   // Create the tip action count presentation
   const tipActionCountPresentation = document.createElement('span')
   tipActionCountPresentation.className = 'ProfileTweet-actionCountForPresentation'
-  tipActionCountPresentation.textContent = getMessage('twitterTipsIconLabel')
+  tipActionCountPresentation.textContent = locale.getMessage('twitterTipsIconLabel')
   tipActionCount.appendChild(tipActionCountPresentation)
 
   // Create the shadow DOM root that hosts our injected DOM elements
