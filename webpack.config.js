@@ -14,6 +14,7 @@ module.exports = (env, argv) => {
     devtool: argv.mode === 'development' ? 'inline-source-map' : false,
     entry: {
       ['scripts/brave_rewards/publisher/github/github']: './scripts/brave_rewards/publisher/github/github',
+      ['scripts/brave_rewards/publisher/reddit/reddit']: './scripts/brave_rewards/publisher/reddit/reddit',
       ['scripts/brave_rewards/publisher/twitter/twitter']: './scripts/brave_rewards/publisher/twitter/twitter',
       ['scripts/brave_rewards/publisher/youtube/youtube']: './scripts/brave_rewards/publisher/youtube/youtube'
     },
@@ -22,6 +23,7 @@ module.exports = (env, argv) => {
         patterns: [
           { from: 'Greaselion.json' },
           { from: 'scripts/brave_rewards/publisher/github/_locales/**/*' },
+          { from: 'scripts/brave_rewards/publisher/reddit/_locales/**/*' },
           { from: 'scripts/brave_rewards/publisher/twitter/_locales/**/*' },
         ]
       })

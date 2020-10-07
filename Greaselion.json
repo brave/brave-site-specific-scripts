@@ -15,6 +15,20 @@
   },
   {
     "urls": [
+      "https://old.reddit.com/*",
+      "https://reddit.com/*",
+      "https://www.reddit.com/*"
+    ],
+    "scripts": [
+      "scripts/brave_rewards/publisher/reddit/reddit.bundle.js"
+    ],
+    "preconditions": {
+      "reddit-tips-enabled": true
+    },
+    "messages": "scripts/brave_rewards/publisher/reddit/_locales"
+  },
+  {
+    "urls": [
       "https://twitter.com/*",
       "https://*.twitter.com/*"
     ],
