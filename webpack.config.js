@@ -20,6 +20,7 @@ module.exports = (env, argv) => {
       new CopyPlugin({
         patterns: [
           { from: 'Greaselion.json' },
+          { from: 'scripts/brave_rewards/publisher/twitter/_locales/**/*' },
         ]
       })
     ],
