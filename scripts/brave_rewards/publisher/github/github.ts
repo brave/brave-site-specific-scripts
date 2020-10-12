@@ -48,16 +48,15 @@ const sendErrorResponse = (errorMessage: string) => {
 }
 
 const createTipAction = (elem: Element, getMetaData: (elem: Element) => Promise<MediaMetaData>) => {
-  const hoverClasses = ' tooltipped tooltipped-sw tooltipped-align-right-1'
-
   // Create the tip action
   const tipAction = document.createElement('div')
-  tipAction.className = 'GitHubTip-action js-tooltip ' + actionTipClass + hoverClasses
+  tipAction.className = 'GitHubTip-action js-tooltip ' + actionTipClass
   tipAction.style.display = 'inline-block'
   tipAction.style.minWidth = '40px'
 
   const tipActionHoverText = locale.getMessage('githubTipsHoverText')
   if (tipActionHoverText) {
+    tipAction.className += ' tooltipped tooltipped-sw tooltipped-align-right-1'
     tipAction.setAttribute('aria-label', tipActionHoverText)
   }
 
