@@ -15,7 +15,8 @@ module.exports = (env, argv) => {
     entry: {
       ['scripts/brave_rewards/publisher/github/github']: './scripts/brave_rewards/publisher/github/github',
       ['scripts/brave_rewards/publisher/reddit/reddit']: './scripts/brave_rewards/publisher/reddit/reddit',
-      ['scripts/brave_rewards/publisher/twitter/twitter']: './scripts/brave_rewards/publisher/twitter/twitter',
+      ['scripts/brave_rewards/publisher/twitter/twitterBase']: './scripts/brave_rewards/publisher/twitter/twitterBase',
+      ['scripts/brave_rewards/publisher/twitter/twitterInlineTipping']: './scripts/brave_rewards/publisher/twitter/twitterInlineTipping',
       ['scripts/brave_rewards/publisher/youtube/youtube']: './scripts/brave_rewards/publisher/youtube/youtube'
     },
     plugins: [

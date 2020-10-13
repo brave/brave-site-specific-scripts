@@ -33,7 +33,16 @@
       "https://*.twitter.com/*"
     ],
     "scripts": [
-      "scripts/brave_rewards/publisher/twitter/twitter.bundle.js"
+      "scripts/brave_rewards/publisher/twitter/twitterBase.bundle.js"
+    ]
+  },
+  {
+    "urls": [
+      "https://twitter.com/*",
+      "https://*.twitter.com/*"
+    ],
+    "scripts": [
+      "scripts/brave_rewards/publisher/twitter/twitterInlineTipping.bundle.js"
     ],
     "preconditions": {
       "twitter-tips-enabled": true

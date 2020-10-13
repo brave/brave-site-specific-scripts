@@ -2,130 +2,24 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import * as auth from './auth'
-import * as commonTypes from '../common/types'
-import * as commonUtils from '../common/utils'
+import { MediaMetaData } from '../common/types'
+import { port } from './messaging'
+
+import * as api from './api'
 import * as locale from '../common/locale'
 import * as types from './types'
 import * as utils from './utils'
 
-const sendHeadersUrls = [ 'https://api.twitter.com/1.1/*' ]
-const sendHeadersExtra = [ 'requestHeaders', 'extraHeaders' ]
-
-let port: chrome.runtime.Port | null = null
-
-let registeredOnSendHeadersWebRequest = false
-
-let registeredOnUpdatedTab = false
-
-let configureTipActionTimeout: any = null
-
-let credentialHeaders = {}
+let timeout: any = null
 
 let newTwitter = true
-
-interface MediaMetaData {
-  user: {
-    id: string
-    screenName: string
-    fullName: string
-    favIconUrl: string
-  }
-  post: {
-    id: string
-    timestamp: string
-    text: string
-  }
-}
-
-const sendAPIRequest = (name: string, url: string) => {
-  return new Promise((resolve, reject) => {
-    if (!name || !url) {
-      reject(new Error('Invalid parameters'))
-      return
-    }
-
-    if (Object.keys(credentialHeaders).length === 0) {
-      reject(new Error('Missing credential headers'))
-      return
-    }
-
-    if (!port) {
-      reject(new Error('Invalid port'))
-      return
-    }
-
-    port.postMessage({
-      type: 'OnAPIRequest',
-      mediaType: types.mediaType,
-      data: {
-        name,
-        url,
-        init: {
-          credentials: 'include',
-          headers: {
-            ...credentialHeaders
-          },
-          referrerPolicy: 'no-referrer-when-downgrade',
-          method: 'GET',
-          redirect: 'follow'
-        }
-      }})
-
-    port.onMessage.addListener(function onMessageListener(msg) {
-      if (!port) {
-        reject(new Error('Invalid port'))
-        return
-      }
-      if (!msg || !msg.data) {
-        port.onMessage.removeListener(onMessageListener)
-        reject(new Error('Invalid message'))
-        return
-      }
-      if (msg.type === 'OnAPIResponse') {
-        if (!msg.data.name || (!msg.data.response && !msg.data.error)) {
-          port.onMessage.removeListener(onMessageListener)
-          reject(new Error('Invalid message'))
-          return
-        }
-        if (msg.data.name === name) {
-          port.onMessage.removeListener(onMessageListener)
-          if (msg.data.error) {
-            reject(new Error(msg.data.error))
-            return
-          }
-          resolve(msg.data.response)
-          return
-        }
-      }
-    })
-  })
-}
-
-const getTweetDetails = async (tweetId: string) => {
-  if (!tweetId) {
-    return Promise.reject(new Error('Invalid parameters'))
-  }
-
-  const url = `https://api.twitter.com/1.1/statuses/show.json?id=${tweetId}`
-  return sendAPIRequest('GetTweetDetails', url)
-}
-
-const getUserDetails = async (screenName: string) => {
-  if (!screenName) {
-    return Promise.reject(new Error('Invalid parameters'))
-  }
-
-  const url = `https://api.twitter.com/1.1/users/show.json?screen_name=${screenName}`
-  return sendAPIRequest('GetUserDetails', url)
-}
 
 const getMediaMetaData = (tweet: Element, tweetId: string): Promise<MediaMetaData> => {
   if (!tweet || !tweetId) {
     return Promise.reject(new Error('Invalid parameters'))
   }
 
-  return getTweetDetails(tweetId)
+  return api.getTweetDetails(tweetId)
     .then((details: any) => {
       return {
         user: {
@@ -324,8 +218,38 @@ const createTipAction = (tweet: Element, tweetId: string, hasUserActions: boolea
   return tipAction
 }
 
-const configureTipAction = () => {
-  clearTimeout(configureTipActionTimeout)
+const tipUser = (mediaMetaData: MediaMetaData) => {
+  if (!mediaMetaData) {
+    return
+  }
+
+  const profileUrl = utils.buildProfileUrl(mediaMetaData.user.screenName, mediaMetaData.user.id)
+  const publisherKey = utils.buildPublisherKey(mediaMetaData.user.id)
+  const publisherName = mediaMetaData.user.screenName
+  const publisherScreenName = mediaMetaData.user.screenName
+
+  if (!port) {
+    return
+  }
+
+  port.postMessage({
+    type: 'TipUser',
+    mediaType: types.mediaType,
+    data: {
+      url: profileUrl,
+      publisherKey,
+      publisherName,
+      publisherScreenName,
+      favIconUrl: mediaMetaData.user.favIconUrl,
+      postId: mediaMetaData.post.id,
+      postTimestamp: mediaMetaData.post.timestamp,
+      postText: mediaMetaData.post.text
+    }
+  })
+}
+
+export const configure = () => {
+  clearTimeout(timeout)
 
   // Reset page state since first run of this function may have
   // been pre-content
@@ -365,216 +289,5 @@ const configureTipAction = () => {
     }
   }
 
-  configureTipActionTimeout = setTimeout(configureTipAction, 3000)
+  timeout = setTimeout(configure, 3000)
 }
-
-const handleOnSendHeadersWebRequest = (mediaType: string, details: any) => {
-  if (mediaType !== types.mediaType || !details || !details.requestHeaders) {
-    return
-  }
-
-  const authHeaders = auth.processRequestHeaders(details.requestHeaders)
-  if (commonUtils.areObjectsEqualShallow(authHeaders, credentialHeaders)) {
-    return
-  }
-
-  credentialHeaders = authHeaders
-
-  sendPublisherInfo()
-  configureTipAction()
-}
-
-const handleOnUpdatedTab = (changeInfo: any) => {
-  if (!changeInfo || !changeInfo.url) {
-    return
-  }
-
-  sendPublisherInfo()
-}
-
-const registerOnSendHeadersWebRequest = () => {
-  if (registeredOnSendHeadersWebRequest) {
-    return
-  }
-
-  registeredOnSendHeadersWebRequest = true
-
-  if (!port) {
-    return
-  }
-
-  port.postMessage({
-    type: 'RegisterOnSendHeadersWebRequest',
-    mediaType: types.mediaType,
-    data: {
-      urlPatterns: sendHeadersUrls,
-      extra: sendHeadersExtra
-    }
-  })
-
-  port.onMessage.addListener(function (msg) {
-    if (!msg.data) {
-      return
-    }
-    switch (msg.type) {
-      case 'OnSendHeadersWebRequest': {
-        handleOnSendHeadersWebRequest(msg.mediaType, msg.data.details)
-        break
-      }
-    }
-  })
-}
-
-const registerOnUpdatedTab = () => {
-  if (registeredOnUpdatedTab) {
-    return
-  }
-
-  registeredOnUpdatedTab = true
-
-  if (!port) {
-    return
-  }
-
-  port.postMessage({
-    type: 'RegisterOnUpdatedTab',
-    mediaType: types.mediaType,
-  })
-
-  port.onMessage.addListener(function (msg) {
-    if (!msg.data) {
-      return
-    }
-    switch (msg.type) {
-      case 'OnUpdatedTab': {
-        handleOnUpdatedTab(msg.data.changeInfo)
-        break
-      }
-    }
-  })
-}
-
-const sendPublisherInfoForExcludedPage = () => {
-  const url = `https://${types.mediaDomain}`
-  const publisherKey = types.mediaDomain
-  const publisherName = types.mediaDomain
-  const mediaKey = ''
-  const favIconUrl = ''
-
-  if (!port) {
-    return
-  }
-
-  port.postMessage({
-    type: 'SavePublisherVisit',
-    mediaType: '',
-    data: {
-      url,
-      publisherKey,
-      publisherName,
-      mediaKey,
-      favIconUrl
-    }
-  })
-}
-
-const sendPublisherInfoForStandardPage = (url: URL) => {
-  const screenName = utils.getScreenNameFromUrl(url)
-  if (!screenName) {
-    return
-  }
-
-  getUserDetails(screenName)
-    .then((userDetails: any) => {
-      const userId = userDetails.id_str
-      const publisherKey = utils.buildPublisherKey(userId)
-      const publisherName = screenName
-      const mediaKey = ''
-      const favIconUrl = userDetails.profile_image_url_https.replace('_normal', '')
-
-      const profileUrl = utils.buildProfileUrl(screenName, userId)
-
-      if (!port) {
-        return
-      }
-
-      port.postMessage({
-        type: 'SavePublisherVisit',
-        mediaType: types.mediaType,
-        data: {
-          url: profileUrl,
-          publisherKey,
-          publisherName,
-          mediaKey,
-          favIconUrl
-        }
-      })
-    })
-    .catch(error => {
-      console.error(`Failed to fetch user details for ${screenName}: ${error.message}`)
-    })
-}
-
-const sendPublisherInfo = () => {
-  const url = new URL(location.href)
-  if (utils.isExcludedPath(url.pathname)) {
-    sendPublisherInfoForExcludedPage()
-  } else {
-    sendPublisherInfoForStandardPage(url)
-  }
-}
-
-const tipUser = (mediaMetaData: MediaMetaData) => {
-  if (!mediaMetaData) {
-    return
-  }
-
-  const profileUrl = utils.buildProfileUrl(mediaMetaData.user.screenName, mediaMetaData.user.id)
-  const publisherKey = utils.buildPublisherKey(mediaMetaData.user.id)
-  const publisherName = mediaMetaData.user.screenName
-  const publisherScreenName = mediaMetaData.user.screenName
-
-  if (!port) {
-    return
-  }
-
-  port.postMessage({
-    type: 'TipUser',
-    mediaType: types.mediaType,
-    data: {
-      url: profileUrl,
-      publisherKey,
-      publisherName,
-      publisherScreenName,
-      favIconUrl: mediaMetaData.user.favIconUrl,
-      postId: mediaMetaData.post.id,
-      postTimestamp: mediaMetaData.post.timestamp,
-      postText: mediaMetaData.post.text
-    }
-  })
-}
-
-const initScript = () => {
-  // Don't run in incognito context
-  if (chrome.extension.inIncognitoContext) {
-    return
-  }
-
-  port = chrome.runtime.connect(commonTypes.braveRewardsExtensionId, { name: 'Greaselion' })
-
-  // Send publisher info and configure tip action on visibility change
-  document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState === 'visible') {
-      console.debug('visibilitychange event triggered')
-      sendPublisherInfo()
-      configureTipAction()
-    }
-  })
-
-  registerOnSendHeadersWebRequest()
-  registerOnUpdatedTab()
-
-  console.info('Greaselion script loaded: twitter.ts')
-}
-
-initScript()
