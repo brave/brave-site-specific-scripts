@@ -101,3 +101,34 @@ export const isBlocklistedTab = (queryString: string) => {
 
   return true
 }
+
+export const getMediaMetaData = async (screenName: string) => {
+  if (!screenName) {
+    throw new Error('Invalid parameters')
+  }
+
+  const profileApiUrl = buildProfileApiUrl(screenName)
+  if (!profileApiUrl) {
+    throw new Error('Invalid profile api url')
+  }
+
+  const response = await fetch(profileApiUrl)
+  if (!response.ok) {
+    throw new Error(`Profile API request failed: ${response.statusText} (${response.status})`)
+  }
+
+  const data = await response.json()
+  return {
+    user: {
+      id: data.id,
+      screenName: data.login,
+      fullName: data.name || data.login,
+      favIconUrl: data.avatar_url
+    },
+    post: {
+      id: '',
+      timestamp: '',
+      text: ''
+    }
+  }
+}

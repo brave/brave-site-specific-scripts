@@ -13,7 +13,8 @@ module.exports = (env, argv) => {
   const config = {
     devtool: argv.mode === 'development' ? 'inline-source-map' : false,
     entry: {
-      ['scripts/brave_rewards/publisher/github/github']: './scripts/brave_rewards/publisher/github/github',
+      ['scripts/brave_rewards/publisher/github/githubBase']: './scripts/brave_rewards/publisher/github/githubBase',
+      ['scripts/brave_rewards/publisher/github/githubInlineTipping']: './scripts/brave_rewards/publisher/github/githubInlineTipping',
       ['scripts/brave_rewards/publisher/reddit/reddit']: './scripts/brave_rewards/publisher/reddit/reddit',
       ['scripts/brave_rewards/publisher/twitter/twitterBase']: './scripts/brave_rewards/publisher/twitter/twitterBase',
       ['scripts/brave_rewards/publisher/twitter/twitterInlineTipping']: './scripts/brave_rewards/publisher/twitter/twitterInlineTipping',

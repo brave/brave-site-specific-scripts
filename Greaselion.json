@@ -6,7 +6,17 @@
       "https://gist.github.com/*"
     ],
     "scripts": [
-      "scripts/brave_rewards/publisher/github/github.bundle.js"
+      "scripts/brave_rewards/publisher/github/githubBase.bundle.js"
+    ]
+  },
+  {
+    "urls": [
+      "https://github.com/*",
+      "https://www.github.com/*",
+      "https://gist.github.com/*"
+    ],
+    "scripts": [
+      "scripts/brave_rewards/publisher/github/githubInlineTipping.bundle.js"
     ],
     "preconditions": {
       "github-tips-enabled": true
