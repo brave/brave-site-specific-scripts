@@ -235,7 +235,7 @@ export const isUserPath = (path: string) => {
   return false
 }
 
-export const isPredefinedPath = (path: string) => {
+export const isExcludedPath = (path: string) => {
   const paths = [
     '/',
     '/account',
