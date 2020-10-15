@@ -2,28 +2,23 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { createPort, credentialHeaders, setCredentialHeaders } from './messaging'
+import { createPort } from '../common/messaging'
+
+import * as tabHandlers from '../common/tabHandlers'
+import * as webRequestHandlers from '../common/webRequestHandlers'
 
 import * as auth from './auth'
-import * as commonUtils from '../common/utils'
-import * as tabHandlers from './tabHandlers'
 import * as tipping from './tipping'
 import * as types from './types'
-import * as webRequestHandlers from './webRequestHandlers'
 
 const handleOnSendHeadersWebRequest = (mediaType: string, details: any) => {
   if (mediaType !== types.mediaType || !details || !details.requestHeaders) {
     return
   }
 
-  const authHeaders = auth.processRequestHeaders(details.requestHeaders)
-  if (commonUtils.areObjectsEqualShallow(authHeaders, credentialHeaders)) {
-    return
+  if (auth.processRequestHeaders(details.requestHeaders)) {
+    tipping.configure()
   }
-
-  setCredentialHeaders(authHeaders)
-
-  tipping.configure()
 }
 
 const handleOnUpdatedTab = (changeInfo: any) => {
@@ -49,8 +44,12 @@ const initScript = () => {
     }
   })
 
-  webRequestHandlers.registerOnSendHeadersWebRequest(handleOnSendHeadersWebRequest)
-  tabHandlers.registerOnUpdatedTab(handleOnUpdatedTab)
+  webRequestHandlers.registerOnSendHeadersWebRequest(
+    types.mediaType,
+    types.sendHeadersUrls,
+    types.sendHeadersExtra,
+    handleOnSendHeadersWebRequest)
+  tabHandlers.registerOnUpdatedTab(types.mediaType, handleOnUpdatedTab)
 
   console.info('Greaselion script loaded: twitterInlineTipping.ts')
 }

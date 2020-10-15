@@ -5,7 +5,8 @@
 import { createPort } from '../common/messaging'
 
 import * as publisherInfo from './publisherInfo'
-import * as tabHandlers from './tabHandlers'
+import * as tabHandlers from '../common/tabHandlers'
+import * as types from './types'
 
 let lastLocation = ''
 
@@ -32,14 +33,22 @@ const initScript = () => {
 
   createPort()
 
-  // Send publisher info and configure tip action on visibility change
+  // Configure tip action on visibility change
+  document.addEventListener('readystatechange', function () {
+    if (document.readyState === 'complete' &&
+        document.visibilityState === 'visible') {
+      publisherInfo.send()
+    }
+  })
+
+  // Send publisher info on visibility change
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState === 'visible') {
       publisherInfo.send()
     }
   })
 
-  tabHandlers.registerOnUpdatedTab(handleOnUpdatedTab)
+  tabHandlers.registerOnUpdatedTab(types.mediaType, handleOnUpdatedTab)
 
   console.info('Greaselion script loaded: redditBase.ts')
 }

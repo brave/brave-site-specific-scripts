@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import { port, sendErrorResponse } from '../common/messaging'
 import { MediaMetaData } from '../common/types'
-import { port, sendErrorResponse } from './messaging'
 
 import * as types from './types'
 import * as utils from './utils'
@@ -35,7 +35,7 @@ const sendForExcludedPage = () => {
 const sendForStandardPage = (url: URL) => {
   const screenName = utils.getScreenNameFromUrl(url)
   if (!screenName) {
-    sendErrorResponse('Invalid screen name')
+    sendErrorResponse(types.mediaType, 'Invalid screen name')
     return
   }
 
@@ -45,7 +45,7 @@ const sendForStandardPage = (url: URL) => {
       const publisherKey = utils.buildPublisherKey(userId)
       const publisherName = mediaMetaData.user.fullName
       if (!publisherName) {
-        sendErrorResponse('Invalid publisher name')
+        sendErrorResponse(types.mediaType, 'Invalid publisher name')
         return
       }
 

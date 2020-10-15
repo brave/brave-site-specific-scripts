@@ -4,8 +4,9 @@
 
 import { createPort } from '../common/messaging'
 
-import * as tabHandlers from './tabHandlers'
+import * as tabHandlers from '../common/tabHandlers'
 import * as tipping from './tipping'
+import * as types from './types'
 
 let lastLocation = ''
 
@@ -32,14 +33,22 @@ const initScript = () => {
 
   createPort()
 
-  // Send publisher info and configure tip action on visibility change
+  // Configure tip action on visibility change
+  document.addEventListener('readystatechange', function () {
+    if (document.readyState === 'complete' &&
+        document.visibilityState === 'visible') {
+      tipping.configure()
+    }
+  })
+
+  // Configure tip action on visibility change
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState === 'visible') {
       tipping.configure()
     }
   })
 
-  tabHandlers.registerOnUpdatedTab(handleOnUpdatedTab)
+  tabHandlers.registerOnUpdatedTab(types.mediaType, handleOnUpdatedTab)
 
   console.info('Greaselion script loaded: redditInlineTipping.ts')
 }

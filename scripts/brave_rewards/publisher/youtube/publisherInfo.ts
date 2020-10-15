@@ -2,27 +2,27 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { port, sendErrorResponse } from './messaging'
+import { port, sendErrorResponse } from '../common/messaging'
 
 import * as types from './types'
 import * as utils from './utils'
 
 const sendForChannel = (channelId: string) => {
   if (!channelId) {
-    sendErrorResponse('Invalid channel id')
+    sendErrorResponse(types.mediaType, 'Invalid channel id')
     return
   }
 
   const channelNameElement = utils.getChannelNameElementFromChannelPage()
   if (!channelNameElement) {
-    sendErrorResponse('Unable to extract channel name from page')
+    sendErrorResponse(types.mediaType, 'Unable to extract channel name from page')
     return
   }
 
   const publisherKey = utils.buildPublisherKey(channelId)
   const publisherName = utils.getChannelNameFromElement(channelNameElement)
   if (!publisherName) {
-    sendErrorResponse('Invalid publisher name')
+    sendErrorResponse(types.mediaType, 'Invalid publisher name')
     return
   }
 
@@ -89,14 +89,14 @@ const sendForUser = () => {
     .then((responseText) => {
       const channelId = utils.getChannelIdFromResponse(responseText)
       if (!channelId) {
-        sendErrorResponse('Invalid channel id')
+        sendErrorResponse(types.mediaType, 'Invalid channel id')
         return
       }
 
       const publisherKey = utils.buildPublisherKey(channelId)
       const publisherName = utils.getChannelNameFromResponse(responseText)
       if (!publisherName) {
-        sendErrorResponse('Invalid publisher name')
+        sendErrorResponse(types.mediaType, 'Invalid publisher name')
         return
       }
 
@@ -135,7 +135,7 @@ const sendForUser = () => {
 const sendForVideoHelper = (url: string, responseText: string, publisherName: string, publisherUrl: string) => {
   const channelId = utils.getChannelIdFromResponse(responseText)
   if (!channelId) {
-    sendErrorResponse('Invalid channel id')
+    sendErrorResponse(types.mediaType, 'Invalid channel id')
     return
   }
 
@@ -143,7 +143,7 @@ const sendForVideoHelper = (url: string, responseText: string, publisherName: st
 
   const mediaId = utils.getMediaIdFromUrl(new URL(url))
   if (!mediaId) {
-    sendErrorResponse('Invalid media id')
+    sendErrorResponse(types.mediaType, 'Invalid media id')
     return
   }
 
@@ -152,7 +152,7 @@ const sendForVideoHelper = (url: string, responseText: string, publisherName: st
   if (!publisherName) {
     publisherName = utils.getPublisherNameFromResponse(responseText)
     if (!publisherName) {
-      sendErrorResponse('Invalid publisher name')
+      sendErrorResponse(types.mediaType, 'Invalid publisher name')
       return
     }
   }
@@ -201,7 +201,7 @@ const sendForVideo = () => {
 
   const mediaId = utils.getMediaIdFromUrl(new URL(url))
   if (!mediaId) {
-    sendErrorResponse('Invalid media id')
+    sendErrorResponse(types.mediaType, 'Invalid media id')
     return
   }
 

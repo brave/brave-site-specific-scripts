@@ -2,13 +2,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { createPort } from './messaging'
+import { createPort } from '../common/messaging'
+
+import * as webRequestHandlers from '../common/webRequestHandlers'
 
 import * as mediaDuration from './mediaDuration'
 import * as publisherInfo from './publisherInfo'
 import * as types from './types'
 import * as utils from './utils'
-import * as webRequestHandlers from './webRequestHandlers'
+
+const mediaDurationUrlPattern = 'https://www.youtube.com/api/stats/watchtime?*'
 
 const handleOnCompletedWebRequest = (mediaType: string, details: any) => {
   if (mediaType !== types.mediaType) {
@@ -38,7 +41,10 @@ const initScript = () => {
         document.visibilityState === 'visible' &&
         !utils.isVideoPath(location.pathname)) {
       setTimeout(() => {
-        webRequestHandlers.registerOnCompletedWebRequestHandler(handleOnCompletedWebRequest)
+        webRequestHandlers.registerOnCompletedWebRequestHandler(
+          types.mediaType,
+          mediaDurationUrlPattern,
+          handleOnCompletedWebRequest)
         publisherInfo.send()
       }, 200)
     }
@@ -47,7 +53,10 @@ const initScript = () => {
   // Load publisher info and register webRequest.OnCompleted handler on visibility change
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState === 'visible') {
-      webRequestHandlers.registerOnCompletedWebRequestHandler(handleOnCompletedWebRequest)
+      webRequestHandlers.registerOnCompletedWebRequestHandler(
+        types.mediaType,
+        mediaDurationUrlPattern,
+        handleOnCompletedWebRequest)
       publisherInfo.send()
     }
   })
@@ -57,7 +66,10 @@ const initScript = () => {
   // finished loading by then
   document.addEventListener('yt-page-data-updated', function () {
     if (document.visibilityState === 'visible') {
-      webRequestHandlers.registerOnCompletedWebRequestHandler(handleOnCompletedWebRequest)
+      webRequestHandlers.registerOnCompletedWebRequestHandler(
+        types.mediaType,
+        mediaDurationUrlPattern,
+        handleOnCompletedWebRequest)
       publisherInfo.send()
     }
     mediaDuration.setFirstVisit(true)

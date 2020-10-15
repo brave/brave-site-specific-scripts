@@ -4,12 +4,10 @@
 
 import { port } from '../common/messaging'
 
-import * as types from './types'
-
 let registeredOnUpdatedTab = false
 
-export const registerOnUpdatedTab = (callback: (changeInfo: any) => void) => {
-  if (registeredOnUpdatedTab) {
+export const registerOnUpdatedTab = (mediaType: string, callback: (changeInfo: any) => void) => {
+  if (!mediaType || registeredOnUpdatedTab) {
     return
   }
 
@@ -21,7 +19,7 @@ export const registerOnUpdatedTab = (callback: (changeInfo: any) => void) => {
 
   port.postMessage({
     type: 'RegisterOnUpdatedTab',
-    mediaType: types.mediaType
+    mediaType: mediaType
   })
 
   port.onMessage.addListener(function (msg: any) {

@@ -2,10 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { createPort } from './messaging'
+import { createPort } from '../common/messaging'
 
-import * as tabHandlers from './tabHandlers'
+import * as tabHandlers from '../common/tabHandlers'
 import * as tipping from './tipping'
+import * as types from './types'
 
 let lastLocation = ''
 
@@ -39,7 +40,7 @@ const initScript = () => {
     }
   })
 
-  tabHandlers.registerOnUpdatedTab(handleOnUpdatedTab)
+  tabHandlers.registerOnUpdatedTab(types.mediaType, handleOnUpdatedTab)
 
   console.info('Greaselion script loaded: githubInlineTipping.ts')
 }

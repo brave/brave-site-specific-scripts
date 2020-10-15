@@ -2,7 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { credentialHeaders, port } from './messaging'
+import { port } from '../common/messaging'
+import { authHeaders } from './auth'
 
 import * as types from './types'
 
@@ -13,8 +14,8 @@ const sendAPIRequest = (name: string, url: string) => {
       return
     }
 
-    if (Object.keys(credentialHeaders).length === 0) {
-      reject(new Error('Missing credential headers'))
+    if (Object.keys(authHeaders).length === 0) {
+      reject(new Error('Missing auth headers'))
       return
     }
 
@@ -32,7 +33,7 @@ const sendAPIRequest = (name: string, url: string) => {
         init: {
           credentials: 'include',
           headers: {
-            ...credentialHeaders
+            ...authHeaders
           },
           referrerPolicy: 'no-referrer-when-downgrade',
           method: 'GET',

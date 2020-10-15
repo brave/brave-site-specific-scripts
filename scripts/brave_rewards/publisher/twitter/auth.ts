@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import * as commonUtils from '../common/utils'
+
 type SessionId = string | null
 
 const authHeaderNames = [
@@ -14,7 +16,7 @@ const authTokenCookieRegex = /[; ]_twitter_sess=([^\s;]*)/
 
 let lastSessionId: SessionId = null
 
-let authHeaders = {}
+export let authHeaders = {}
 
 const readSessionCookie = (cookiesString: string): SessionId => {
   if (!cookiesString) {
@@ -31,8 +33,10 @@ const readSessionCookie = (cookiesString: string): SessionId => {
 
 export const processRequestHeaders = (requestHeaders: any[]) => {
   if (!requestHeaders) {
-    return {}
+    return false
   }
+
+  let headers = {}
 
   for (const header of requestHeaders) {
     // Parse cookies for session id
@@ -42,12 +46,17 @@ export const processRequestHeaders = (requestHeaders: any[]) => {
       if (hasAuthChanged) {
         // Clear cached auth data when session changes
         lastSessionId = currentSessionId
-        authHeaders = {}
+        headers = {}
       }
     } else if (authHeaderNames.includes(header.name) || header.name.startsWith('x-twitter-')) {
-      authHeaders[header.name] = header.value
+      headers[header.name] = header.value
     }
   }
 
-  return authHeaders
+  if (commonUtils.areObjectsEqualShallow(authHeaders, headers)) {
+    return false
+  }
+
+  authHeaders = headers
+  return true
 }
