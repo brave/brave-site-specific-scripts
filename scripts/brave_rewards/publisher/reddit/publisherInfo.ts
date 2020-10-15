@@ -29,14 +29,63 @@ const getMediaMetaData = async (screenName: string, isOldReddit: boolean) => {
   }
 }
 
+const getScreenNameFromThread = () => {
+  if (utils.isOldRedditUrl(new URL(location.href))) {
+    return getScreenNameFromThreadForOldReddit()
+  }
+
+  const posts = document.getElementsByClassName('Post')
+  if (!posts || posts.length === 0) {
+    return ''
+  }
+
+  const anchor = posts[0].querySelector("a[href^='/user/']") as HTMLAnchorElement
+  if (!anchor || !anchor.href) {
+    return ''
+  }
+
+  const matches = anchor.href.match('/user/([^/]+)/?')
+  if (!matches || matches.length !== 2) {
+    return ''
+  }
+
+  return matches[1]
+}
+
+const getScreenNameFromThreadForOldReddit = () => {
+  const posts = document.querySelectorAll(`div[data-type="link"]`)
+  if (!posts || posts.length === 0) {
+    return ''
+  }
+
+  const post = posts[posts.length - 1]
+
+  const anchor = post.querySelector("a[href^='https://old.reddit.com/user/']") as HTMLAnchorElement
+  if (!anchor || !anchor.href) {
+    return ''
+  }
+
+  return anchor.href.replace('https://old.reddit.com/user/', '')
+}
+
 const sendForStandardPage = (url: URL) => {
-  const screenName = utils.getScreenNameFromUrl(url)
+  let screenName = ''
+
+  // A standard page is either a user url or a thread url. For a user
+  // url retrieve the screen name from the url. For a thread url,
+  // retrieve the screen name from the first post in the thread.
+  if (utils.isThreadPath(url.pathname)) {
+    screenName = getScreenNameFromThread()
+  } else {
+    screenName = utils.getScreenNameFromUrl(url)
+  }
+
   if (!screenName) {
     sendErrorResponse('Invalid screen name')
     return
   }
 
-  const isOldReddit = utils.isOldReddit(url)
+  const isOldReddit = utils.isOldRedditUrl(url)
 
   return getMediaMetaData(screenName, isOldReddit)
     .then((mediaMetaData: MediaMetaData) => {

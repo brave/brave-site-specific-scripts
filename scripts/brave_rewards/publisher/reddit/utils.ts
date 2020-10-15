@@ -18,16 +18,24 @@ export const buildProfileUrl = (screenName: string, isOldReddit: boolean) => {
     return ''
   }
 
-  let subdomain = ''
+  let subdomain = 'www'
   if (isOldReddit) {
-    subdomain = 'old.'
+    subdomain = 'old'
   }
 
-  return `https://${subdomain}reddit.com/user/${screenName}/`
+  return `https://${subdomain}.reddit.com/user/${screenName}/`
 }
 
-export const isOldReddit = (url: URL) => {
+export const isOldRedditUrl = (url: URL) => {
   return url.hostname.startsWith('old.') || url.hostname.startsWith('np.')
+}
+
+export const isThreadPath = (path: string) => {
+  if (!path) {
+    return false
+  }
+
+  return path.startsWith('/r/') && path.includes('/comments/')
 }
 
 export const getProfileUrlResponse = async (screenName: string, isOldReddit: boolean) => {
@@ -49,7 +57,7 @@ export const getProfileUrlResponse = async (screenName: string, isOldReddit: boo
 }
 
 export const getScreenNameFromUrl = (url: URL) => {
-  if (!url.pathname) {
+  if (!url.pathname || !url.pathname.startsWith('/user/')) {
     return ''
   }
 
@@ -119,7 +127,6 @@ export const isExcludedPath = (path: string) => {
   const startPatterns = [
     '/dev/',
     '/help/',
-    '/r/',
     '/wiki/'
   ]
 
@@ -127,6 +134,11 @@ export const isExcludedPath = (path: string) => {
     if (path.startsWith(pattern)) {
       return true
     }
+  }
+
+  // In general, we exclude forums unless they represent a thread
+  if (path.startsWith('/r/') && !isThreadPath(path)) {
+    return true
   }
 
   return false

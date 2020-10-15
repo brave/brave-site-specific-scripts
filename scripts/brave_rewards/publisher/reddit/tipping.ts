@@ -488,7 +488,7 @@ const tipUser = (mediaMetaData: MediaMetaData) => {
 export const configure = () => {
   clearTimeout(timeout)
 
-  const isOldReddit = utils.isOldReddit(new URL(location.href))
+  const isOldReddit = utils.isOldRedditUrl(new URL(location.href))
 
   if (isOldReddit) {
     // Comments, replies, etc.

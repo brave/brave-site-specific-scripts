@@ -10,7 +10,7 @@ test('builds profile url with empty params', () => {
 
 test('builds profile url for new reddit', () => {
   expect(utils.buildProfileUrl('emerick', false))
-    .toBe('https://reddit.com/user/emerick/')
+    .toBe('https://www.reddit.com/user/emerick/')
 })
 
 test('builds profile url for old reddit', () => {
@@ -20,12 +20,22 @@ test('builds profile url for old reddit', () => {
 
 test('confirms that url points to old reddit', () => {
   const url = new URL('https://old.reddit.com/user/emerick')
-  expect(utils.isOldReddit(url)).toBe(true)
+  expect(utils.isOldRedditUrl(url)).toBe(true)
 })
 
 test('confirms that url does not point to old reddit', () => {
   const url = new URL('https://www.reddit.com/user/emerick')
-  expect(utils.isOldReddit(url)).toBe(false)
+  expect(utils.isOldRedditUrl(url)).toBe(false)
+})
+
+test('confirms that path points to a reddit thread', () => {
+  const path = '/r/MechanicalKeyboards/comments/jbge7k/this_is_peak_level_innovation/'
+  expect(utils.isThreadPath(path)).toBe(true)
+})
+
+test('confirms that path does not point to a reddit thread', () => {
+  const path = '/user/emerick'
+  expect(utils.isThreadPath(path)).toBe(false)
 })
 
 test('gets screen name from matching url', () => {
