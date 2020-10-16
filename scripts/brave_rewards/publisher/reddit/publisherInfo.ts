@@ -3,7 +3,7 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { MediaMetaData } from '../common/types'
-import { port, sendErrorResponse } from './messaging'
+import { port, sendErrorResponse } from '../common/messaging'
 
 import * as types from './types'
 import * as utils from './utils'
@@ -81,7 +81,7 @@ const sendForStandardPage = (url: URL) => {
   }
 
   if (!screenName) {
-    sendErrorResponse('Invalid screen name')
+    sendErrorResponse(types.mediaType, 'Invalid screen name')
     return
   }
 
@@ -93,7 +93,7 @@ const sendForStandardPage = (url: URL) => {
       const publisherKey = utils.buildPublisherKey(userId)
       const publisherName = mediaMetaData.user.fullName
       if (!publisherName) {
-        sendErrorResponse('Invalid publisher name')
+        sendErrorResponse(types.mediaType, 'Invalid publisher name')
         return
       }
 

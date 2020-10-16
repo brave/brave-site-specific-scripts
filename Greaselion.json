@@ -30,7 +30,17 @@
       "https://www.reddit.com/*"
     ],
     "scripts": [
-      "scripts/brave_rewards/publisher/reddit/reddit.bundle.js"
+      "scripts/brave_rewards/publisher/reddit/redditBase.bundle.js"
+    ]
+  },
+  {
+    "urls": [
+      "https://old.reddit.com/*",
+      "https://reddit.com/*",
+      "https://www.reddit.com/*"
+    ],
+    "scripts": [
+      "scripts/brave_rewards/publisher/reddit/redditInlineTipping.bundle.js"
     ],
     "preconditions": {
       "reddit-tips-enabled": true
