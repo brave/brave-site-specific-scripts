@@ -7,7 +7,10 @@
     ],
     "scripts": [
       "scripts/brave_rewards/publisher/github/githubBase.bundle.js"
-    ]
+    ],
+    "preconditions": {
+      "rewards-enabled": true
+    }
   },
   {
     "urls": [
@@ -31,7 +34,10 @@
     ],
     "scripts": [
       "scripts/brave_rewards/publisher/reddit/redditBase.bundle.js"
-    ]
+    ],
+    "preconditions": {
+      "rewards-enabled": true
+    }
   },
   {
     "urls": [
@@ -54,7 +60,10 @@
     ],
     "scripts": [
       "scripts/brave_rewards/publisher/twitter/twitterBase.bundle.js"
-    ]
+    ],
+    "preconditions": {
+      "rewards-enabled": true
+    }
   },
   {
     "urls": [
