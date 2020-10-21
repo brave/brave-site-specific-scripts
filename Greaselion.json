@@ -10,7 +10,8 @@
     ],
     "preconditions": {
       "rewards-enabled": true
-    }
+    },
+    "minimum_brave_version": "1.17"
   },
   {
     "urls": [
@@ -24,7 +25,8 @@
     "preconditions": {
       "github-tips-enabled": true
     },
-    "messages": "scripts/brave_rewards/publisher/github/_locales"
+    "messages": "scripts/brave_rewards/publisher/github/_locales",
+    "minimum_brave_version": "1.17"
   },
   {
     "urls": [
@@ -37,7 +39,8 @@
     ],
     "preconditions": {
       "rewards-enabled": true
-    }
+    },
+    "minimum_brave_version": "1.17"
   },
   {
     "urls": [
@@ -51,7 +54,8 @@
     "preconditions": {
       "reddit-tips-enabled": true
     },
-    "messages": "scripts/brave_rewards/publisher/reddit/_locales"
+    "messages": "scripts/brave_rewards/publisher/reddit/_locales",
+    "minimum_brave_version": "1.17"
   },
   {
     "urls": [
@@ -63,7 +67,8 @@
     ],
     "preconditions": {
       "rewards-enabled": true
-    }
+    },
+    "minimum_brave_version": "1.17"
   },
   {
     "urls": [
@@ -76,7 +81,8 @@
     "preconditions": {
       "twitter-tips-enabled": true
     },
-    "messages": "scripts/brave_rewards/publisher/twitter/_locales"
+    "messages": "scripts/brave_rewards/publisher/twitter/_locales",
+    "minimum_brave_version": "1.17"
   },
   {
     "urls": [
