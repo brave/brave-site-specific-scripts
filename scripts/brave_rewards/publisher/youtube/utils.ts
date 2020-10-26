@@ -68,17 +68,6 @@ export const getChannelIdFromUrl = (path: string) => {
   return params[0]
 }
 
-export const getChannelIdFromChannelPage = (scripts: HTMLCollectionOf<HTMLScriptElement>) => {
-  for (const script of scripts) {
-    let match = getChannelIdFromResponse(script.text)
-    if (match) {
-      return match
-    }
-  }
-
-  return ''
-}
-
 export const getChannelIdFromResponse = (data: string) => {
   if (!data) {
     return ''

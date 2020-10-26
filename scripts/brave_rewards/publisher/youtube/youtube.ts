@@ -288,8 +288,8 @@ const sendPublisherInfo = () => {
     return
   }
 
-  const channelId = utils.getChannelIdFromChannelPage(document.scripts)
-  sendPublisherInfoForChannel(channelId)
+  // Otherwise, it's a custom url which is handled just like a user url
+  sendPublisherInfoForUser()
 }
 
 const sendMediaDurationMetadata = (url: URL) => {
