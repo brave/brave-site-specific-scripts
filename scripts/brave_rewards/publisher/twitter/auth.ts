@@ -16,7 +16,7 @@ const authTokenCookieRegex = /[; ]_twitter_sess=([^\s;]*)/
 
 let lastSessionId: SessionId = null
 
-export let authHeaders = {}
+let authHeaders = {}
 
 const readSessionCookie = (cookiesString: string): SessionId => {
   if (!cookiesString) {
@@ -29,6 +29,10 @@ const readSessionCookie = (cookiesString: string): SessionId => {
   }
 
   return unescape(match[1])
+}
+
+export const getAuthHeaders = () => {
+  return authHeaders
 }
 
 export const processRequestHeaders = (requestHeaders: any[]) => {

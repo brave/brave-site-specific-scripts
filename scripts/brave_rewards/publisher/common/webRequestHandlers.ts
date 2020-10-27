@@ -20,7 +20,7 @@ export const registerOnCompletedWebRequestHandler = (mediaType: string, urlPatte
 
   port.postMessage({
     type: 'RegisterOnCompletedWebRequest',
-    mediaType: mediaType,
+    mediaType,
     data: {
       urlPatterns: [ urlPattern ]
     }
@@ -49,10 +49,10 @@ export const registerOnSendHeadersWebRequest = (mediaType: string, urlPatterns: 
 
   port.postMessage({
     type: 'RegisterOnSendHeadersWebRequest',
-    mediaType: mediaType,
+    mediaType,
     data: {
-      urlPatterns: urlPatterns,
-      extra: extra
+      urlPatterns,
+      extra
     }
   })
 

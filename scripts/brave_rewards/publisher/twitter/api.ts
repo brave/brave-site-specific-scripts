@@ -3,7 +3,7 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { port } from '../common/messaging'
-import { authHeaders } from './auth'
+import { getAuthHeaders } from './auth'
 
 import * as types from './types'
 
@@ -14,6 +14,7 @@ const sendAPIRequest = (name: string, url: string) => {
       return
     }
 
+    const authHeaders = getAuthHeaders()
     if (Object.keys(authHeaders).length === 0) {
       reject(new Error('Missing auth headers'))
       return
