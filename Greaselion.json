@@ -90,7 +90,7 @@
       "https://www.youtube.com/*"
     ],
     "scripts": [
-      "scripts/brave_rewards/publisher/youtube/youtube.bundle.js"
+      "scripts/brave_rewards/publisher/youtube/youtubeBase.bundle.js"
     ],
     "preconditions": {
       "rewards-enabled": true
