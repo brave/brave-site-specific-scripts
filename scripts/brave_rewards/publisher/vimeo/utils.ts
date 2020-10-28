@@ -153,6 +153,12 @@ export const isExcludedPath = (path: string) => {
     return true
   }
 
+  // In general, we block urls that start with '/channels/' but let
+  // this one through
+  if (path.startsWith('/channels/staffpicks/')) {
+    return false
+  }
+
   const startPatterns = [
     '/blog/',
     '/categories/',
