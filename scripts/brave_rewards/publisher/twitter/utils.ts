@@ -115,7 +115,7 @@ export const isExcludedPath = (path: string) => {
     '/settings/',
     '/who_to_follow/',
     '/?login',
-    '/?logout',
+    '/?logout'
   ]
 
   for (const pattern of startPatterns) {

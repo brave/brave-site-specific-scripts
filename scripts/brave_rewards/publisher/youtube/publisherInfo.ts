@@ -2,48 +2,27 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import { port, sendErrorResponse } from '../common/messaging'
+
 import * as types from './types'
 import * as utils from './utils'
 
-const braveRewardsExtensionId = 'jidkidbbcafjabdphckchenhfomhnfma'
-const mediaDurationUrlPattern = 'https://www.youtube.com/api/stats/watchtime?*'
-
-let port: chrome.runtime.Port | null = null
-
-let registeredOnCompletedWebRequestHandler = false
-
-let firstVisit = true
-
-const sendErrorResponse = (errorMessage: string) => {
-  if (!port) {
-    return
-  }
-
-  port.postMessage({
-    type: 'GreaselionError',
-    mediaType: types.mediaType,
-    data: {
-      errorMessage
-    }
-  })
-}
-
-const sendPublisherInfoForChannel = (channelId: string) => {
+const sendForChannel = (channelId: string) => {
   if (!channelId) {
-    sendErrorResponse('Invalid channel id')
+    sendErrorResponse(types.mediaType, 'Invalid channel id')
     return
   }
 
   const channelNameElement = utils.getChannelNameElementFromChannelPage()
   if (!channelNameElement) {
-    sendErrorResponse('Unable to extract channel name from page')
+    sendErrorResponse(types.mediaType, 'Unable to extract channel name from page')
     return
   }
 
   const publisherKey = utils.buildPublisherKey(channelId)
   const publisherName = utils.getChannelNameFromElement(channelNameElement)
   if (!publisherName) {
-    sendErrorResponse('Invalid publisher name')
+    sendErrorResponse(types.mediaType, 'Invalid publisher name')
     return
   }
 
@@ -75,7 +54,7 @@ const sendPublisherInfoForChannel = (channelId: string) => {
   })
 }
 
-const sendPublisherInfoForPredefined = () => {
+const sendForExcluded = () => {
   const url = `https://www.${types.mediaDomain}`
   const publisherKey = types.mediaDomain
   const publisherName = types.mediaDomain
@@ -97,7 +76,7 @@ const sendPublisherInfoForPredefined = () => {
   })
 }
 
-const sendPublisherInfoForUser = () => {
+const sendForUser = () => {
   const url = location.href
 
   fetch(url)
@@ -110,14 +89,14 @@ const sendPublisherInfoForUser = () => {
     .then((responseText) => {
       const channelId = utils.getChannelIdFromResponse(responseText)
       if (!channelId) {
-        sendErrorResponse('Invalid channel id')
+        sendErrorResponse(types.mediaType, 'Invalid channel id')
         return
       }
 
       const publisherKey = utils.buildPublisherKey(channelId)
       const publisherName = utils.getChannelNameFromResponse(responseText)
       if (!publisherName) {
-        sendErrorResponse('Invalid publisher name')
+        sendErrorResponse(types.mediaType, 'Invalid publisher name')
         return
       }
 
@@ -153,10 +132,10 @@ const sendPublisherInfoForUser = () => {
     })
 }
 
-const sendPublisherInfoForVideoHelper = (url: string, responseText: string, publisherName: string, publisherUrl: string) => {
+const sendForVideoHelper = (url: string, responseText: string, publisherName: string, publisherUrl: string) => {
   const channelId = utils.getChannelIdFromResponse(responseText)
   if (!channelId) {
-    sendErrorResponse('Invalid channel id')
+    sendErrorResponse(types.mediaType, 'Invalid channel id')
     return
   }
 
@@ -164,7 +143,7 @@ const sendPublisherInfoForVideoHelper = (url: string, responseText: string, publ
 
   const mediaId = utils.getMediaIdFromUrl(new URL(url))
   if (!mediaId) {
-    sendErrorResponse('Invalid media id')
+    sendErrorResponse(types.mediaType, 'Invalid media id')
     return
   }
 
@@ -173,7 +152,7 @@ const sendPublisherInfoForVideoHelper = (url: string, responseText: string, publ
   if (!publisherName) {
     publisherName = utils.getPublisherNameFromResponse(responseText)
     if (!publisherName) {
-      sendErrorResponse('Invalid publisher name')
+      sendErrorResponse(types.mediaType, 'Invalid publisher name')
       return
     }
   }
@@ -210,19 +189,19 @@ const scrapePublisherInfoFromPage = (url: string) => {
       return response.text()
     })
     .then((responseText) => {
-      sendPublisherInfoForVideoHelper(url, responseText, '', '')
+      sendForVideoHelper(url, responseText, '', '')
     })
     .catch((error) => {
       throw new Error(`YouTube fetch request failed: ${error}`)
     })
 }
 
-const sendPublisherInfoForVideo = () => {
+const sendForVideo = () => {
   const url = location.href
 
   const mediaId = utils.getMediaIdFromUrl(new URL(url))
   if (!mediaId) {
-    sendErrorResponse('Invalid media id')
+    sendErrorResponse(types.mediaType, 'Invalid media id')
     return
   }
 
@@ -255,7 +234,7 @@ const sendPublisherInfoForVideo = () => {
       return response.text()
     })
     .then((responseText) => {
-      sendPublisherInfoForVideoHelper(
+      sendForVideoHelper(
         url,
         responseText,
         fetchData.publisherName,
@@ -266,141 +245,27 @@ const sendPublisherInfoForVideo = () => {
     })
 }
 
-const sendPublisherInfo = () => {
+export const send = () => {
   if (utils.isVideoPath(location.pathname)) {
-    sendPublisherInfoForVideo()
+    sendForVideo()
     return
   }
 
   if (utils.isChannelPath(location.pathname)) {
-    const channelId = utils.getChannelIdFromUrl(location.pathname)
-    sendPublisherInfoForChannel(channelId)
+    sendForChannel(utils.getChannelIdFromUrl(location.pathname))
     return
   }
 
   if (utils.isUserPath(location.pathname)) {
-    sendPublisherInfoForUser()
+    sendForUser()
     return
   }
 
-  if (utils.isPredefinedPath(location.pathname)) {
-    sendPublisherInfoForPredefined()
+  if (utils.isExcludedPath(location.pathname)) {
+    sendForExcluded()
     return
   }
 
   // Otherwise, it's a custom url which is handled just like a user url
-  sendPublisherInfoForUser()
+  sendForUser()
 }
-
-const sendMediaDurationMetadata = (url: URL) => {
-  const searchParams = new URLSearchParams(url.search)
-
-  const mediaId = utils.getMediaIdFromParts(searchParams)
-  const mediaKey = utils.buildMediaKey(mediaId)
-  const duration = utils.getMediaDurationFromParts(searchParams)
-
-  if (!port) {
-    return
-  }
-
-  port.postMessage({
-    type: 'MediaDurationMetadata',
-    mediaType: types.mediaType,
-    data: {
-      mediaKey,
-      duration,
-      firstVisit
-    }
-  })
-
-  firstVisit = false
-}
-
-const handleOnCompletedWebRequest = (mediaType: string, details: any) => {
-  if (mediaType !== types.mediaType) {
-    return
-  }
-
-  if (!details || !details.url) {
-    return
-  }
-
-  const url = new URL(details.url)
-  sendMediaDurationMetadata(url)
-}
-
-// Register an OnCompleted webRequest handler for this script
-const registerOnCompletedWebRequestHandler = () => {
-  if (registeredOnCompletedWebRequestHandler) {
-    return
-  }
-
-  registeredOnCompletedWebRequestHandler = true
-
-  if (!port) {
-    return
-  }
-
-  port.postMessage({
-    type: 'RegisterOnCompletedWebRequest',
-    mediaType: types.mediaType,
-    data: {
-      urlPatterns: [ mediaDurationUrlPattern ]
-    }
-  })
-
-  port.onMessage.addListener((msg) => {
-    switch (msg.type) {
-      case 'OnCompletedWebRequest': {
-        handleOnCompletedWebRequest(msg.mediaType, msg.details)
-        break
-      }
-    }
-  })
-}
-
-const initScript = () => {
-  // Don't run in incognito context
-  if (chrome.extension.inIncognitoContext) {
-    return
-  }
-
-  // Connect port for communications with Rewards background page
-  port = chrome.runtime.connect(braveRewardsExtensionId, { name: 'Greaselion' })
-
-  // Load publisher info and register webRequest.OnCompleted handler when document finishes loading
-  // Note: Not needed for video paths, as 'yt-page-data-updated' handles those
-  document.addEventListener('readystatechange', function () {
-    if (document.readyState === 'complete' &&
-        document.visibilityState === 'visible' &&
-        !utils.isVideoPath(location.pathname)) {
-      setTimeout(() => {
-        registerOnCompletedWebRequestHandler()
-        sendPublisherInfo()
-      }, 200)
-    }
-  })
-
-  // Load publisher info and register webRequest.OnCompleted handler on visibility change
-  document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState === 'visible') {
-      registerOnCompletedWebRequestHandler()
-      sendPublisherInfo()
-    }
-  })
-
-  // Load publisher info and register webRequest.OnCompleted handler on page data update
-  // Note: Can't use 'yt-navigate-finish' for this, as data may not have
-  // finished loading by then
-  document.addEventListener('yt-page-data-updated', function () {
-    if (document.visibilityState === 'visible') {
-      registerOnCompletedWebRequestHandler()
-      sendPublisherInfo()
-    }
-    firstVisit = true
-  })
-
-  console.info('Greaselion script loaded: youtube.ts')
-}
-
-initScript()

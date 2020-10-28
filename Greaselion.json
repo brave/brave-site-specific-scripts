@@ -6,12 +6,27 @@
       "https://gist.github.com/*"
     ],
     "scripts": [
-      "scripts/brave_rewards/publisher/github/github.bundle.js"
+      "scripts/brave_rewards/publisher/github/githubBase.bundle.js"
+    ],
+    "preconditions": {
+      "rewards-enabled": true
+    },
+    "minimum_brave_version": "1.17"
+  },
+  {
+    "urls": [
+      "https://github.com/*",
+      "https://www.github.com/*",
+      "https://gist.github.com/*"
+    ],
+    "scripts": [
+      "scripts/brave_rewards/publisher/github/githubInlineTipping.bundle.js"
     ],
     "preconditions": {
       "github-tips-enabled": true
     },
-    "messages": "scripts/brave_rewards/publisher/github/_locales"
+    "messages": "scripts/brave_rewards/publisher/github/_locales",
+    "minimum_brave_version": "1.17"
   },
   {
     "urls": [
@@ -20,12 +35,27 @@
       "https://www.reddit.com/*"
     ],
     "scripts": [
-      "scripts/brave_rewards/publisher/reddit/reddit.bundle.js"
+      "scripts/brave_rewards/publisher/reddit/redditBase.bundle.js"
+    ],
+    "preconditions": {
+      "rewards-enabled": true
+    },
+    "minimum_brave_version": "1.17"
+  },
+  {
+    "urls": [
+      "https://old.reddit.com/*",
+      "https://reddit.com/*",
+      "https://www.reddit.com/*"
+    ],
+    "scripts": [
+      "scripts/brave_rewards/publisher/reddit/redditInlineTipping.bundle.js"
     ],
     "preconditions": {
       "reddit-tips-enabled": true
     },
-    "messages": "scripts/brave_rewards/publisher/reddit/_locales"
+    "messages": "scripts/brave_rewards/publisher/reddit/_locales",
+    "minimum_brave_version": "1.17"
   },
   {
     "urls": [
@@ -33,12 +63,26 @@
       "https://*.twitter.com/*"
     ],
     "scripts": [
-      "scripts/brave_rewards/publisher/twitter/twitter.bundle.js"
+      "scripts/brave_rewards/publisher/twitter/twitterBase.bundle.js"
+    ],
+    "preconditions": {
+      "rewards-enabled": true
+    },
+    "minimum_brave_version": "1.17"
+  },
+  {
+    "urls": [
+      "https://twitter.com/*",
+      "https://*.twitter.com/*"
+    ],
+    "scripts": [
+      "scripts/brave_rewards/publisher/twitter/twitterInlineTipping.bundle.js"
     ],
     "preconditions": {
       "twitter-tips-enabled": true
     },
-    "messages": "scripts/brave_rewards/publisher/twitter/_locales"
+    "messages": "scripts/brave_rewards/publisher/twitter/_locales",
+    "minimum_brave_version": "1.17"
   },
   {
     "urls": [
@@ -46,7 +90,7 @@
       "https://www.youtube.com/*"
     ],
     "scripts": [
-      "scripts/brave_rewards/publisher/youtube/youtube.bundle.js"
+      "scripts/brave_rewards/publisher/youtube/youtubeBase.bundle.js"
     ],
     "preconditions": {
       "rewards-enabled": true

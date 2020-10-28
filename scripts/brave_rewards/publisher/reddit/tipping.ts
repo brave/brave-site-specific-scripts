@@ -3,7 +3,7 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { MediaMetaData } from '../common/types'
-import { port } from './messaging'
+import { port } from '../common/messaging'
 
 import * as locale from '../common/locale'
 import * as types from './types'

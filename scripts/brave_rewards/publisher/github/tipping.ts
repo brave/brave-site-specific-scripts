@@ -2,47 +2,45 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import * as commonTypes from '../common/types'
+import { port } from '../common/messaging'
+import { MediaMetaData } from '../common/types'
+
 import * as locale from '../common/locale'
 import * as types from './types'
 import * as utils from './utils'
-
-let port: chrome.runtime.Port | null = null
-
-let registeredOnUpdatedTab = false
-
-let configureTipActionsTimeout: any = null
-
-let lastLocation = ''
 
 const actionTipClass = 'action-brave-tip'
 const tipActionCountClass = 'GitHubTip-actionCount'
 const tipIconContainerClass = 'IconContainer'
 
-interface MediaMetaData {
-  user: {
-    id: string
-    screenName: string
-    fullName: string
-    favIconUrl: string
-  }
-  post: {
-    id: string
-    timestamp: string
-    text: string
-  }
-}
+let timeout: any = null
 
-const sendErrorResponse = (errorMessage: string) => {
+const tipUser = (mediaMetaData: MediaMetaData) => {
+  if (!mediaMetaData) {
+    return
+  }
+
+  const profileUrl = utils.buildProfileUrl(mediaMetaData.user.screenName)
+  const publisherKey = utils.buildPublisherKey(mediaMetaData.user.id)
+  const publisherName = mediaMetaData.user.fullName
+  const publisherScreenName = mediaMetaData.user.screenName
+
   if (!port) {
     return
   }
 
   port.postMessage({
-    type: 'GreaselionError',
+    type: 'TipUser',
     mediaType: types.mediaType,
     data: {
-      errorMessage
+      url: profileUrl,
+      publisherKey,
+      publisherName,
+      publisherScreenName,
+      favIconUrl: mediaMetaData.user.favIconUrl,
+      postId: mediaMetaData.post.id,
+      postTimestamp: mediaMetaData.post.timestamp,
+      postText: mediaMetaData.post.text
     }
   })
 }
@@ -164,7 +162,7 @@ const getCommentMetaData = async (elem: Element) => {
     throw new Error('Missing screen name')
   }
 
-  return getMediaMetaData(screenName)
+  return utils.getMediaMetaData(screenName)
 }
 
 const commentInsertFunction = (parent: Element) => {
@@ -225,7 +223,7 @@ const getCommitLinksMetaData = async (elem: Element) => {
     throw new Error('Missing screen name')
   }
 
-  return getMediaMetaData(screenName)
+  return utils.getMediaMetaData(screenName)
 }
 
 const commitLinksInsertFunction = (parent: Element) => {
@@ -274,7 +272,7 @@ const getStarringContainerMetaData = async (elem: Element) => {
     throw new Error('Missing screen name')
   }
 
-  return getMediaMetaData(screenName)
+  return utils.getMediaMetaData(screenName)
 }
 
 const starringContainerInsertFunction = (parent: Element) => {
@@ -324,7 +322,7 @@ const getPageHeadMetaData = async (elem: Element) => {
     throw new Error('Missing screen name')
   }
 
-  return getMediaMetaData(screenName)
+  return utils.getMediaMetaData(screenName)
 }
 
 const pageheadInsertFunction = (parent: Element) => {
@@ -388,7 +386,7 @@ const getMemberListItemMetaData = async (elem: Element) => {
     throw new Error('Missing screen name')
   }
 
-  return getMediaMetaData(screenName)
+  return utils.getMediaMetaData(screenName)
 }
 
 const memberListItemInsertFunction = (parent: Element) => {
@@ -416,29 +414,6 @@ const memberListItemInsertFunction = (parent: Element) => {
   }
 }
 
-const configureTipActions = () => {
-  clearTimeout(configureTipActionsTimeout)
-
-  // Format: https://github.com/<user>/<repository>/pull/<pr_number>
-  // Format: https://github.com/<user>/<repository>/issues/<issue_number>
-  configureTipAction('timeline-comment-actions', commentInsertFunction)
-
-  // Format: https://github.com/<user>/<repository>/commits/<branch_name>
-  configureTipAction('js-commits-list-item', commitLinksInsertFunction)
-
-  // Format: https://github.com/<user>?tab=stars
-  configureTipAction('float-right', starringContainerInsertFunction)
-
-  // Format: https://gist.github.com/<user>/<gist_number>
-  configureTipAction('pagehead-actions', pageheadInsertFunction)
-
-  // Format: https://github.com/orgs/<org>/people
-  // Format: https://github.com/orgs/<org>/teams/<team_name>/members
-  configureTipAction('member-list-item', memberListItemInsertFunction)
-
-  configureTipActionsTimeout = setTimeout(configureTipActions, 3000)
-}
-
 const configureTipAction = (tipLocationClass: string, insertFunction: (parent: Element) => void) => {
   const tipLocations = document.getElementsByClassName(tipLocationClass)
   if (!tipLocations) {
@@ -458,204 +433,25 @@ const configureTipAction = (tipLocationClass: string, insertFunction: (parent: E
   }
 }
 
-const handleOnUpdatedTab = (changeInfo: any) => {
-  // When sites use the history API, it can cause spurious
-  // tabs.onUpdated notifications. In order to work around that, look
-  // for a changeInfo with a URL or a status of complete and then
-  // store the location if it doesn't match.
-  if (!changeInfo || (!changeInfo.url && changeInfo.status !== 'complete')) {
-    return
-  }
+export const configure = () => {
+  clearTimeout(timeout)
 
-  if (location.href !== lastLocation) {
-    lastLocation = location.href
-    sendPublisherInfo()
-    configureTipActions()
-  }
+  // Format: https://github.com/<user>/<repository>/pull/<pr_number>
+  // Format: https://github.com/<user>/<repository>/issues/<issue_number>
+  configureTipAction('timeline-comment-actions', commentInsertFunction)
+
+  // Format: https://github.com/<user>/<repository>/commits/<branch_name>
+  configureTipAction('js-commits-list-item', commitLinksInsertFunction)
+
+  // Format: https://github.com/<user>?tab=stars
+  configureTipAction('float-right', starringContainerInsertFunction)
+
+  // Format: https://gist.github.com/<user>/<gist_number>
+  configureTipAction('pagehead-actions', pageheadInsertFunction)
+
+  // Format: https://github.com/orgs/<org>/people
+  // Format: https://github.com/orgs/<org>/teams/<team_name>/members
+  configureTipAction('member-list-item', memberListItemInsertFunction)
+
+  timeout = setTimeout(configure, 3000)
 }
-
-const registerOnUpdatedTab = () => {
-  if (registeredOnUpdatedTab) {
-    return
-  }
-
-  registeredOnUpdatedTab = true
-
-  if (!port) {
-    return
-  }
-
-  port.postMessage({
-    type: 'RegisterOnUpdatedTab',
-    mediaType: types.mediaType
-  })
-
-  port.onMessage.addListener(function (msg) {
-    if (!msg.data) {
-      return
-    }
-    switch (msg.type) {
-      case 'OnUpdatedTab': {
-        handleOnUpdatedTab(msg.data.changeInfo)
-        break
-      }
-    }
-  })
-}
-
-const sendPublisherInfoForExcludedPage = () => {
-  const url = `https://${types.mediaDomain}`
-  const publisherKey = types.mediaDomain
-  const publisherName = types.mediaDomain
-  const mediaKey = ''
-  const favIconUrl = ''
-
-  if (!port) {
-    return
-  }
-
-  port.postMessage({
-    type: 'SavePublisherVisit',
-    mediaType: '',
-    data: {
-      url,
-      publisherKey,
-      publisherName,
-      mediaKey,
-      favIconUrl
-    }
-  })
-}
-
-const getMediaMetaData = async (screenName: string) => {
-  if (!screenName) {
-    throw new Error('Invalid parameters')
-  }
-
-  const profileApiUrl = utils.buildProfileApiUrl(screenName)
-  if (!profileApiUrl) {
-    throw new Error('Invalid profile api url')
-  }
-
-  const response = await fetch(profileApiUrl)
-  if (!response.ok) {
-    throw new Error(`Profile API request failed: ${response.statusText} (${response.status})`)
-  }
-
-  const data = await response.json()
-  return {
-    user: {
-      id: data.id,
-      screenName: data.login,
-      fullName: data.name || data.login,
-      favIconUrl: data.avatar_url
-    },
-    post: {
-      id: '',
-      timestamp: '',
-      text: ''
-    }
-  }
-}
-
-const sendPublisherInfoForStandardPage = (url: URL) => {
-  const screenName = utils.getScreenNameFromUrl(url)
-  if (!screenName) {
-    sendErrorResponse('Invalid screen name')
-    return
-  }
-
-  return getMediaMetaData(screenName)
-    .then((mediaMetaData: MediaMetaData) => {
-      const userId = mediaMetaData.user.id
-      const publisherKey = utils.buildPublisherKey(userId)
-      const publisherName = mediaMetaData.user.fullName
-      if (!publisherName) {
-        sendErrorResponse('Invalid publisher name')
-        return
-      }
-
-      const mediaKey = ''
-      const favIconUrl = mediaMetaData.user.favIconUrl
-
-      const profileUrl = utils.buildProfileUrl(screenName)
-
-      if (!port) {
-        return
-      }
-
-      port.postMessage({
-        type: 'SavePublisherVisit',
-        mediaType: types.mediaType,
-        data: {
-          url: profileUrl,
-          publisherKey,
-          publisherName,
-          mediaKey,
-          favIconUrl
-        }
-      })
-    })
-}
-
-const sendPublisherInfo = () => {
-  const url = new URL(location.href)
-  if (utils.isExcludedPath(url.pathname)) {
-    sendPublisherInfoForExcludedPage()
-  } else {
-    sendPublisherInfoForStandardPage(url)
-  }
-}
-
-const tipUser = (mediaMetaData: MediaMetaData) => {
-  if (!mediaMetaData) {
-    return
-  }
-
-  const profileUrl = utils.buildProfileUrl(mediaMetaData.user.screenName)
-  const publisherKey = utils.buildPublisherKey(mediaMetaData.user.id)
-  const publisherName = mediaMetaData.user.fullName
-  const publisherScreenName = mediaMetaData.user.screenName
-
-  if (!port) {
-    return
-  }
-
-  port.postMessage({
-    type: 'TipUser',
-    mediaType: types.mediaType,
-    data: {
-      url: profileUrl,
-      publisherKey,
-      publisherName,
-      publisherScreenName,
-      favIconUrl: mediaMetaData.user.favIconUrl,
-      postId: mediaMetaData.post.id,
-      postTimestamp: mediaMetaData.post.timestamp,
-      postText: mediaMetaData.post.text
-    }
-  })
-}
-
-const initScript = () => {
-  // Don't run in incognito context
-  if (chrome.extension.inIncognitoContext) {
-    return
-  }
-
-  port = chrome.runtime.connect(commonTypes.braveRewardsExtensionId, { name: 'Greaselion' })
-
-  // Send publisher info and configure tip action on visibility change
-  document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState === 'visible') {
-      sendPublisherInfo()
-      configureTipActions()
-    }
-  })
-
-  registerOnUpdatedTab()
-
-  console.info('Greaselion script loaded: github.ts')
-}
-
-initScript()

@@ -2,13 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { createPort, port } from './messaging'
+import { createPort } from '../common/messaging'
 
 import * as publisherInfo from './publisherInfo'
-import * as tipping from './tipping'
+import * as tabHandlers from '../common/tabHandlers'
 import * as types from './types'
-
-let registeredOnUpdatedTab = false
 
 let lastLocation = ''
 
@@ -24,37 +22,7 @@ const handleOnUpdatedTab = (changeInfo: any) => {
   if (location.href !== lastLocation) {
     lastLocation = location.href
     publisherInfo.send()
-    tipping.configure()
   }
-}
-
-const registerOnUpdatedTab = () => {
-  if (registeredOnUpdatedTab) {
-    return
-  }
-
-  registeredOnUpdatedTab = true
-
-  if (!port) {
-    return
-  }
-
-  port.postMessage({
-    type: 'RegisterOnUpdatedTab',
-    mediaType: types.mediaType
-  })
-
-  port.onMessage.addListener(function (msg) {
-    if (!msg.data) {
-      return
-    }
-    switch (msg.type) {
-      case 'OnUpdatedTab': {
-        handleOnUpdatedTab(msg.data.changeInfo)
-        break
-      }
-    }
-  })
 }
 
 const initScript = () => {
@@ -65,17 +33,24 @@ const initScript = () => {
 
   createPort()
 
-  // Send publisher info and configure tip action on visibility change
-  document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState === 'visible') {
+  // Configure tip action on visibility change
+  document.addEventListener('readystatechange', function () {
+    if (document.readyState === 'complete' &&
+        document.visibilityState === 'visible') {
       publisherInfo.send()
-      tipping.configure()
     }
   })
 
-  registerOnUpdatedTab()
+  // Send publisher info on visibility change
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') {
+      publisherInfo.send()
+    }
+  })
 
-  console.info('Greaselion script loaded: reddit.ts')
+  tabHandlers.registerOnUpdatedTab(types.mediaType, handleOnUpdatedTab)
+
+  console.info('Greaselion script loaded: redditBase.ts')
 }
 
 initScript()
