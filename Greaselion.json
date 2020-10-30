@@ -86,6 +86,15 @@
   },
   {
     "urls": [
+      "https://vimeo.com/*"
+    ],
+    "scripts": [
+      "scripts/brave_rewards/publisher/vimeo/vimeoBase.bundle.js"
+    ],
+    "minimum_brave_version": "1.18"
+  },
+  {
+    "urls": [
       "https://m.youtube.com/*",
       "https://www.youtube.com/*"
     ],
