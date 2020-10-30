@@ -49,3 +49,7 @@ export const areObjectsEqualShallow = (firstObj: {}, secondObj: {}) => {
 
   return true
 }
+
+export const documentReady = () => {
+  return document.readyState === 'complete' && document.visibilityState === 'visible'
+}

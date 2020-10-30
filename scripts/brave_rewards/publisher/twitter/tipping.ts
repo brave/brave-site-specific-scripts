@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { port } from '../common/messaging'
+import { getPort } from '../common/messaging'
 import { MediaMetaData } from '../common/types'
 
 import * as api from './api'
@@ -228,6 +228,7 @@ const tipUser = (mediaMetaData: MediaMetaData) => {
   const publisherName = mediaMetaData.user.screenName
   const publisherScreenName = mediaMetaData.user.screenName
 
+  const port = getPort()
   if (!port) {
     return
   }

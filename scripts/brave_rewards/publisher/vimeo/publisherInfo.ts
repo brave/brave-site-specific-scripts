@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { port } from '../common/messaging'
+import { getPort } from '../common/messaging'
 
 import * as types from './types'
 import * as utils from './utils'
@@ -130,6 +130,7 @@ const getPublisherDataFromUnrecognizedPage = async () => {
 const sendForStandardPage = () => {
   getPublisherData()
     .then((publisherData) => {
+      const port = getPort()
       if (!port) {
         throw new Error('Invalid port')
       }
@@ -156,6 +157,7 @@ const sendForExcludedPage = () => {
   const publisherName = types.mediaDomain
   const favIconUrl = ''
 
+  const port = getPort()
   if (!port) {
     return
   }

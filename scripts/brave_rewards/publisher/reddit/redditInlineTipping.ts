@@ -7,6 +7,7 @@ import { createPort } from '../common/messaging'
 import * as tabHandlers from '../common/tabHandlers'
 import * as tipping from './tipping'
 import * as types from './types'
+import * as utils from '../common/utils'
 
 let lastLocation = ''
 
@@ -31,24 +32,32 @@ const initScript = () => {
     return
   }
 
-  createPort()
-
-  // Configure tip action on visibility change
-  document.addEventListener('readystatechange', function () {
-    if (document.readyState === 'complete' &&
-        document.visibilityState === 'visible') {
-      tipping.configure()
+  createPort((success: boolean) => {
+    if (!success) {
+      console.error('Failed to initialize communications port')
+      return
     }
-  })
 
-  // Configure tip action on visibility change
-  document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState === 'visible') {
+    // Configure tip action on readystate change
+    if (utils.documentReady()) {
       tipping.configure()
+    } else {
+      document.addEventListener('readystatechange', function () {
+        if (utils.documentReady()) {
+          tipping.configure()
+        }
+      })
     }
-  })
 
-  tabHandlers.registerOnUpdatedTab(types.mediaType, handleOnUpdatedTab)
+    // Configure tip action on visibility change
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') {
+        tipping.configure()
+      }
+    })
+
+    tabHandlers.registerOnUpdatedTab(types.mediaType, handleOnUpdatedTab)
+  })
 
   console.info('Greaselion script loaded: redditInlineTipping.ts')
 }

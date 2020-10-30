@@ -7,6 +7,7 @@ import { createPort } from '../common/messaging'
 import * as publisherInfo from './publisherInfo'
 import * as tabHandlers from '../common/tabHandlers'
 import * as types from './types'
+import * as utils from '../common/utils'
 
 let lastLocation = ''
 
@@ -31,16 +32,32 @@ const initScript = () => {
     return
   }
 
-  createPort()
-
-  // Send publisher info on visibility change
-  document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState === 'visible') {
-      publisherInfo.send()
+  createPort((success: boolean) => {
+    if (!success) {
+      console.error('Failed to initialize communications port')
+      return
     }
-  })
 
-  tabHandlers.registerOnUpdatedTab(types.mediaType, handleOnUpdatedTab)
+    // Send publisher info on readystate change
+    if (utils.documentReady()) {
+      publisherInfo.send()
+    } else {
+      document.addEventListener('readystatechange', function () {
+        if (utils.documentReady()) {
+          publisherInfo.send()
+        }
+      })
+    }
+
+    // Send publisher info on visibility change
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') {
+        publisherInfo.send()
+      }
+    })
+
+    tabHandlers.registerOnUpdatedTab(types.mediaType, handleOnUpdatedTab)
+  })
 
   console.info('Greaselion script loaded: githubBase.ts')
 }

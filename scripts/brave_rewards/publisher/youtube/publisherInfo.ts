@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { port, sendErrorResponse } from '../common/messaging'
+import { getPort, sendErrorResponse } from '../common/messaging'
 
 import * as types from './types'
 import * as utils from './utils'
@@ -37,6 +37,7 @@ const sendForChannel = (channelId: string) => {
   const publisherUrl = utils.buildChannelUrl(channelId)
   const favIconUrl = utils.getFavIconUrlFromPage(document.scripts)
 
+  const port = getPort()
   if (!port) {
     return
   }
@@ -60,6 +61,7 @@ const sendForExcluded = () => {
   const publisherName = types.mediaDomain
   const favIconUrl = ''
 
+  const port = getPort()
   if (!port) {
     return
   }
@@ -111,6 +113,7 @@ const sendForUser = () => {
       const favIconUrl = utils.getFavIconUrlFromResponse(responseText)
       const publisherUrl = utils.buildChannelUrl(channelId)
 
+      const port = getPort()
       if (!port) {
         return
       }
@@ -163,6 +166,7 @@ const sendForVideoHelper = (url: string, responseText: string, publisherName: st
 
   const favIconUrl = utils.getFavIconUrlFromResponse(responseText)
 
+  const port = getPort()
   if (!port) {
     return
   }
