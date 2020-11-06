@@ -23,7 +23,7 @@ const handleOnCompletedWebRequest = (mediaType: string, details: any) => {
   }
 
   const url = new URL(details.url)
-  mediaDuration.sendMetadata(url)
+  mediaDuration.sendMetadataFromUrl(url)
 }
 
 const initScript = () => {

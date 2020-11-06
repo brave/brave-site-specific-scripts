@@ -5,15 +5,6 @@ test('builds channel url', () => {
     .toBe('https://www.youtube.com/channel/UCxVXX2JqatsN4xwtjd3W5Kg/videos')
 })
 
-test('builds media key', () => {
-  expect(utils.buildMediaKey('8iULSxHQ0tM')).toBe('youtube_8iULSxHQ0tM')
-})
-
-test('builds publisher key', () => {
-  expect(utils.buildPublisherKey('UCxVXX2JqatsN4xwtjd3W5Kg'))
-    .toBe('youtube#channel:UCxVXX2JqatsN4xwtjd3W5Kg')
-})
-
 test('builds video url', () => {
   expect(utils.buildVideoUrl('8iULSxHQ0tM'))
     .toBe('https://www.youtube.com/watch?v=8iULSxHQ0tM')

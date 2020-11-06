@@ -1,13 +1,5 @@
 import * as utils from './utils'
 
-test('builds publisher key', () => {
-  expect(utils.buildPublisherKey('12345')).toBe('reddit#channel:12345')
-})
-
-test('builds profile url with empty params', () => {
-  expect(utils.buildProfileUrl('', false)).toBe('')
-})
-
 test('builds profile url for new reddit', () => {
   expect(utils.buildProfileUrl('emerick', false))
     .toBe('https://www.reddit.com/user/emerick/')

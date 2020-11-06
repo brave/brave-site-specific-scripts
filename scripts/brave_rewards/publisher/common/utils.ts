@@ -2,6 +2,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+export const buildMediaKey = (mediaType: string, mediaId: string) => {
+  if (!mediaType || !mediaId) {
+    return ''
+  }
+
+  return `${mediaType}_${mediaId}`
+}
+
+export const buildPublisherKey = (mediaType: string, key: string) => {
+  return `${mediaType}#channel:${key}`
+}
+
 export const extractData = (data: string, matchAfter: string, matchUntil: string) => {
   if (data.length < matchAfter.length) {
     return ''

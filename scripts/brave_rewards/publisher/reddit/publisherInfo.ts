@@ -5,6 +5,8 @@
 import { MediaMetaData } from '../common/types'
 import { getPort, sendErrorResponse } from '../common/messaging'
 
+import * as commonUtils from '../common/utils'
+
 import * as types from './types'
 import * as utils from './utils'
 
@@ -90,14 +92,14 @@ const sendForStandardPage = (url: URL) => {
   return getMediaMetaData(screenName, isOldReddit)
     .then((mediaMetaData: MediaMetaData) => {
       const userId = mediaMetaData.user.id
-      const publisherKey = utils.buildPublisherKey(userId)
+      const publisherKey = commonUtils.buildPublisherKey(types.mediaType, userId)
       const publisherName = mediaMetaData.user.fullName
       if (!publisherName) {
         sendErrorResponse(types.mediaType, 'Invalid publisher name')
         return
       }
 
-      const mediaKey = ''
+      const mediaKey = commonUtils.buildMediaKey(types.mediaType, screenName)
       const favIconUrl = mediaMetaData.user.favIconUrl
 
       // Regardless of this being old or new reddit we want to

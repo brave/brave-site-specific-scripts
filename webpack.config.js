@@ -14,14 +14,20 @@ module.exports = (env, argv) => {
     devtool: argv.mode === 'development' ? 'inline-source-map' : false,
     entry: {
       ['scripts/brave_rewards/publisher/github/githubBase']: './scripts/brave_rewards/publisher/github/githubBase',
+      ['scripts/brave_rewards/publisher/github/githubAutoContribution']: './scripts/brave_rewards/publisher/github/githubAutoContribution',
       ['scripts/brave_rewards/publisher/github/githubInlineTipping']: './scripts/brave_rewards/publisher/github/githubInlineTipping',
       ['scripts/brave_rewards/publisher/reddit/redditBase']: './scripts/brave_rewards/publisher/reddit/redditBase',
+      ['scripts/brave_rewards/publisher/reddit/redditAutoContribution']: './scripts/brave_rewards/publisher/reddit/redditAutoContribution',
       ['scripts/brave_rewards/publisher/reddit/redditInlineTipping']: './scripts/brave_rewards/publisher/reddit/redditInlineTipping',
       ['scripts/brave_rewards/publisher/twitch/twitchBase']: './scripts/brave_rewards/publisher/twitch/twitchBase',
+      ['scripts/brave_rewards/publisher/twitch/twitchAutoContribution']: './scripts/brave_rewards/publisher/twitch/twitchAutoContribution',
       ['scripts/brave_rewards/publisher/twitter/twitterBase']: './scripts/brave_rewards/publisher/twitter/twitterBase',
+      ['scripts/brave_rewards/publisher/twitter/twitterAutoContribution']: './scripts/brave_rewards/publisher/twitter/twitterAutoContribution',
       ['scripts/brave_rewards/publisher/twitter/twitterInlineTipping']: './scripts/brave_rewards/publisher/twitter/twitterInlineTipping',
       ['scripts/brave_rewards/publisher/vimeo/vimeoBase']: './scripts/brave_rewards/publisher/vimeo/vimeoBase',
+      ['scripts/brave_rewards/publisher/vimeo/vimeoAutoContribution']: './scripts/brave_rewards/publisher/vimeo/vimeoAutoContribution',
       ['scripts/brave_rewards/publisher/youtube/youtubeBase']: './scripts/brave_rewards/publisher/youtube/youtubeBase',
+      ['scripts/brave_rewards/publisher/youtube/youtubeAutoContribution']: './scripts/brave_rewards/publisher/youtube/youtubeAutoContribution',
       ['scripts/brave_together/confabs/oneOnOneMeetings']: './scripts/brave_together/confabs/oneOnOneMeetings'
     },
     plugins: [

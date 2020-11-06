@@ -4,6 +4,8 @@
 
 import { getPort } from '../common/messaging'
 
+import * as commonUtils from '../common/utils'
+
 import * as api from './api'
 import * as types from './types'
 import * as utils from './utils'
@@ -40,35 +42,35 @@ const sendForStandardPage = (url: URL) => {
   }
 
   api.getUserDetails(screenName)
-     .then((userDetails: any) => {
-       const userId = userDetails.id_str
-       const publisherKey = utils.buildPublisherKey(userId)
-       const publisherName = screenName
-       const mediaKey = ''
-       const favIconUrl = userDetails.profile_image_url_https.replace('_normal', '')
+    .then((userDetails: any) => {
+      const userId = userDetails.id_str
+      const publisherKey = commonUtils.buildPublisherKey(types.mediaType, userId)
+      const publisherName = screenName
+      const mediaKey = commonUtils.buildMediaKey(types.mediaType, screenName)
+      const favIconUrl = userDetails.profile_image_url_https.replace('_normal', '')
 
-       const profileUrl = utils.buildProfileUrl(screenName, userId)
+      const profileUrl = utils.buildProfileUrl(screenName, userId)
 
-       const port = getPort()
-       if (!port) {
-         return
-       }
+      const port = getPort()
+      if (!port) {
+        return
+      }
 
-       port.postMessage({
-         type: 'SavePublisherVisit',
-         mediaType: types.mediaType,
-         data: {
-           url: profileUrl,
-           publisherKey,
-           publisherName,
-           mediaKey,
-           favIconUrl
-         }
-       })
-     })
-     .catch(error => {
-       console.error(`Failed to fetch user details for ${screenName}: ${error.message}`)
-     })
+      port.postMessage({
+        type: 'SavePublisherVisit',
+        mediaType: types.mediaType,
+        data: {
+          url: profileUrl,
+          publisherKey,
+          publisherName,
+          mediaKey,
+          favIconUrl
+        }
+      })
+    })
+    .catch(error => {
+      console.error(`Failed to fetch user details for ${screenName}: ${error.message}`)
+    })
 }
 
 export const send = () => {

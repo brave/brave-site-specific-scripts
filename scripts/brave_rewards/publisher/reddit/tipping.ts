@@ -5,7 +5,9 @@
 import { MediaMetaData } from '../common/types'
 import { getPort } from '../common/messaging'
 
+import * as commonUtils from '../common/utils'
 import * as locale from '../common/locale'
+
 import * as types from './types'
 import * as utils from './utils'
 
@@ -461,7 +463,7 @@ const tipUser = (mediaMetaData: MediaMetaData) => {
     return
   }
 
-  const publisherKey = utils.buildPublisherKey(mediaMetaData.user.id)
+  const publisherKey = commonUtils.buildPublisherKey(types.mediaType, mediaMetaData.user.id)
   const publisherName = mediaMetaData.user.fullName
   const publisherScreenName = mediaMetaData.user.screenName
 
