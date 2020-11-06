@@ -107,8 +107,7 @@
   },
   {
     "urls": [
-      "https://together.brave.com",
-      "https://together.brave.com/*",
+      "https://together.brave.com/*"
     ],
     "scripts": [
       "scripts/brave_together/confabs/oneOnOneMeetings.bundle.js"
