@@ -77,7 +77,7 @@ Each item in this array is a partial pathname and filename. The path is relative
 
 ## Pushing to production
 
-Like tracking lists or adblocking lists, Greaselion scripts can be updated an dpushed to users outside of a full application update. On the client side, this is managed by the (Local Data Files service)[https://github.com/brave/brave-core/blob/master/components/brave_component_updater/browser/local_data_files_service.cc]. On the server side, it is managed by uploading a new version of the (Local Data Files Updater component)[https://github.com/brave/brave-core-crx-packager]. In between is this repository.
+Like tracking lists or adblocking lists, Greaselion scripts can be updated and pushed to users outside of a full application update. On the client side, this is managed by the (Local Data Files service)[https://github.com/brave/brave-core/blob/master/components/brave_component_updater/browser/local_data_files_service.cc]. On the server side, it is managed by uploading a new version of the (Local Data Files Updater component)[https://github.com/brave/brave-core-crx-packager]. In between is this repository.
 
 Thus:
 
