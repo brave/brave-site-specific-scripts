@@ -21,7 +21,7 @@ module.exports = (env, argv) => {
       ['scripts/brave_rewards/publisher/twitter/twitterInlineTipping']: './scripts/brave_rewards/publisher/twitter/twitterInlineTipping',
       ['scripts/brave_rewards/publisher/vimeo/vimeoBase']: './scripts/brave_rewards/publisher/vimeo/vimeoBase',
       ['scripts/brave_rewards/publisher/youtube/youtubeBase']: './scripts/brave_rewards/publisher/youtube/youtubeBase',
-      ['scripts/brave_together/confabs/oneOnOneMeetings']: 'scripts/brave_together/confabs/oneOnOneMeetings'
+      ['scripts/brave_together/confabs/oneOnOneMeetings']: './scripts/brave_together/confabs/oneOnOneMeetings'
     },
     plugins: [
       new CopyPlugin({
