@@ -10,6 +10,7 @@ import * as webRequestHandlers from '../common/webRequestHandlers'
 import * as auth from './auth'
 import * as tipping from './tipping'
 import * as types from './types'
+import * as utils from '../common/utils'
 
 const handleOnSendHeadersWebRequest = (mediaType: string, details: any) => {
   if (mediaType !== types.mediaType || !details || !details.requestHeaders) {
@@ -35,21 +36,37 @@ const initScript = () => {
     return
   }
 
-  createPort()
-
-  // Configure tip action on visibility change
-  document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState === 'visible') {
-      tipping.configure()
+  createPort((success: boolean) => {
+    if (!success) {
+      console.error('Failed to initialize communications port')
+      return
     }
-  })
 
-  webRequestHandlers.registerOnSendHeadersWebRequest(
-    types.mediaType,
-    types.sendHeadersUrls,
-    types.sendHeadersExtra,
-    handleOnSendHeadersWebRequest)
-  tabHandlers.registerOnUpdatedTab(types.mediaType, handleOnUpdatedTab)
+    // Configure tip action on readystate change
+    if (utils.documentReady()) {
+      tipping.configure()
+    } else {
+      document.addEventListener('readystatechange', function () {
+        if (utils.documentReady()) {
+          tipping.configure()
+        }
+      })
+    }
+
+    // Configure tip action on visibility change
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') {
+        tipping.configure()
+      }
+    })
+
+    webRequestHandlers.registerOnSendHeadersWebRequest(
+      types.mediaType,
+      types.sendHeadersUrls,
+      types.sendHeadersExtra,
+      handleOnSendHeadersWebRequest)
+    tabHandlers.registerOnUpdatedTab(types.mediaType, handleOnUpdatedTab)
+  })
 
   console.info('Greaselion script loaded: twitterInlineTipping.ts')
 }

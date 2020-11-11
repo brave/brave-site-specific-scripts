@@ -32,50 +32,55 @@ const initScript = () => {
     return
   }
 
-  createPort()
+  createPort((success: boolean) => {
+    if (!success) {
+      console.error('Failed to initialize communications port')
+      return
+    }
 
-  // Load publisher info and register webRequest.OnCompleted handler when document finishes loading
-  // Note: Not needed for video paths, as 'yt-page-data-updated' handles those
-  document.addEventListener('readystatechange', function () {
-    if (document.readyState === 'complete' &&
-        document.visibilityState === 'visible' &&
-        !utils.isVideoPath(location.pathname)) {
-      setTimeout(() => {
+    // Load publisher info and register webRequest.OnCompleted handler when document finishes loading
+    // Note: Not needed for video paths, as 'yt-page-data-updated' handles those
+    document.addEventListener('readystatechange', function () {
+      if (document.readyState === 'complete' &&
+          document.visibilityState === 'visible' &&
+          !utils.isVideoPath(location.pathname)) {
+        setTimeout(() => {
+          webRequestHandlers.registerOnCompletedWebRequestHandler(
+            types.mediaType,
+            mediaDurationUrlPattern,
+            handleOnCompletedWebRequest)
+          publisherInfo.send()
+        }, 200)
+      }
+    })
+
+    // Load publisher info and register webRequest.OnCompleted handler on visibility change
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') {
         webRequestHandlers.registerOnCompletedWebRequestHandler(
           types.mediaType,
           mediaDurationUrlPattern,
           handleOnCompletedWebRequest)
         publisherInfo.send()
-      }, 200)
-    }
+      }
+    })
+
+    // Load publisher info and register webRequest.OnCompleted handler on page data update
+    // Note: Can't use 'yt-navigate-finish' for this, as data may not have
+    // finished loading by then
+    document.addEventListener('yt-page-data-updated', function () {
+      if (document.visibilityState === 'visible') {
+        webRequestHandlers.registerOnCompletedWebRequestHandler(
+          types.mediaType,
+          mediaDurationUrlPattern,
+          handleOnCompletedWebRequest)
+        publisherInfo.send()
+      }
+      mediaDuration.setFirstVisit(true)
+    })
   })
 
-  // Load publisher info and register webRequest.OnCompleted handler on visibility change
-  document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState === 'visible') {
-      webRequestHandlers.registerOnCompletedWebRequestHandler(
-        types.mediaType,
-        mediaDurationUrlPattern,
-        handleOnCompletedWebRequest)
-      publisherInfo.send()
-    }
-  })
-
-  // Load publisher info and register webRequest.OnCompleted handler on page data update
-  // Note: Can't use 'yt-navigate-finish' for this, as data may not have
-  // finished loading by then
-  document.addEventListener('yt-page-data-updated', function () {
-    if (document.visibilityState === 'visible') {
-      webRequestHandlers.registerOnCompletedWebRequestHandler(
-        types.mediaType,
-        mediaDurationUrlPattern,
-        handleOnCompletedWebRequest)
-      publisherInfo.send()
-    }
-    mediaDuration.setFirstVisit(true)
-  })
-
-  console.info('Greaselion script loaded: youtube.ts')
+  console.info('Greaselion script loaded: youtubeBase.ts')
 }
 
 initScript()

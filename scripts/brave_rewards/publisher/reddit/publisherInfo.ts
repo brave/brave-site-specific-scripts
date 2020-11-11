@@ -3,7 +3,7 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { MediaMetaData } from '../common/types'
-import { port, sendErrorResponse } from '../common/messaging'
+import { getPort, sendErrorResponse } from '../common/messaging'
 
 import * as types from './types'
 import * as utils from './utils'
@@ -105,6 +105,7 @@ const sendForStandardPage = (url: URL) => {
       // so pass false here
       const profileUrl = utils.buildProfileUrl(screenName, false)
 
+      const port = getPort()
       if (!port) {
         return
       }
@@ -130,6 +131,7 @@ const sendForExcludedPage = () => {
   const mediaKey = ''
   const favIconUrl = ''
 
+  const port = getPort()
   if (!port) {
     return
   }

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { port } from '../common/messaging'
+import { getPort } from '../common/messaging'
 
 import * as types from './types'
 import * as utils from './utils'
@@ -20,6 +20,7 @@ export const sendMetadata = (url: URL) => {
   const mediaKey = utils.buildMediaKey(mediaId)
   const duration = utils.getMediaDurationFromParts(searchParams)
 
+  const port = getPort()
   if (!port) {
     return
   }

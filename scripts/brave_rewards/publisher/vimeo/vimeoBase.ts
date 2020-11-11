@@ -7,6 +7,7 @@ import { createPort } from '../common/messaging'
 import * as publisherInfo from './publisherInfo'
 import * as tabHandlers from '../common/tabHandlers'
 import * as types from './types'
+import * as utils from '../common/utils'
 
 let lastLocation = ''
 
@@ -31,26 +32,34 @@ const initScript = () => {
     return
   }
 
-  createPort()
-
-  // Send publisher info when document finishes loading
-  document.addEventListener('readystatechange', function () {
-    if (document.readyState === 'complete' &&
-        document.visibilityState === 'visible') {
-      setTimeout(() => {
-        publisherInfo.send()
-      }, 200)
+  createPort((success: boolean) => {
+    if (!success) {
+      console.error('Failed to initialize communications port')
+      return
     }
-  })
 
-  // Send publisher info on visibility change
-  document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState === 'visible') {
+    // Send publisher info when document finishes loading
+    if (utils.documentReady()) {
       publisherInfo.send()
+    } else {
+      document.addEventListener('readystatechange', function () {
+        if (utils.documentReady()) {
+          setTimeout(() => {
+            publisherInfo.send()
+          }, 200)
+        }
+      })
     }
-  })
 
-  tabHandlers.registerOnUpdatedTab(types.mediaType, handleOnUpdatedTab)
+    // Send publisher info on visibility change
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') {
+        publisherInfo.send()
+      }
+    })
+
+    tabHandlers.registerOnUpdatedTab(types.mediaType, handleOnUpdatedTab)
+  })
 
   console.info('Greaselion script loaded: vimeo.ts')
 }
