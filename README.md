@@ -19,6 +19,7 @@ Table of contents:
    - [`preconditions` key](#preconditions-key)
    - [`urls` key](#urls-key)
    - [`scripts` key](#scripts-key)
+ - [Before submitting a PR](#before-submitting-a-pr)
  - [Pushing to production](#pushing-to-production)
  - [Troubleshooting](#troubleshooting)
 
@@ -74,6 +75,14 @@ There can be multiple URL match patterns in this array. If all preconditions are
 `scripts` is a required key whose value is a `JSON` array. Its role is to specify the actual script files to be injected into the page.
 
 Each item in this array is a partial pathname and filename. The path is relative to the directory where the `Greaselion.json` configuration file resides.
+
+## Before submitting a PR
+Run this command to ensure that it will all compile properly:
+
+        rm -rf dist
+        npm run build && npm run lint && npm run test
+        
+All tests must PASS!
 
 ## Pushing to production
 
