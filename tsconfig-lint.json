@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig",
   "include": [
-    "./scripts/**/*"
+    "./scripts/**/*",
+    "*.js"
   ]
 }

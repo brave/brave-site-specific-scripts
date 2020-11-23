@@ -15,7 +15,7 @@
     "homepage": "https://github.com/brave/brave-site-specific-scripts#brave-site-specific-scripts",
     "scripts": {
         "build": "webpack --mode production",
-        "lint": "tslint --project tsconfig-lint.json \"scripts/**/*.{ts,tsx}\"",
+        "lint": "tslint --project tsconfig-lint.json \"scripts/**/*.{ts,tsx}\" \"*.js\"",
         "test": "jest",
         "watch": "webpack --mode=development --watch"
     },
