@@ -1,13 +1,5 @@
 import * as utils from './utils'
 
-test('builds media key', () => {
-  expect(utils.buildMediaKey('user')).toBe('github_user')
-})
-
-test('builds publisher key', () => {
-  expect(utils.buildPublisherKey('12345')).toBe('github#channel:12345')
-})
-
 test('builds profile url with empty params', () => {
   expect(utils.buildProfileUrl('')).toBe('')
 })

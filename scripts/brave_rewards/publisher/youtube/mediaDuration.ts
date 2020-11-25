@@ -4,6 +4,8 @@
 
 import { getPort } from '../common/messaging'
 
+import * as commonUtils from '../common/utils'
+
 import * as types from './types'
 import * as utils from './utils'
 
@@ -13,11 +15,11 @@ export const setFirstVisit = (enabled: boolean) => {
   firstVisit = enabled
 }
 
-export const sendMetadata = (url: URL) => {
+export const sendMetadataFromUrl = (url: URL) => {
   const searchParams = new URLSearchParams(url.search)
 
   const mediaId = utils.getMediaIdFromParts(searchParams)
-  const mediaKey = utils.buildMediaKey(mediaId)
+  const mediaKey = commonUtils.buildMediaKey(types.mediaType, mediaId)
   const duration = utils.getMediaDurationFromParts(searchParams)
 
   const port = getPort()

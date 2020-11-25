@@ -1,13 +1,5 @@
 import * as utils from './utils'
 
-test('builds media key', () => {
-  expect(utils.buildMediaKey('user')).toBe('twitter_user')
-})
-
-test('builds publisher key', () => {
-  expect(utils.buildPublisherKey('12345')).toBe('twitter#channel:12345')
-})
-
 test('builds profile url with empty params', () => {
   expect(utils.buildProfileUrl('', '')).toBe('')
 })

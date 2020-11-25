@@ -2,161 +2,157 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { getPort, sendErrorResponse } from '../common/messaging'
+import { getPort } from '../common/messaging'
+
+import * as commonUtils from '../common/utils'
 
 import * as types from './types'
 import * as utils from './utils'
 
-const sendForChannel = (channelId: string) => {
+const getPublisherInfoForChannel = async (channelId: string) => {
   if (!channelId) {
-    sendErrorResponse(types.mediaType, 'Invalid channel id')
-    return
+    throw new Error('Invalid channel id')
   }
 
   const channelNameElement = utils.getChannelNameElementFromChannelPage()
   if (!channelNameElement) {
-    sendErrorResponse(types.mediaType, 'Unable to extract channel name from page')
-    return
+    throw new Error('Unable to extract channel name from page')
   }
 
-  const publisherKey = utils.buildPublisherKey(channelId)
+  const publisherKey = commonUtils.buildPublisherKey(types.mediaType, channelId)
   const publisherName = utils.getChannelNameFromElement(channelNameElement)
   if (!publisherName) {
-    sendErrorResponse(types.mediaType, 'Invalid publisher name')
-    return
+    throw new Error('Invalid publisher name')
   }
 
   // This media key represents the channel trailer video
-  let mediaKey = ''
   const mediaIdAnchor = utils.getMediaIdAnchorFromChannelPage()
   const mediaId = utils.getMediaIdFromAnchor(mediaIdAnchor)
-  if (mediaId) {
-    mediaKey = utils.buildMediaKey(mediaId)
-  }
+  const mediaKey = commonUtils.buildMediaKey(types.mediaType, mediaId ? mediaId : channelId)
 
   const publisherUrl = utils.buildChannelUrl(channelId)
   const favIconUrl = utils.getFavIconUrlFromPage(document.scripts)
 
-  const port = getPort()
-  if (!port) {
-    return
+  return {
+    url: publisherUrl,
+    publisherKey,
+    publisherName,
+    mediaKey,
+    favIconUrl
   }
-
-  port.postMessage({
-    type: 'SavePublisherVisit',
-    mediaType: types.mediaType,
-    data: {
-      url: publisherUrl,
-      publisherKey,
-      publisherName,
-      mediaKey,
-      favIconUrl
-    }
-  })
 }
 
-const sendForExcluded = () => {
-  const url = `https://www.${types.mediaDomain}`
-  const publisherKey = types.mediaDomain
-  const publisherName = types.mediaDomain
-  const favIconUrl = ''
-
-  const port = getPort()
-  if (!port) {
-    return
-  }
-
-  port.postMessage({
-    type: 'SavePublisherVisit',
-    mediaType: '',
-    data: {
-      url: url,
-      publisherKey,
-      publisherName,
-      favIconUrl
-    }
-  })
-}
-
-const sendForUser = () => {
+const getPublisherInfoForUser = async () => {
   const url = location.href
 
-  fetch(url)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`YouTube publisher request failed: ${response.statusText} (${response.status})`)
-      }
-      return response.text()
-    })
-    .then((responseText) => {
-      const channelId = utils.getChannelIdFromResponse(responseText)
-      if (!channelId) {
-        sendErrorResponse(types.mediaType, 'Invalid channel id')
-        return
-      }
-
-      const publisherKey = utils.buildPublisherKey(channelId)
-      const publisherName = utils.getChannelNameFromResponse(responseText)
-      if (!publisherName) {
-        sendErrorResponse(types.mediaType, 'Invalid publisher name')
-        return
-      }
-
-      // This media key represents the channel trailer video
-      let mediaKey = ''
-      const mediaIdAnchor = utils.getMediaIdAnchorFromChannelPage()
-      const mediaId = utils.getMediaIdFromAnchor(mediaIdAnchor)
-      if (mediaId) {
-        mediaKey = utils.buildMediaKey(mediaId)
-      }
-
-      const favIconUrl = utils.getFavIconUrlFromResponse(responseText)
-      const publisherUrl = utils.buildChannelUrl(channelId)
-
-      const port = getPort()
-      if (!port) {
-        return
-      }
-
-      port.postMessage({
-        type: 'SavePublisherVisit',
-        mediaType: types.mediaType,
-        data: {
-          url: publisherUrl,
-          publisherKey,
-          publisherName,
-          mediaKey,
-          favIconUrl
-        }
-      })
-    })
-    .catch((error) => {
-      throw new Error(`YouTube fetch request failed: ${error}`)
-    })
-}
-
-const sendForVideoHelper = (url: string, responseText: string, publisherName: string, publisherUrl: string) => {
-  const channelId = utils.getChannelIdFromResponse(responseText)
-  if (!channelId) {
-    sendErrorResponse(types.mediaType, 'Invalid channel id')
-    return
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error(`YouTube publisher request failed: ${response.statusText} (${response.status})`)
   }
 
-  const publisherKey = utils.buildPublisherKey(channelId)
+  const responseText = await response.text()
+
+  const channelId = utils.getChannelIdFromResponse(responseText)
+  if (!channelId) {
+    throw new Error('Invalid channel id')
+  }
+
+  const publisherKey = commonUtils.buildPublisherKey(types.mediaType, channelId)
+  const publisherName = utils.getChannelNameFromResponse(responseText)
+  if (!publisherName) {
+    throw new Error('Invalid publisher name')
+  }
+
+  // This media key represents the channel trailer video
+  const mediaIdAnchor = utils.getMediaIdAnchorFromChannelPage()
+  const mediaId = utils.getMediaIdFromAnchor(mediaIdAnchor)
+  const mediaKey = commonUtils.buildMediaKey(types.mediaType, mediaId ? mediaId : channelId)
+
+  const favIconUrl = utils.getFavIconUrlFromResponse(responseText)
+  const publisherUrl = utils.buildChannelUrl(channelId)
+
+  return {
+    url: publisherUrl,
+    publisherKey,
+    publisherName,
+    mediaKey,
+    favIconUrl
+  }
+}
+
+const getPublisherInfoForVideo = async () => {
+  const url = location.href
 
   const mediaId = utils.getMediaIdFromUrl(new URL(url))
   if (!mediaId) {
-    sendErrorResponse(types.mediaType, 'Invalid media id')
-    return
+    throw new Error('Invalid media id')
   }
 
-  const mediaKey = utils.buildMediaKey(mediaId)
+  const videoUrl = utils.buildVideoUrl(mediaId)
+  const encodedVideoUrl = encodeURI(videoUrl)
+
+  const response = await fetch(`https://www.youtube.com/oembed?format=json&url=${encodedVideoUrl}`)
+  if (!response.ok) {
+    if (response.status === 401) {
+      // Embedding disabled; need to scrape data from page instead
+      return scrapePublisherInfoFromPage(url)
+    } else {
+      throw new Error(`YouTube oembed request failed: ${response.statusText} (${response.status})`)
+    }
+  }
+
+  const responseJson = await response.json()
+
+  const fetchData: any = {}
+  fetchData.publisherUrl = responseJson.author_url
+  fetchData.publisherName = responseJson.author_name
+
+  const publisherResponse = await fetch(fetchData.publisherUrl)
+  if (!publisherResponse.ok) {
+    throw new Error(`YouTube publisher request failed: ${response.statusText} (${response.status})`)
+  }
+
+  const publisherResponseText = await publisherResponse.text()
+  if (!publisherResponseText) {
+    throw new Error('YouTube publisher request failed: empty response')
+  }
+
+  return getPublisherInfoFromResponse(
+    url,
+    publisherResponseText,
+    fetchData.publisherName,
+    fetchData.publisherUrl)
+}
+
+const getPublisherInfoForExcluded = () => {
+  return {
+    url: `https://www.${types.mediaDomain}`,
+    publisherKey: types.mediaDomain,
+    publisherName: types.mediaDomain,
+    mediaKey: '',
+    favIconUrl: ''
+  }
+}
+
+const getPublisherInfoFromResponse = (url: string, responseText: string, publisherName: string, publisherUrl: string) => {
+  const channelId = utils.getChannelIdFromResponse(responseText)
+  if (!channelId) {
+    throw new Error('Invalid channel id')
+  }
+
+  const publisherKey = commonUtils.buildPublisherKey(types.mediaType, channelId)
+
+  const mediaId = utils.getMediaIdFromUrl(new URL(url))
+  if (!mediaId) {
+    throw new Error('Invalid media id')
+  }
+
+  const mediaKey = commonUtils.buildMediaKey(types.mediaType, mediaId ? mediaId : channelId)
 
   if (!publisherName) {
     publisherName = utils.getPublisherNameFromResponse(responseText)
     if (!publisherName) {
-      sendErrorResponse(types.mediaType, 'Invalid publisher name')
-      return
+      throw new Error('Invalid publisher name')
     }
   }
 
@@ -166,110 +162,70 @@ const sendForVideoHelper = (url: string, responseText: string, publisherName: st
 
   const favIconUrl = utils.getFavIconUrlFromResponse(responseText)
 
-  const port = getPort()
-  if (!port) {
-    return
+  return {
+    url: publisherUrl,
+    publisherKey,
+    publisherName,
+    mediaKey,
+    favIconUrl
   }
-
-  port.postMessage({
-    type: 'SavePublisherVisit',
-    mediaType: types.mediaType,
-    data: {
-      url: publisherUrl,
-      publisherKey,
-      publisherName,
-      mediaKey,
-      favIconUrl
-    }
-  })
 }
 
-const scrapePublisherInfoFromPage = (url: string) => {
-  fetch(url)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`YouTube publisher request failed: ${response.statusText} (${response.status})`)
-      }
-      return response.text()
-    })
-    .then((responseText) => {
-      sendForVideoHelper(url, responseText, '', '')
-    })
-    .catch((error) => {
-      throw new Error(`YouTube fetch request failed: ${error}`)
-    })
-}
-
-const sendForVideo = () => {
-  const url = location.href
-
-  const mediaId = utils.getMediaIdFromUrl(new URL(url))
-  if (!mediaId) {
-    sendErrorResponse(types.mediaType, 'Invalid media id')
-    return
+const scrapePublisherInfoFromPage = async (url: string) => {
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error(`YouTube publisher request failed: ${response.statusText} (${response.status})`)
   }
 
-  const videoUrl = utils.buildVideoUrl(mediaId)
-  const encodedVideoUrl = encodeURI(videoUrl)
+  const responseText = await response.text()
+  if (!responseText) {
+    throw new Error('YouTube publisher request failed: empty response')
+  }
 
-  const fetchData: any = {}
-
-  fetch(`https://www.youtube.com/oembed?format=json&url=${encodedVideoUrl}`)
-    .then((response) => {
-      if (!response.ok) {
-        if (response.status === 401) {
-          // Embedding disabled; need to scrape data from page instead
-          scrapePublisherInfoFromPage(url)
-        } else {
-          throw new Error(`YouTube oembed request failed: ${response.statusText} (${response.status})`)
-        }
-      }
-      return response.json()
-    })
-    .then((responseJson) => {
-      fetchData.publisherUrl = responseJson.author_url
-      fetchData.publisherName = responseJson.author_name
-      return fetch(fetchData.publisherUrl)
-    })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`YouTube publisher request failed: ${response.statusText} (${response.status})`)
-      }
-      return response.text()
-    })
-    .then((responseText) => {
-      sendForVideoHelper(
-        url,
-        responseText,
-        fetchData.publisherName,
-        fetchData.publisherUrl)
-    })
-    .catch((error) => {
-      throw new Error(`YouTube fetch request failed: ${error}`)
-    })
+  return getPublisherInfoFromResponse(url, responseText, '', '')
 }
 
 export const send = () => {
+  get()
+    .then((info) => {
+      const port = getPort()
+      if (!port) {
+        throw new Error('Invalid port')
+      }
+      port.postMessage({
+        type: 'SavePublisherVisit',
+        mediaType: '',
+        data: {
+          url: info.url,
+          publisherKey: info.publisherKey,
+          publisherName: info.publisherName,
+          mediaKey: info.mediaKey,
+          favIconUrl: info.favIconUrl
+        }
+      })
+    })
+    .catch((error) => {
+      throw new Error(`Failed to retrieve publisher data: ${error}`)
+    })
+}
+
+export const get = async () => {
   if (utils.isVideoPath(location.pathname)) {
-    sendForVideo()
-    return
+    return getPublisherInfoForVideo()
   }
 
   if (utils.isChannelPath(location.pathname)) {
-    sendForChannel(utils.getChannelIdFromUrl(location.pathname))
-    return
+    return getPublisherInfoForChannel(utils.getChannelIdFromUrl(location.pathname))
   }
 
   if (utils.isUserPath(location.pathname)) {
-    sendForUser()
-    return
+    return getPublisherInfoForUser()
   }
 
   if (utils.isExcludedPath(location.pathname)) {
-    sendForExcluded()
-    return
+    return getPublisherInfoForExcluded()
   }
 
   // Otherwise, it's a custom url which is handled just like a user url
-  sendForUser()
+  return getPublisherInfoForUser()
 }

@@ -4,34 +4,28 @@
 
 import { getPort } from '../common/messaging'
 
+import * as commonUtils from '../common/utils'
+
 import * as types from './types'
 import * as utils from './utils'
 
-const getPublisherData = async () => {
-  if (utils.isVideoPath(location.pathname)) {
-    return getPublisherDataFromVideoPage()
-  } else {
-    return getPublisherDataFromUnrecognizedPage()
-  }
-}
-
-const getPublisherDataFromVideoPage = async () => {
+const getPublisherInfoForVideoPage = async () => {
   const url = location.href
   const encodedVideoUrl = encodeURI(url)
 
   const oembedResponse = await fetch(`https://vimeo.com/api/oembed.json?url=${encodedVideoUrl}`)
   if (!oembedResponse.ok) {
-    return getPublisherDataFromUnrecognizedPage()
+    return getPublisherInfoForUnrecognizedPage()
   }
 
   const data = await oembedResponse.json()
   if (!data) {
-    return getPublisherDataFromUnrecognizedPage()
+    return getPublisherInfoForUnrecognizedPage()
   }
 
   const publisherUrl = data.author_url
   if (!publisherUrl) {
-    return getPublisherDataFromUnrecognizedPage()
+    return getPublisherInfoForUnrecognizedPage()
   }
 
   const publisherName = data.author_name
@@ -41,7 +35,7 @@ const getPublisherDataFromVideoPage = async () => {
 
   const videoId = data.video_id
   if (!videoId || videoId === 0) {
-    return getPublisherDataFromUnrecognizedPage()
+    return getPublisherInfoForUnrecognizedPage()
   }
 
   const response = await fetch(publisherUrl)
@@ -56,9 +50,9 @@ const getPublisherDataFromVideoPage = async () => {
     throw new Error('Invalid user id')
   }
 
-  const publisherKey = utils.buildPublisherKey(userId)
+  const publisherKey = commonUtils.buildPublisherKey(types.mediaType, userId)
 
-  const mediaKey = utils.buildMediaKey(videoId)
+  const mediaKey = commonUtils.buildMediaKey(types.mediaType, videoId.toString())
   if (!mediaKey) {
     throw new Error('Invalid media key')
   }
@@ -74,7 +68,7 @@ const getPublisherDataFromVideoPage = async () => {
   }
 }
 
-const getPublisherDataFromUnrecognizedPage = async () => {
+const getPublisherInfoForUnrecognizedPage = async () => {
   const url = location.href
   const response = await fetch(url)
   if (!response.ok) {
@@ -112,11 +106,11 @@ const getPublisherDataFromUnrecognizedPage = async () => {
     if (!videoId) {
       throw new Error('Invalid video id')
     }
-
-    mediaKey = utils.buildMediaKey(videoId)
   }
 
-  const publisherKey = utils.buildPublisherKey(userId)
+  mediaKey = commonUtils.buildMediaKey(types.mediaType, userId)
+
+  const publisherKey = commonUtils.buildPublisherKey(types.mediaType, userId)
 
   return {
     url,
@@ -128,8 +122,8 @@ const getPublisherDataFromUnrecognizedPage = async () => {
 }
 
 const sendForStandardPage = () => {
-  getPublisherData()
-    .then((publisherData) => {
+  get()
+    .then((info) => {
       const port = getPort()
       if (!port) {
         throw new Error('Invalid port')
@@ -138,11 +132,11 @@ const sendForStandardPage = () => {
         type: 'SavePublisherVisit',
         mediaType: types.mediaType,
         data: {
-          url: publisherData.url,
-          publisherKey: publisherData.publisherKey,
-          publisherName: publisherData.publisherName,
-          mediaKey: publisherData.mediaKey,
-          favIconUrl: publisherData.favIconUrl
+          url: info.url,
+          publisherKey: info.publisherKey,
+          publisherName: info.publisherName,
+          mediaKey: info.mediaKey,
+          favIconUrl: info.favIconUrl
         }
       })
     })
@@ -180,5 +174,13 @@ export const send = () => {
     sendForExcludedPage()
   } else {
     sendForStandardPage()
+  }
+}
+
+export const get = async () => {
+  if (utils.isVideoPath(location.pathname)) {
+    return getPublisherInfoForVideoPage()
+  } else {
+    return getPublisherInfoForUnrecognizedPage()
   }
 }

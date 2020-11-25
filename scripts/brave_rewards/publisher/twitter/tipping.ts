@@ -5,8 +5,10 @@
 import { getPort } from '../common/messaging'
 import { MediaMetaData } from '../common/types'
 
-import * as api from './api'
+import * as commonUtils from '../common/utils'
 import * as locale from '../common/locale'
+
+import * as api from './api'
 import * as types from './types'
 import * as utils from './utils'
 
@@ -224,7 +226,7 @@ const tipUser = (mediaMetaData: MediaMetaData) => {
   }
 
   const profileUrl = utils.buildProfileUrl(mediaMetaData.user.screenName, mediaMetaData.user.id)
-  const publisherKey = utils.buildPublisherKey(mediaMetaData.user.id)
+  const publisherKey = commonUtils.buildPublisherKey(types.mediaType, mediaMetaData.user.id)
   const publisherName = mediaMetaData.user.screenName
   const publisherScreenName = mediaMetaData.user.screenName
 
