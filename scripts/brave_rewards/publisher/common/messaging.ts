@@ -27,7 +27,9 @@ export const createPort = (callback: (success: boolean) => void) => {
     { type: 'SupportsGreaselion' },
     function (response) {
       if (!chrome.runtime.lastError && response && response.supported) {
-        port = chrome.runtime.connect(types.braveExtensionId, { name: 'Greaselion' })
+        port = chrome.runtime.connect(
+          types.braveExtensionId,
+          { name: 'Greaselion' })
         callback(true)
         return
       }
@@ -35,7 +37,9 @@ export const createPort = (callback: (success: boolean) => void) => {
 
   setTimeout(() => {
     if (!port) {
-      port = chrome.runtime.connect(types.braveRewardsExtensionId, { name: 'Greaselion' })
+      port = chrome.runtime.connect(
+        types.braveRewardsExtensionId,
+        { name: 'Greaselion' })
       callback(true)
       return
     }

@@ -13,7 +13,8 @@ const getPublisherInfoForVideoPage = async () => {
   const url = location.href
   const encodedVideoUrl = encodeURI(url)
 
-  const oembedResponse = await fetch(`https://vimeo.com/api/oembed.json?url=${encodedVideoUrl}`)
+  const oembedResponse =
+    await fetch(`https://vimeo.com/api/oembed.json?url=${encodedVideoUrl}`)
   if (!oembedResponse.ok) {
     return getPublisherInfoForUnrecognizedPage()
   }
@@ -40,7 +41,9 @@ const getPublisherInfoForVideoPage = async () => {
 
   const response = await fetch(publisherUrl)
   if (!response.ok) {
-    throw new Error(`Publisher request failed: ${response.statusText} (${response.status})`)
+    const msg =
+      commonUtils.formatNetworkError('Publisher request failed', response)
+    throw new Error(msg)
   }
 
   const responseText = await response.text()
@@ -52,7 +55,8 @@ const getPublisherInfoForVideoPage = async () => {
 
   const publisherKey = commonUtils.buildPublisherKey(types.mediaType, userId)
 
-  const mediaKey = commonUtils.buildMediaKey(types.mediaType, videoId.toString())
+  const mediaKey =
+    commonUtils.buildMediaKey(types.mediaType, videoId.toString())
   if (!mediaKey) {
     throw new Error('Invalid media key')
   }
@@ -72,7 +76,9 @@ const getPublisherInfoForUnrecognizedPage = async () => {
   const url = location.href
   const response = await fetch(url)
   if (!response.ok) {
-    throw new Error(`Publisher request failed: ${response.statusText} (${response.status})`)
+    const msg =
+      commonUtils.formatNetworkError('Publisher request failed', response)
+    throw new Error(msg)
   }
 
   const responseText = await response.text()
@@ -87,7 +93,8 @@ const getPublisherInfoForUnrecognizedPage = async () => {
 
   let userId = utils.getUserIdFromPublisherPageResponse(responseText)
   if (userId) {
-    publisherName = utils.getPublisherNameFromPublisherPageResponse(responseText)
+    publisherName =
+      utils.getPublisherNameFromPublisherPageResponse(responseText)
     if (!publisherName) {
       throw new Error('Invalid publisher name')
     }

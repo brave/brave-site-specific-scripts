@@ -6,7 +6,10 @@ import { getPort } from '../common/messaging'
 
 let registeredOnUpdatedTab = false
 
-export const registerOnUpdatedTab = (mediaType: string, callback: (changeInfo: any) => void) => {
+export const registerOnUpdatedTab = (
+  mediaType: string,
+  callback: (changeInfo: any) => void
+) => {
   if (!mediaType || registeredOnUpdatedTab) {
     return
   }

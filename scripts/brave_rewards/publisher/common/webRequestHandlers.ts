@@ -7,7 +7,11 @@ import { getPort } from '../common/messaging'
 let registeredOnCompletedWebRequestHandler = false
 let registeredOnSendHeadersWebRequest = false
 
-export const registerOnCompletedWebRequestHandler = (mediaType: string, urlPattern: string, callback: (mediaType: string, details: any) => void) => {
+export const registerOnCompletedWebRequestHandler = (
+  mediaType: string,
+  urlPattern: string,
+  callback: (mediaType: string, details: any) => void
+) => {
   if (!mediaType || registeredOnCompletedWebRequestHandler) {
     return
   }
@@ -37,7 +41,12 @@ export const registerOnCompletedWebRequestHandler = (mediaType: string, urlPatte
   })
 }
 
-export const registerOnSendHeadersWebRequest = (mediaType: string, urlPatterns: string[], extra: string[], callback: (mediaType: string, details: any) => void) => {
+export const registerOnSendHeadersWebRequest = (
+  mediaType: string,
+  urlPatterns: string[],
+  extra: string[],
+  callback: (mediaType: string, details: any) => void
+) => {
   if (!mediaType || registeredOnSendHeadersWebRequest) {
     return
   }

@@ -41,7 +41,8 @@ const getScreenNameFromThread = () => {
     return ''
   }
 
-  const anchor = posts[0].querySelector("a[href^='/user/']") as HTMLAnchorElement
+  const anchor =
+    posts[0].querySelector("a[href^='/user/']") as HTMLAnchorElement
   if (!anchor || !anchor.href) {
     return ''
   }
@@ -62,7 +63,8 @@ const getScreenNameFromThreadForOldReddit = () => {
 
   const post = posts[posts.length - 1]
 
-  const anchor = post.querySelector("a[href^='https://old.reddit.com/user/']") as HTMLAnchorElement
+  const selector = "a[href^='https://old.reddit.com/user/']"
+  const anchor = post.querySelector(selector) as HTMLAnchorElement
   if (!anchor || !anchor.href) {
     return ''
   }
@@ -92,7 +94,8 @@ const sendForStandardPage = (url: URL) => {
   return getMediaMetaData(screenName, isOldReddit)
     .then((mediaMetaData: MediaMetaData) => {
       const userId = mediaMetaData.user.id
-      const publisherKey = commonUtils.buildPublisherKey(types.mediaType, userId)
+      const publisherKey =
+        commonUtils.buildPublisherKey(types.mediaType, userId)
       const publisherName = mediaMetaData.user.fullName
       if (!publisherName) {
         sendErrorResponse(types.mediaType, 'Invalid publisher name')

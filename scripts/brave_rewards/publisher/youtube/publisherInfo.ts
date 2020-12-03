@@ -28,7 +28,8 @@ const getPublisherInfoForChannel = async (channelId: string) => {
   // This media key represents the channel trailer video
   const mediaIdAnchor = utils.getMediaIdAnchorFromChannelPage()
   const mediaId = utils.getMediaIdFromAnchor(mediaIdAnchor)
-  const mediaKey = commonUtils.buildMediaKey(types.mediaType, mediaId ? mediaId : channelId)
+  const mediaKey =
+    commonUtils.buildMediaKey(types.mediaType, mediaId ? mediaId : channelId)
 
   const publisherUrl = utils.buildChannelUrl(channelId)
   const favIconUrl = utils.getFavIconUrlFromPage(document.scripts)
@@ -47,7 +48,9 @@ const getPublisherInfoForUser = async () => {
 
   const response = await fetch(url)
   if (!response.ok) {
-    throw new Error(`YouTube publisher request failed: ${response.statusText} (${response.status})`)
+    const msg =
+      commonUtils.formatNetworkError('Publisher request failed', response)
+    throw new Error(msg)
   }
 
   const responseText = await response.text()
@@ -66,7 +69,8 @@ const getPublisherInfoForUser = async () => {
   // This media key represents the channel trailer video
   const mediaIdAnchor = utils.getMediaIdAnchorFromChannelPage()
   const mediaId = utils.getMediaIdFromAnchor(mediaIdAnchor)
-  const mediaKey = commonUtils.buildMediaKey(types.mediaType, mediaId ? mediaId : channelId)
+  const mediaKey =
+    commonUtils.buildMediaKey(types.mediaType, mediaId ? mediaId : channelId)
 
   const favIconUrl = utils.getFavIconUrlFromResponse(responseText)
   const publisherUrl = utils.buildChannelUrl(channelId)
@@ -97,7 +101,9 @@ const getPublisherInfoForVideo = async () => {
       // Embedding disabled; need to scrape data from page instead
       return scrapePublisherInfoFromPage(url)
     } else {
-      throw new Error(`YouTube oembed request failed: ${response.statusText} (${response.status})`)
+      const msg =
+        commonUtils.formatNetworkError('oEmbed request failed', response)
+      throw new Error(msg)
     }
   }
 
@@ -109,12 +115,14 @@ const getPublisherInfoForVideo = async () => {
 
   const publisherResponse = await fetch(fetchData.publisherUrl)
   if (!publisherResponse.ok) {
-    throw new Error(`YouTube publisher request failed: ${response.statusText} (${response.status})`)
+    const msg =
+      commonUtils.formatNetworkError('Publisher request failed', response)
+    throw new Error(msg)
   }
 
   const publisherResponseText = await publisherResponse.text()
   if (!publisherResponseText) {
-    throw new Error('YouTube publisher request failed: empty response')
+    throw new Error('Publisher request failed: empty response')
   }
 
   return getPublisherInfoFromResponse(
@@ -134,7 +142,12 @@ const getPublisherInfoForExcluded = () => {
   }
 }
 
-const getPublisherInfoFromResponse = (url: string, responseText: string, publisherName: string, publisherUrl: string) => {
+const getPublisherInfoFromResponse = (
+  url: string,
+  responseText: string,
+  publisherName: string,
+  publisherUrl: string
+) => {
   const channelId = utils.getChannelIdFromResponse(responseText)
   if (!channelId) {
     throw new Error('Invalid channel id')
@@ -147,7 +160,8 @@ const getPublisherInfoFromResponse = (url: string, responseText: string, publish
     throw new Error('Invalid media id')
   }
 
-  const mediaKey = commonUtils.buildMediaKey(types.mediaType, mediaId ? mediaId : channelId)
+  const mediaKey =
+    commonUtils.buildMediaKey(types.mediaType, mediaId ? mediaId : channelId)
 
   if (!publisherName) {
     publisherName = utils.getPublisherNameFromResponse(responseText)
@@ -174,12 +188,14 @@ const getPublisherInfoFromResponse = (url: string, responseText: string, publish
 const scrapePublisherInfoFromPage = async (url: string) => {
   const response = await fetch(url)
   if (!response.ok) {
-    throw new Error(`YouTube publisher request failed: ${response.statusText} (${response.status})`)
+    const msg =
+      commonUtils.formatNetworkError('Publisher request failed', response)
+    throw new Error(msg)
   }
 
   const responseText = await response.text()
   if (!responseText) {
-    throw new Error('YouTube publisher request failed: empty response')
+    throw new Error('Publisher request failed: empty response')
   }
 
   return getPublisherInfoFromResponse(url, responseText, '', '')
@@ -215,7 +231,8 @@ export const get = async () => {
   }
 
   if (utils.isChannelPath(location.pathname)) {
-    return getPublisherInfoForChannel(utils.getChannelIdFromUrl(location.pathname))
+    const channelId = utils.getChannelIdFromUrl(location.pathname)
+    return getPublisherInfoForChannel(channelId)
   }
 
   if (utils.isUserPath(location.pathname)) {

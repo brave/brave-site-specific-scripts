@@ -33,7 +33,11 @@ const sendDuration = () => {
 
         const mediaId = info.mediaKey.replace(`${types.mediaType}_`, '')
         const duration = Math.round((Date.now() - lastActivityTime) / 1000)
-        mediaDuration.sendMetadata(types.mediaType, mediaId, duration, firstVisit)
+        mediaDuration.sendMetadata(
+          types.mediaType,
+          mediaId,
+          duration,
+          firstVisit)
       })
       .catch((error) => {
         throw new Error(`Failed to retrieve publisher data: ${error}`)

@@ -27,7 +27,10 @@ export const getPublisherNameFromPublisherPageResponse = (response: string) => {
 
   const publisherName = getPublisherNameFromVideoPageResponse(response)
   if (!publisherName) {
-    return utils.extractData(response, '<meta property="og:title" content="', '"')
+    return utils.extractData(
+      response,
+      '<meta property="og:title" content="',
+      '"')
   }
 
   return publisherName
@@ -47,7 +50,7 @@ export const getPublisherNameFromVideoPageResponse = (response: string) => {
   try {
     object = JSON.parse(`{"brave_publisher":"${publisherNameJson}"}`)
   } catch (error) {
-    throw new Error(`Error parsing publisher name from video page response: ${error}`)
+    throw new Error(`Error parsing publisher name from video page: ${error}`)
   }
 
   return object.brave_publisher
@@ -58,12 +61,18 @@ export const getUserIdFromPublisherPageResponse = (response: string) => {
     return ''
   }
 
-  const userId = utils.extractData(response, '<meta property="al:ios:url" content="vimeo://app.vimeo.com/users/', '"')
+  const userId = utils.extractData(
+    response,
+    '<meta property="al:ios:url" content="vimeo://app.vimeo.com/users/',
+    '"')
   if (userId) {
     return userId
   }
 
-  return utils.extractData(response, '<meta property="al:android:url" content="vimeo://app.vimeo.com/users/', '"')
+  return utils.extractData(
+    response,
+    '<meta property="al:android:url" content="vimeo://app.vimeo.com/users/',
+    '"')
 }
 
 export const getUserIdFromVideoPageResponse = (response: string) => {
@@ -79,7 +88,10 @@ export const getVideoIdFromVideoPageResponse = (response: string) => {
     return ''
   }
 
-  return utils.extractData(response, '<link rel="canonical" href="https://vimeo.com/', '"')
+  return utils.extractData(
+    response,
+    '<link rel="canonical" href="https://vimeo.com/',
+    '"')
 }
 
 export const isAllowedEvent = (event: string) => {

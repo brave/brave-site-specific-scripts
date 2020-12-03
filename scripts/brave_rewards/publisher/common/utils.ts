@@ -14,7 +14,11 @@ export const buildPublisherKey = (mediaType: string, key: string) => {
   return `${mediaType}#channel:${key}`
 }
 
-export const extractData = (data: string, matchAfter: string, matchUntil: string) => {
+export const extractData = (
+  data: string,
+  matchAfter: string,
+  matchUntil: string
+) => {
   if (data.length < matchAfter.length) {
     return ''
   }
@@ -63,5 +67,14 @@ export const areObjectsEqualShallow = (firstObj: {}, secondObj: {}) => {
 }
 
 export const documentReady = () => {
-  return document.readyState === 'complete' && document.visibilityState === 'visible'
+  if (document.readyState === 'complete' &&
+      document.visibilityState === 'visible') {
+    return true
+  }
+
+  return false
+}
+
+export const formatNetworkError = (message: string, response: Response) => {
+  return `${message}: ${response.statusText} (${response.status})`
 }

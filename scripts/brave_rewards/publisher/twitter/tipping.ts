@@ -16,7 +16,7 @@ let timeout: any = null
 
 let newTwitter = true
 
-const getMediaMetaData = (tweet: Element, tweetId: string): Promise<MediaMetaData> => {
+const getMediaMetaData = (tweet: Element, tweetId: string) => {
   if (!tweet || !tweetId) {
     return Promise.reject(new Error('Invalid parameters'))
   }
@@ -28,7 +28,8 @@ const getMediaMetaData = (tweet: Element, tweetId: string): Promise<MediaMetaDat
           id: details.user.id_str,
           screenName: details.user.screen_name,
           fullName: details.user.name,
-          favIconUrl: details.user.profile_image_url_https.replace('_normal', '')
+          favIconUrl: details.user.profile_image_url_https
+            .replace('_normal', '')
         },
         post: {
           id: tweetId,
@@ -43,7 +44,7 @@ const getMediaMetaData = (tweet: Element, tweetId: string): Promise<MediaMetaDat
     })
 }
 
-const getMediaMetaDataForOldTwitter = (tweet: Element, tweetId: string): MediaMetaData | null => {
+const getMediaMetaDataForOldTwitter = (tweet: Element, tweetId: string) => {
   if (!tweet) {
     return null
   }
@@ -111,7 +112,11 @@ const isThreadParent = (tweet: Element) => {
   return true
 }
 
-const createTipAction = (tweet: Element, tweetId: string, hasUserActions: boolean) => {
+const createTipAction = (
+  tweet: Element,
+  tweetId: string,
+  hasUserActions: boolean
+) => {
   // Create the tip action
   const tipAction = document.createElement('div')
   tipAction.className = 'ProfileTweet-action js-tooltip action-brave-tip'
@@ -120,12 +125,15 @@ const createTipAction = (tweet: Element, tweetId: string, hasUserActions: boolea
   tipAction.style.textAlign = hasUserActions ? 'right' : 'start'
   tipAction.setAttribute('role', 'button')
   tipAction.setAttribute('tabindex', '0')
-  tipAction.setAttribute('data-original-title', locale.getMessage('twitterTipsHoverText'))
+  tipAction.setAttribute(
+    'data-original-title',
+    locale.getMessage('twitterTipsHoverText'))
   tipAction.addEventListener('keydown', onTipActionKey)
 
   // Create the tip button
   const tipButton = document.createElement('button')
-  tipButton.className = 'ProfileTweet-actionButton u-textUserColorHover js-actionButton'
+  tipButton.className =
+    'ProfileTweet-actionButton u-textUserColorHover js-actionButton'
   tipButton.style.background = 'transparent'
   tipButton.style.border = '0'
   tipButton.style.color = '#657786'
@@ -203,8 +211,10 @@ const createTipAction = (tweet: Element, tweetId: string, hasUserActions: boolea
 
   // Create the tip action count presentation
   const tipActionCountPresentation = document.createElement('span')
-  tipActionCountPresentation.className = 'ProfileTweet-actionCountForPresentation'
-  tipActionCountPresentation.textContent = locale.getMessage('twitterTipsIconLabel')
+  tipActionCountPresentation.className =
+    'ProfileTweet-actionCountForPresentation'
+  tipActionCountPresentation.textContent =
+    locale.getMessage('twitterTipsIconLabel')
   tipActionCount.appendChild(tipActionCountPresentation)
 
   // Create the shadow DOM root that hosts our injected DOM elements
@@ -225,8 +235,10 @@ const tipUser = (mediaMetaData: MediaMetaData) => {
     return
   }
 
-  const profileUrl = utils.buildProfileUrl(mediaMetaData.user.screenName, mediaMetaData.user.id)
-  const publisherKey = commonUtils.buildPublisherKey(types.mediaType, mediaMetaData.user.id)
+  const profileUrl =
+    utils.buildProfileUrl(mediaMetaData.user.screenName, mediaMetaData.user.id)
+  const publisherKey =
+    commonUtils.buildPublisherKey(types.mediaType, mediaMetaData.user.id)
   const publisherName = mediaMetaData.user.screenName
   const publisherScreenName = mediaMetaData.user.screenName
 
