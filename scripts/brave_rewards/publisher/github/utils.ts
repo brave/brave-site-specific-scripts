@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import * as commonUtils from '../common/utils'
+
 export const buildProfileUrl = (screenName: string) => {
   if (!screenName) {
     return ''
@@ -96,7 +98,9 @@ export const getMediaMetaData = async (screenName: string) => {
 
   const response = await fetch(profileApiUrl)
   if (!response.ok) {
-    throw new Error(`Profile API request failed: ${response.statusText} (${response.status})`)
+    const msg =
+      commonUtils.formatNetworkError('Profile API request failed', response)
+    throw new Error(msg)
   }
 
   const data = await response.json()

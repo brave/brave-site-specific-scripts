@@ -38,7 +38,8 @@ const initScript = () => {
       return
     }
 
-    // Load publisher info and register webRequest.OnCompleted handler when document finishes loading
+    // Load publisher info and register webRequest.OnCompleted handler
+    // when document finishes loading
     // Note: Not needed for video paths, as 'yt-page-data-updated' handles those
     document.addEventListener('readystatechange', function () {
       if (document.readyState === 'complete' &&
@@ -54,7 +55,8 @@ const initScript = () => {
       }
     })
 
-    // Load publisher info and register webRequest.OnCompleted handler on visibility change
+    // Load publisher info and register webRequest.OnCompleted handler
+    // on visibility change
     document.addEventListener('visibilitychange', function () {
       if (document.visibilityState === 'visible') {
         webRequestHandlers.registerOnCompletedWebRequestHandler(
@@ -65,7 +67,8 @@ const initScript = () => {
       }
     })
 
-    // Load publisher info and register webRequest.OnCompleted handler on page data update
+    // Load publisher info and register webRequest.OnCompleted handler
+    // on page data update
     // Note: Can't use 'yt-navigate-finish' for this, as data may not have
     // finished loading by then
     document.addEventListener('yt-page-data-updated', function () {

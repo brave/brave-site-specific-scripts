@@ -12,7 +12,9 @@ export const buildVideoUrl = (mediaId: string) => {
   return `https://www.youtube.com/watch?v=${mediaId}`
 }
 
-export const getFavIconUrlFromPage = (scripts: HTMLCollectionOf<HTMLScriptElement>) => {
+export const getFavIconUrlFromPage = (
+  scripts: HTMLCollectionOf<HTMLScriptElement>
+) => {
   for (const script of scripts) {
     const match = getFavIconUrlFromResponse(script.text)
     if (match) {
@@ -74,7 +76,8 @@ export const getChannelIdFromResponse = (data: string) => {
     return match
   }
 
-  match = utils.extractData(data, '<link rel="canonical" href="https://www.youtube.com/channel/', '">')
+  match = utils.extractData(
+    data, '<link rel="canonical" href="https://www.youtube.com/channel/', '">')
   if (match) {
     return match
   }
@@ -101,7 +104,8 @@ export const getChannelNameFromResponse = (data: string) => {
 }
 
 export const getChannelNameElementFromChannelPage = () => {
-  return document.querySelector('#channel-container #text-container') as HTMLElement
+  return document.
+    querySelector('#channel-container #text-container') as HTMLElement
 }
 
 export const getChannelNameFromElement = (element: HTMLElement) => {
@@ -113,7 +117,8 @@ export const getChannelNameFromElement = (element: HTMLElement) => {
 }
 
 export const getMediaIdAnchorFromChannelPage = () => {
-  return document.querySelector('#contents .ytp-title-link') as HTMLAnchorElement
+  return document.
+    querySelector('#contents .ytp-title-link') as HTMLAnchorElement
 }
 
 export const getMediaIdFromAnchor = (anchor: HTMLAnchorElement) => {
@@ -174,7 +179,8 @@ export const getMediaDurationFromParts = (searchParams: URLSearchParams) => {
     return 0
   }
 
-  // Combine all of the intervals (should only be one set if there were no seeks)
+  // Combine all of the intervals (should only be one set if there
+  // were no seeks)
   let duration = 0
   for (let i = 0; i < startTimes.length; ++i) {
     const st = parseFloat(startTimes[i])

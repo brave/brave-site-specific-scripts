@@ -45,7 +45,8 @@ test('gets screen name from matching url with incorrect query param', () => {
 })
 
 test('gets screen name from matching tweet url', () => {
-  const url = new URL('https://twitter.com/lukemulks/status/1293113074317049856')
+  const url =
+    new URL('https://twitter.com/lukemulks/status/1293113074317049856')
   expect(utils.getScreenNameFromUrl(url)).toBe('lukemulks')
 })
 

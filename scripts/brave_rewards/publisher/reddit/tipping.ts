@@ -21,11 +21,14 @@ const getTipMediaMetaDataForOldReddit = async (post: Element) => {
   }
 
   let postText = ''
-  let postTitleElement: HTMLAnchorElement | null = post.querySelector('a[data-event-action="title"]')
+  const postTitleElement: HTMLAnchorElement | null =
+    post.querySelector('a[data-event-action="title"]')
   const postTextElements = post.getElementsByClassName('md')
 
   if (!postTextElements || postTextElements.length === 0) {
-    postText = postTitleElement && postTitleElement.innerText ? postTitleElement.innerText : ''
+    postText =
+      postTitleElement && postTitleElement.innerText ?
+      postTitleElement.innerText : ''
   } else {
     const divPostTextElement = (postTextElements[0] as HTMLDivElement)
     if (divPostTextElement && divPostTextElement.innerText) {
@@ -92,7 +95,9 @@ const getTipMediaMetaData = async (post: Element) => {
       }
     } else {
       postTextElements = post.getElementsByTagName('h1')
-      if (postTextElements && postTextElements.length > 0 && postTextElements[0].innerText) {
+      if (postTextElements &&
+          postTextElements.length > 0 &&
+          postTextElements[0].innerText) {
         postText = postTextElements[0].innerText
       }
     }
@@ -108,9 +113,12 @@ const getTipMediaMetaData = async (post: Element) => {
   }
 
   let screenName = ''
-  const anchor: HTMLAnchorElement | null = post.querySelector('a[href^="/user/"]:not([data-click-id="body"]):not([data-click-id="subreddit"])')
+  const selector = 'a[href^="/user/"]:not([data-click-id="body"]):not([data-click-id="subreddit"])'
+  const anchor: HTMLAnchorElement | null = post.querySelector(selector)
   if (anchor && anchor.textContent) {
-    screenName = anchor.textContent.startsWith('u/') ? anchor.textContent.split('/')[1] : anchor.textContent
+    screenName =
+      anchor.textContent.startsWith('u/') ?
+      anchor.textContent.split('/')[1] : anchor.textContent
   }
 
   let postRelativeDate = ''
@@ -202,7 +210,9 @@ const createTipAction = (isPost: boolean) => {
     tipAction.style.borderRadius = '2px'
   }
 
-  tipAction.setAttribute('data-original-title', locale.getMessage('redditTipsHoverText'))
+  tipAction.setAttribute(
+    'data-original-title',
+    locale.getMessage('redditTipsHoverText'))
 
   return tipAction
 }
@@ -282,16 +292,30 @@ const getMoreActionPostElement = (postElement: Element) => {
     return null
   }
 
-  return !element.nextElementSibling && !element.previousElementSibling && element.parentElement ? element.parentElement : element
+  return !element.nextElementSibling &&
+         !element.previousElementSibling &&
+         element.parentElement ? element.parentElement : element
 }
 
 const getSaveElement = (commentElement: Element) => {
-  return document.evaluate(".//button[text()='Save']", commentElement, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue as HTMLElement | null
+  return document.evaluate(
+    ".//button[text()='Save']",
+    commentElement,
+    null,
+    XPathResult.FIRST_ORDERED_NODE_TYPE,
+    null).singleNodeValue as HTMLElement | null
 }
 
 const getPromotedSaveElement = (element: Element) => {
-  const saveElement = document.evaluate(".//span[text()='save']", element, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue as HTMLElement
-  if (!saveElement || !saveElement.parentElement || !saveElement.parentElement.parentElement) {
+  const saveElement = document.evaluate(
+    ".//span[text()='save']",
+    element,
+    null,
+    XPathResult.FIRST_ORDERED_NODE_TYPE,
+    null).singleNodeValue as HTMLElement
+  if (!saveElement ||
+      !saveElement.parentElement ||
+      !saveElement.parentElement.parentElement) {
     return null
   }
 
@@ -299,7 +323,12 @@ const getPromotedSaveElement = (element: Element) => {
 }
 
 const isUsersOwnPost = (commentElement: Element) => {
-  return Boolean(document.evaluate(".//button[text()='edit']", commentElement, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue)
+  return Boolean(document.evaluate(
+    ".//button[text()='edit']",
+    commentElement,
+    null,
+    XPathResult.FIRST_ORDERED_NODE_TYPE,
+    null).singleNodeValue)
 }
 
 const createElementTipActionForOldReddit = (post: Element) => {
@@ -385,15 +414,24 @@ const configureForSaveElement = (element: Element, config: any) => {
     return
   }
 
-  const saveElement = config.promotedPosts ? getPromotedSaveElement(element) : getSaveElement(element)
+  const saveElement =
+    config.promotedPosts ?
+    getPromotedSaveElement(element) :
+    getSaveElement(element)
   if (!saveElement) {
     return
   }
 
-  saveElement.insertAdjacentElement('afterend', createElementTipAction(element, config.posts))
+  saveElement.insertAdjacentElement(
+    'afterend',
+    createElementTipAction(element, config.posts))
 }
 
-const configureForMoreInfoElement = (element: Element, lastElement: Element, config: any) => {
+const configureForMoreInfoElement = (
+  element: Element,
+  lastElement: Element,
+  config: any
+) => {
   if (!element || !lastElement || !config) {
     return
   }
@@ -413,7 +451,10 @@ const configureForPosts = (config: any) => {
   }
 
   // Special case: use this for promoted content when user isn't logged in
-  const postElements = config.posts ? document.getElementsByClassName('Post') : document.getElementsByClassName('Comment')
+  const postElements =
+    config.posts ?
+    document.getElementsByClassName('Post') :
+    document.getElementsByClassName('Comment')
   if (!postElements) {
     return
   }
@@ -421,12 +462,16 @@ const configureForPosts = (config: any) => {
   for (const postElement of postElements) {
     const isUsersPost = isUsersOwnPost(postElement)
     const actions = postElement.querySelectorAll('div.action-brave-tip')
-    const inEditModeElements = postElement.querySelector('div[data-test-id="comment-submission-form-richtext"')
+    const inEditModeElements = postElement.
+      querySelector('div[data-test-id="comment-submission-form-richtext"')
     if (actions.length > 0 || inEditModeElements) {
       continue
     }
 
-    const lastElement = config.posts ? getMoreActionPostElement(postElement) : getMoreActionCommentElement(postElement)
+    const lastElement =
+      config.posts ?
+      getMoreActionPostElement(postElement) :
+      getMoreActionCommentElement(postElement)
     if (lastElement) {
       const moreInfoConfig = { posts: config.posts, usersPost: isUsersPost }
       configureForMoreInfoElement(postElement, lastElement, moreInfoConfig)
@@ -453,7 +498,8 @@ const configureForOldReddit = (postType: string) => {
       continue
     }
 
-    ulElement[0].insertAdjacentElement('beforeend', createElementTipActionForOldReddit(element))
+    const tipAction = createElementTipActionForOldReddit(element)
+    ulElement[0].insertAdjacentElement('beforeend', tipAction)
   }
 }
 
@@ -463,7 +509,8 @@ const tipUser = (mediaMetaData: MediaMetaData) => {
     return
   }
 
-  const publisherKey = commonUtils.buildPublisherKey(types.mediaType, mediaMetaData.user.id)
+  const publisherKey =
+    commonUtils.buildPublisherKey(types.mediaType, mediaMetaData.user.id)
   const publisherName = mediaMetaData.user.fullName
   const publisherScreenName = mediaMetaData.user.screenName
 

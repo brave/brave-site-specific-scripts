@@ -21,7 +21,8 @@ test('confirms that url does not point to old reddit', () => {
 })
 
 test('confirms that path points to a reddit thread', () => {
-  const path = '/r/MechanicalKeyboards/comments/jbge7k/this_is_peak_level_innovation/'
+  const path =
+    '/r/MechanicalKeyboards/comments/jbge7k/this_is_peak_level_innovation/'
   expect(utils.isThreadPath(path)).toBe(true)
 })
 

@@ -45,7 +45,8 @@ const sendForStandardPage = (url: URL) => {
   return utils.getMediaMetaData(screenName)
     .then((mediaMetaData: MediaMetaData) => {
       const userId = mediaMetaData.user.id
-      const publisherKey = commonUtils.buildPublisherKey(types.mediaType, userId)
+      const publisherKey =
+        commonUtils.buildPublisherKey(types.mediaType, userId)
       const publisherName = mediaMetaData.user.fullName
       if (!publisherName) {
         sendErrorResponse(types.mediaType, 'Invalid publisher name')

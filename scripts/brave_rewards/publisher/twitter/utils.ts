@@ -16,7 +16,9 @@ export const buildProfileUrl = (screenName: string, userId?: string) => {
 
 export const getPublisherNameFromPage = () => {
   const components = document.title.split('(@')
-  if (!components || components.length <= 1 || components[0] === document.title) {
+  if (!components ||
+      components.length <= 1 ||
+      components[0] === document.title) {
     return ''
   }
 

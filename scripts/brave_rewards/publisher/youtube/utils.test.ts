@@ -19,8 +19,8 @@ test('gets channel id from non-matching url', () => {
 })
 
 test('gets channel id from matching url', () => {
-  expect(utils.getChannelIdFromUrl('https://www.youtube.com/channel/UCxVXX2JqatsN4xwtjd3W5Kg'))
-    .toBe('UCxVXX2JqatsN4xwtjd3W5Kg')
+  const url = 'https://www.youtube.com/channel/UCxVXX2JqatsN4xwtjd3W5Kg'
+  expect(utils.getChannelIdFromUrl(url)).toBe('UCxVXX2JqatsN4xwtjd3W5Kg')
 })
 
 test('gets media id from non-matching url', () => {
@@ -51,5 +51,6 @@ test('gets user from non-matching url', () => {
 })
 
 test('gets user from matching url', () => {
-  expect(utils.getUserFromUrl('https://www.youtube.com/user/Scobleizer')).toBe('Scobleizer')
+  const url = 'https://www.youtube.com/user/Scobleizer'
+  expect(utils.getUserFromUrl(url)).toBe('Scobleizer')
 })

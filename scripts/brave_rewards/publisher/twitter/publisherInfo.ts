@@ -44,10 +44,12 @@ const sendForStandardPage = (url: URL) => {
   api.getUserDetails(screenName)
     .then((userDetails: any) => {
       const userId = userDetails.id_str
-      const publisherKey = commonUtils.buildPublisherKey(types.mediaType, userId)
+      const publisherKey =
+        commonUtils.buildPublisherKey(types.mediaType, userId)
       const publisherName = screenName
       const mediaKey = commonUtils.buildMediaKey(types.mediaType, screenName)
-      const favIconUrl = userDetails.profile_image_url_https.replace('_normal', '')
+      const favIconUrl =
+        userDetails.profile_image_url_https.replace('_normal', '')
 
       const profileUrl = utils.buildProfileUrl(screenName, userId)
 

@@ -1,7 +1,8 @@
 import * as utils from './utils'
 
 test('builds media key', () => {
-  expect(utils.buildMediaKey('youtube', '8iULSxHQ0tM')).toBe('youtube_8iULSxHQ0tM')
+  expect(utils.buildMediaKey('youtube', '8iULSxHQ0tM')).
+    toBe('youtube_8iULSxHQ0tM')
 })
 
 test('builds publisher key', () => {

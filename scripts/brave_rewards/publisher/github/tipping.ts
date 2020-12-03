@@ -23,7 +23,8 @@ const tipUser = (mediaMetaData: MediaMetaData) => {
   }
 
   const profileUrl = utils.buildProfileUrl(mediaMetaData.user.screenName)
-  const publisherKey = commonUtils.buildPublisherKey(types.mediaType, mediaMetaData.user.id)
+  const publisherKey =
+    commonUtils.buildPublisherKey(types.mediaType, mediaMetaData.user.id)
   const publisherName = mediaMetaData.user.fullName
   const publisherScreenName = mediaMetaData.user.screenName
 
@@ -48,7 +49,10 @@ const tipUser = (mediaMetaData: MediaMetaData) => {
   })
 }
 
-const createTipAction = (elem: Element, getMetaData: (elem: Element) => Promise<MediaMetaData>) => {
+const createTipAction = (
+  elem: Element,
+  getMetaData: (elem: Element) => Promise<MediaMetaData>
+) => {
   // Create the tip action
   const tipAction = document.createElement('div')
   tipAction.className = 'GitHubTip-action js-tooltip ' + actionTipClass
@@ -63,7 +67,8 @@ const createTipAction = (elem: Element, getMetaData: (elem: Element) => Promise<
 
   // Create the tip button
   const tipButton = document.createElement('button')
-  tipButton.className = 'GitHubTip-actionButton u-textUserColorHover js-actionButton'
+  tipButton.className =
+    'GitHubTip-actionButton u-textUserColorHover js-actionButton'
   tipButton.style.background = 'transparent'
   tipButton.style.border = '0'
   tipButton.style.color = '#657786'
@@ -128,7 +133,8 @@ const createTipAction = (elem: Element, getMetaData: (elem: Element) => Promise<
   const tipActionCountPresentation = document.createElement('span')
   tipActionCountPresentation.className = 'GitHubTip-actionCountForPresentation'
 
-  const tipActionCountPresentationLabel = locale.getMessage('githubTipsIconLabel')
+  const tipActionCountPresentationLabel =
+    locale.getMessage('githubTipsIconLabel')
   if (tipActionCountPresentationLabel) {
     tipActionCountPresentation.textContent = tipActionCountPresentationLabel
   }
@@ -141,7 +147,8 @@ const createTipAction = (elem: Element, getMetaData: (elem: Element) => Promise<
 
   // Create style element for hover color
   const style = document.createElement('style')
-  style.appendChild(document.createTextNode('.GitHubTip-actionButton :hover { color: #FB542B }'))
+  style.appendChild(document.
+    createTextNode('.GitHubTip-actionButton :hover { color: #FB542B }'))
   shadowRoot.appendChild(style)
 
   return tipAction
@@ -181,12 +188,14 @@ const commentInsertFunction = (parent: Element) => {
   if (tipAction.shadowRoot) {
     tipAction.style.marginRight = '2px'
 
-    let iconContainer = tipAction.shadowRoot.querySelector(`.${tipIconContainerClass}`) as HTMLElement
+    const iconContainer = tipAction.shadowRoot.
+      querySelector(`.${tipIconContainerClass}`) as HTMLElement
     if (iconContainer) {
       iconContainer.style.paddingBottom = '5px'
     }
 
-    let braveTipActionCount = tipAction.shadowRoot.querySelector(`.${tipActionCountClass}`) as HTMLElement
+    const braveTipActionCount = tipAction.shadowRoot.
+      querySelector(`.${tipActionCountClass}`) as HTMLElement
     if (braveTipActionCount) {
       braveTipActionCount.style.paddingBottom = '2px'
     }
@@ -339,7 +348,8 @@ const pageheadInsertFunction = (parent: Element) => {
   }
 
   const subdomain = components[0]
-  if (subdomain !== 'gist' || window.location.pathname.slice(1).split('/').length < 2) {
+  if (subdomain !== 'gist' ||
+      window.location.pathname.slice(1).split('/').length < 2) {
     return
   }
 
@@ -403,11 +413,13 @@ const memberListItemInsertFunction = (parent: Element) => {
     return
   }
 
-  const tipAction = createTipAction(memberText as Element, getMemberListItemMetaData)
+  const tipAction =
+    createTipAction(memberText as Element, getMemberListItemMetaData)
 
   tipAction.style.paddingLeft = '5px'
 
-  if (path.split('/').includes('teams')) { // Special case, different styling for same element
+  if (path.split('/').includes('teams')) {
+    // Special case, different styling for same element
     memberText.appendChild(tipAction)
   } else {
     memberText.style.width = '250px'
@@ -417,7 +429,10 @@ const memberListItemInsertFunction = (parent: Element) => {
   }
 }
 
-const configureTipAction = (tipLocationClass: string, insertFunction: (parent: Element) => void) => {
+const configureTipAction = (
+  tipLocationClass: string,
+  insertFunction: (parent: Element) => void
+) => {
   const tipLocations = document.getElementsByClassName(tipLocationClass)
   if (!tipLocations) {
     return

@@ -29,7 +29,10 @@ export const isThreadPath = (path: string) => {
   return path.startsWith('/r/') && path.includes('/comments/')
 }
 
-export const getProfileUrlResponse = async (screenName: string, isOldReddit: boolean) => {
+export const getProfileUrlResponse = async (
+  screenName: string,
+  isOldReddit: boolean
+) => {
   if (!screenName) {
     throw new Error('Invalid parameters')
   }
@@ -41,7 +44,8 @@ export const getProfileUrlResponse = async (screenName: string, isOldReddit: boo
 
   const response = await fetch(profileUrl)
   if (!response.ok) {
-    throw new Error(`Profile request failed: ${response.statusText} (${response.status})`)
+    const msg = utils.formatNetworkError('Profile request failed', response)
+    throw new Error(msg)
   }
 
   return response.text()
@@ -70,7 +74,8 @@ export const getUserIdFromResponse = (response: string) => {
   }
 
   // Try new reddit format first, then old reddit format
-  const pattern = utils.extractData(response, 'hideFromRobots":', '"isEmployee"')
+  const pattern = utils.extractData(
+    response, 'hideFromRobots":', '"isEmployee"')
   let userId = utils.extractData(pattern, '"id":"t2_', '"')
   if (!userId) {
     userId = utils.extractData(response, 'target_fullname": "t2_', '"')

@@ -52,7 +52,8 @@ export const processRequestHeaders = (requestHeaders: any[]) => {
         lastSessionId = currentSessionId
         headers = {}
       }
-    } else if (authHeaderNames.includes(header.name) || header.name.startsWith('x-twitter-')) {
+    } else if (authHeaderNames.includes(header.name) ||
+               header.name.startsWith('x-twitter-')) {
       headers[header.name] = header.value
     }
   }
