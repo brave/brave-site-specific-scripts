@@ -11,7 +11,7 @@ pipeline {
             steps {
                 script {
                     GITHUB_API = 'https://api.github.com/repos/brave'
-                    PIPELINE_NAME = 'pr-brave-site-specific-scripts-pr-check-' + CHANGE_BRANCH.replace('/', '-')
+                    PIPELINE_NAME = 'pr-brave-site-specific-scripts-pr-test-' + CHANGE_BRANCH.replace('/', '-')
 
                     withCredentials([usernamePassword(credentialsId: 'brave-builds-github-token-for-pr-builder', usernameVariable: 'PR_BUILDER_USER', passwordVariable: 'PR_BUILDER_TOKEN')]) {
                         def prDetails = readJSON(text: httpRequest(url: GITHUB_API + '/brave-site-specific-scripts/pulls?head=brave:' + CHANGE_BRANCH, customHeaders: [[name: 'Authorization', value: 'token ' + PR_BUILDER_TOKEN]]).content)[0]
@@ -48,7 +48,7 @@ pipeline {
                                             branch('master')
                                         }
                                     }
-                                    scriptPath("jenkins/jobs/other/brave-site-specific-scripts-pr-check.Jenkinsfile")
+                                    scriptPath("jenkins/jobs/other/brave-site-specific-scripts-pr-test.Jenkinsfile")
                                 }
                             }
                         }
