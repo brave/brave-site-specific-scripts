@@ -48,7 +48,7 @@ pipeline {
                                             branch('master')
                                         }
                                     }
-                                    scriptPath("jenkins/jobs/other/brave-site-specific-scripts-pr-test.Jenkinsfile")
+                                    scriptPath("jenkins/jobs/extensions/dev/brave-site-specific-scripts-pr-test.Jenkinsfile")
                                 }
                             }
                         }
