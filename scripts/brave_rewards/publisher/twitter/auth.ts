@@ -63,6 +63,11 @@ export const processRequestHeaders = (requestHeaders: any[]) => {
     }
   }
 
+  // For our purposes (authentication), we want this always to be 'yes'
+  if (headers['x-twitter-active-user'] !== 'yes') {
+    headers['x-twitter-active-user'] = 'yes'
+  }
+
   if (commonUtils.areObjectsEqualShallow(authHeaders, headers)) {
     return false
   }
