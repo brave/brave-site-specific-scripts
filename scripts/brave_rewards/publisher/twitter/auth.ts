@@ -35,6 +35,11 @@ export const getAuthHeaders = () => {
   return authHeaders
 }
 
+export const hasRequiredAuthHeaders = () => {
+  return authHeaders['authorization'] &&
+         (authHeaders['x-csrf-token'] || authHeaders['x-guest-token'])
+}
+
 export const processRequestHeaders = (requestHeaders: any[]) => {
   if (!requestHeaders) {
     return false
@@ -56,6 +61,11 @@ export const processRequestHeaders = (requestHeaders: any[]) => {
                header.name.startsWith('x-twitter-')) {
       headers[header.name] = header.value
     }
+  }
+
+  // For our purposes (authentication), we want this always to be 'yes'
+  if (headers['x-twitter-active-user'] !== 'yes') {
+    headers['x-twitter-active-user'] = 'yes'
   }
 
   if (commonUtils.areObjectsEqualShallow(authHeaders, headers)) {

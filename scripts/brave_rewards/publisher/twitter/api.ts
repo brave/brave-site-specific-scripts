@@ -3,9 +3,11 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { getPort } from '../common/messaging'
-import { getAuthHeaders } from './auth'
+import { getAuthHeaders, hasRequiredAuthHeaders } from './auth'
 
 import * as types from './types'
+
+let lastRequestTime = 0
 
 const sendAPIRequest = (name: string, url: string) => {
   return new Promise((resolve, reject) => {
@@ -14,8 +16,7 @@ const sendAPIRequest = (name: string, url: string) => {
       return
     }
 
-    const authHeaders = getAuthHeaders()
-    if (Object.keys(authHeaders).length === 0) {
+    if (!hasRequiredAuthHeaders()) {
       reject(new Error('Missing auth headers'))
       return
     }
@@ -26,6 +27,14 @@ const sendAPIRequest = (name: string, url: string) => {
       return
     }
 
+    if ((lastRequestTime !== 0) && (Date.now() - lastRequestTime < 3000)) {
+      reject(new Error('Ignoring API request due to network throttle'))
+      return
+    }
+
+    lastRequestTime = Date.now()
+
+    const authHeaders = getAuthHeaders()
     port.postMessage({
       type: 'OnAPIRequest',
       mediaType: types.mediaType,
