@@ -37,7 +37,8 @@ export const getAuthHeaders = () => {
 
 export const hasRequiredAuthHeaders = () => {
   return authHeaders['authorization'] &&
-         (authHeaders['x-csrf-token'] || authHeaders['x-guest-token'])
+         ((authHeaders['x-csrf-token'] && authHeaders['x-twitter-auth-type']) ||
+          (authHeaders['x-csrf-token'] && authHeaders['x-guest-token']))
 }
 
 export const processRequestHeaders = (requestHeaders: any[]) => {
