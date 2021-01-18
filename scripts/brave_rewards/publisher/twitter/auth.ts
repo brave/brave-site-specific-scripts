@@ -35,6 +35,11 @@ export const getAuthHeaders = () => {
   return authHeaders
 }
 
+export const hasRequiredAuthHeaders = () => {
+  return authHeaders['authorization'] &&
+         (authHeaders['x-csrf-token'] || authHeaders['x-guest-token'])
+}
+
 export const processRequestHeaders = (requestHeaders: any[]) => {
   if (!requestHeaders) {
     return false
