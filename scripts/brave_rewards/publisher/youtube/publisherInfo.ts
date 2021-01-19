@@ -210,7 +210,7 @@ export const send = () => {
       }
       port.postMessage({
         type: 'SavePublisherVisit',
-        mediaType: '',
+        mediaType: types.mediaType,
         data: {
           url: info.url,
           publisherKey: info.publisherKey,
