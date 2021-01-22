@@ -182,24 +182,22 @@ const commentInsertFunction = (parent: Element) => {
   }
 
   const tipAction = createTipAction(parent, getCommentMetaData)
-  if (!tipAction) {
+  if (!tipAction || !tipAction.shadowRoot) {
     return
   }
 
-  if (tipAction.shadowRoot) {
-    tipAction.style.marginRight = '2px'
+  tipAction.style.marginRight = '2px'
 
-    const iconContainer = tipAction.shadowRoot.
-      querySelector(`.${tipIconContainerClass}`) as HTMLElement
-    if (iconContainer) {
-      iconContainer.style.paddingBottom = '5px'
-    }
+  const iconContainer = tipAction.shadowRoot.
+    querySelector<HTMLElement>(`.${tipIconContainerClass}`)
+  if (iconContainer) {
+    iconContainer.style.paddingBottom = '5px'
+  }
 
-    const braveTipActionCount = tipAction.shadowRoot.
-      querySelector(`.${tipActionCountClass}`) as HTMLElement
-    if (braveTipActionCount) {
-      braveTipActionCount.style.paddingBottom = '2px'
-    }
+  const braveTipActionCount = tipAction.shadowRoot.
+    querySelector<HTMLElement>(`.${tipActionCountClass}`)
+  if (braveTipActionCount) {
+    braveTipActionCount.style.paddingBottom = '2px'
   }
 
   const children = parent.childNodes
@@ -473,4 +471,38 @@ export const configure = () => {
   configureTipAction('member-list-item', memberListItemInsertFunction)
 
   timeout = setTimeout(configure, 3000)
+}
+
+// Mutation observer for responding to DOM changes. This allows us to
+// reinsert the inline tip button when the DOM changes during normal
+// operation (for example, when the user clicks on a checkbox).
+const onMutate = (mutations: MutationRecord[], observer: MutationObserver) => {
+  for (const { removedNodes } of mutations) {
+    for (const node of removedNodes) {
+      if (node.nodeType !== Node.ELEMENT_NODE) {
+        continue
+      }
+      const element = node as HTMLElement
+      if (element.classList.contains('timeline-comment-header')) {
+        configure()
+        return
+      } else if (element.hasChildNodes()) {
+        const elements =
+          element.getElementsByClassName('timeline-comment-header')
+        if (elements && elements.length > 0) {
+          configure()
+          return
+        }
+      }
+    }
+  }
+}
+
+const observerTarget = document.getElementById('discussion_bucket')
+if (observerTarget) {
+  const observer = new MutationObserver(onMutate)
+  observer.observe(observerTarget, {
+    childList: true,
+    subtree: true
+  })
 }
