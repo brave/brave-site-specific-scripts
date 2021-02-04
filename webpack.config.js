@@ -28,6 +28,7 @@ module.exports = (env, argv) => {
       ['scripts/brave_rewards/publisher/vimeo/vimeoAutoContribution']: './scripts/brave_rewards/publisher/vimeo/vimeoAutoContribution',
       ['scripts/brave_rewards/publisher/youtube/youtubeBase']: './scripts/brave_rewards/publisher/youtube/youtubeBase',
       ['scripts/brave_rewards/publisher/youtube/youtubeAutoContribution']: './scripts/brave_rewards/publisher/youtube/youtubeAutoContribution',
+      ['scripts/brave_rewards/ads/conversions/yubico']: './scripts/brave_rewards/ads/conversions/yubico',
       ['scripts/brave_together/confabs/oneOnOneMeetings']: './scripts/brave_together/confabs/oneOnOneMeetings'
     },
     plugins: [
