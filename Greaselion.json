@@ -211,6 +211,9 @@
     ],
     "scripts": [
       "scripts/brave_rewards/ads/conversions/yubico.bundle.js"
-    ]
+    ],
+    "preconditions": {
+      "ads-enabled": true
+    }
   }
 ]
