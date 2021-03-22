@@ -207,7 +207,8 @@
   },
   {
     "urls": [
-      "https://*yubico.com*/checkout/confirmation*"
+      "https://*.yubico.com*/checkout/confirmation*",
+      "https://yubico.com*/checkout/confirmation*"
     ],
     "scripts": [
       "scripts/brave_rewards/ads/conversions/yubico.bundle.js"
