@@ -73,7 +73,7 @@ export const isBlocklistedTab = (queryString: string) => {
 
   const blocklist = [ 'repositories' ]
 
-  const match = queryString.match('[\?|&]tab=([^&]+)&?')
+  const match = queryString.match('[?|&]tab=([^&]+)&?')
   if (!match || match.length < 2 || !match[1]) {
     return false
   }
