@@ -66,20 +66,24 @@ export const isExcludedPath = (path: string) => {
   return false
 }
 
-export const isBlocklistedTab = (queryString: string) => {
+export const isAllowedTab = (queryString: string) => {
   if (!queryString) {
     return false
   }
 
-  const blocklist = [ 'repositories' ]
+  const allowlist = [ 'stars' ]
 
-  const match = queryString.match('[?|&]tab=([^&]+)&?')
-  if (!match || match.length < 2 || !match[1]) {
+  const searchParams = new URLSearchParams(queryString)
+  if (!searchParams || !searchParams.has('tab')) {
     return false
   }
 
-  const tab = match[1]
-  if (!blocklist.includes(tab)) {
+  const tabName = searchParams.get('tab')
+  if (!tabName) {
+    return false
+  }
+
+  if (!allowlist.includes(tabName)) {
     return false
   }
 

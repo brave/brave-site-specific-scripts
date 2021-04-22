@@ -62,7 +62,7 @@ const createTipAction = (
 
   const tipActionHoverText = locale.getMessage('githubTipsHoverText')
   if (tipActionHoverText) {
-    tipAction.className += ' tooltipped tooltipped-sw tooltipped-align-right-1'
+    tipAction.className += ' tooltipped tooltipped-sw'
     tipAction.setAttribute('aria-label', tipActionHoverText)
   }
 
@@ -291,7 +291,7 @@ const starringContainerInsertFunction = (parent: Element) => {
     return
   }
 
-  if (utils.isBlocklistedTab(window.location.search)) {
+  if (!utils.isAllowedTab(window.location.search)) {
     return
   }
 

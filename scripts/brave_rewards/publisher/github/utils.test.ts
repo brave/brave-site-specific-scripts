@@ -35,10 +35,18 @@ test('path is not excluded', () => {
   expect(utils.isExcludedPath('/foo')).toBe(false)
 })
 
-test('tab is in blocklist', () => {
-  expect(utils.isBlocklistedTab('?tab=repositories')).toBe(true)
+test('tab is not allowed (empty querystring)', () => {
+  expect(utils.isAllowedTab('')).toBe(false)
 })
 
-test('tab is not in blocklist', () => {
-  expect(utils.isBlocklistedTab('?tab=stars')).toBe(false)
+test('tab is not allowed (no tab specifier in querystring)', () => {
+  expect(utils.isAllowedTab('?foo=bar')).toBe(false)
+})
+
+test('tab is not allowed (no entry in allowlist)', () => {
+  expect(utils.isAllowedTab('?tab=repositories')).toBe(false)
+})
+
+test('tab is allowed', () => {
+  expect(utils.isAllowedTab('?tab=stars')).toBe(true)
 })
