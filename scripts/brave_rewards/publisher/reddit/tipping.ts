@@ -432,12 +432,17 @@ const configureForMoreInfoElement = (
   lastElement: Element,
   config: any
 ) => {
-  if (!element || !lastElement || !lastElement.parentElement || !config) {
+  if (!element || !lastElement || !config) {
     return
   }
 
-  lastElement.parentElement.insertAdjacentElement(
-    'beforebegin', createElementTipAction(element, config.posts))
+  if (!config.usersPost && !config.posts) {
+    lastElement.insertAdjacentElement(
+      'beforebegin', createElementTipAction(element, config.posts))
+  } else if (lastElement.parentElement) {
+    lastElement.parentElement.insertAdjacentElement(
+      'beforebegin', createElementTipAction(element, config.posts))
+  }
 }
 
 const configureForPosts = (config: any) => {
