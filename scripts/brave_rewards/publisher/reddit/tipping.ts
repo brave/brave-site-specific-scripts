@@ -115,11 +115,14 @@ const getTipMediaMetaData = async (post: Element) => {
 
   let screenName = ''
   const selector = 'a[href^="/user/"]:not([data-click-id="body"]):not([data-click-id="subreddit"])'
-  const anchor: HTMLAnchorElement | null = post.querySelector(selector)
-  if (anchor && anchor.textContent) {
-    screenName =
-      anchor.textContent.startsWith('u/') ?
-      anchor.textContent.split('/')[1] : anchor.textContent
+  const anchors = post.querySelectorAll(selector)
+  for (const anchor of anchors) {
+    if (anchor && anchor.textContent) {
+      screenName =
+        anchor.textContent.startsWith('u/') ?
+        anchor.textContent.split('/')[1] : anchor.textContent
+      break
+    }
   }
 
   let postRelativeDate = ''
