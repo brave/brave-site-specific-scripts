@@ -413,16 +413,12 @@ const createElementTipAction = (post: Element, isPost: boolean) => {
   return tipAction
 }
 
-const configureForSaveElement = (element: Element, config: any) => {
-  if (!element || !config) {
-    return
-  }
-
-  const saveElement =
-    config.promotedPosts ?
-    getPromotedSaveElement(element) :
-    getSaveElement(element)
-  if (!saveElement) {
+const configureForSaveElement = (
+  element: Element,
+  saveElement: Element,
+  config: any
+) => {
+  if (!element || !saveElement || !config) {
     return
   }
 
@@ -467,15 +463,20 @@ const configureForPosts = (config: any) => {
       continue
     }
 
-    const lastElement =
-      config.posts ?
-      getMoreActionPostElement(postElement) :
-      getMoreActionCommentElement(postElement)
-    if (lastElement) {
-      const moreInfoConfig = { posts: config.posts, usersPost: isUsersPost }
-      configureForMoreInfoElement(postElement, lastElement, moreInfoConfig)
+    const saveElement =
+      config.promotedPosts ?
+      getPromotedSaveElement(postElement) :
+      getSaveElement(postElement)
+    if (saveElement) {
+      configureForSaveElement(postElement, saveElement, config)
     } else {
-      configureForSaveElement(postElement, config)
+      const moreElement = config.posts ?
+        getMoreActionPostElement(postElement) :
+        getMoreActionCommentElement(postElement)
+      if (moreElement) {
+        const moreInfoConfig = { posts: config.posts, usersPost: isUsersPost }
+        configureForMoreInfoElement(postElement, moreElement, moreInfoConfig)
+      }
     }
   }
 }
