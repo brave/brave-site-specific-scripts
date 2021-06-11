@@ -74,9 +74,9 @@ export const getUserIdFromResponse = (response: string) => {
   }
 
   // Try new reddit format first, then old reddit format
-  const pattern = utils.extractData(
-    response, 'hideFromRobots":', '"isEmployee"')
-  let userId = utils.extractData(pattern, '"id":"t2_', '"')
+  let userId =
+    utils.extractData(response, 'hideFromRobots":false,"id":"t2_', '","isEmployee"') ||
+    utils.extractData(response, 'hideFromRobots":true,"id":"t2_', '","isEmployee"')
   if (!userId) {
     userId = utils.extractData(response, 'target_fullname": "t2_', '"')
   }
