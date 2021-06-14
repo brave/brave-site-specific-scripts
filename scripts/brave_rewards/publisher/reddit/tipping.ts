@@ -115,11 +115,14 @@ const getTipMediaMetaData = async (post: Element) => {
 
   let screenName = ''
   const selector = 'a[href^="/user/"]:not([data-click-id="body"]):not([data-click-id="subreddit"])'
-  const anchor: HTMLAnchorElement | null = post.querySelector(selector)
-  if (anchor && anchor.textContent) {
-    screenName =
-      anchor.textContent.startsWith('u/') ?
-      anchor.textContent.split('/')[1] : anchor.textContent
+  const anchors = post.querySelectorAll(selector)
+  for (const anchor of anchors) {
+    if (anchor && anchor.textContent) {
+      screenName =
+        anchor.textContent.startsWith('u/') ?
+        anchor.textContent.split('/')[1] : anchor.textContent
+      break
+    }
   }
 
   let postRelativeDate = ''
@@ -410,16 +413,12 @@ const createElementTipAction = (post: Element, isPost: boolean) => {
   return tipAction
 }
 
-const configureForSaveElement = (element: Element, config: any) => {
-  if (!element || !config) {
-    return
-  }
-
-  const saveElement =
-    config.promotedPosts ?
-    getPromotedSaveElement(element) :
-    getSaveElement(element)
-  if (!saveElement) {
+const configureForSaveElement = (
+  element: Element,
+  saveElement: Element,
+  config: any
+) => {
+  if (!element || !saveElement || !config) {
     return
   }
 
@@ -433,12 +432,17 @@ const configureForMoreInfoElement = (
   lastElement: Element,
   config: any
 ) => {
-  if (!element || !lastElement || !lastElement.parentElement || !config) {
+  if (!element || !lastElement || !config) {
     return
   }
 
-  lastElement.parentElement.insertAdjacentElement(
-    'beforebegin', createElementTipAction(element, config.posts))
+  if (!config.usersPost && !config.posts) {
+    lastElement.insertAdjacentElement(
+      'beforebegin', createElementTipAction(element, config.posts))
+  } else if (lastElement.parentElement) {
+    lastElement.parentElement.insertAdjacentElement(
+      'beforebegin', createElementTipAction(element, config.posts))
+  }
 }
 
 const configureForPosts = (config: any) => {
@@ -464,15 +468,20 @@ const configureForPosts = (config: any) => {
       continue
     }
 
-    const lastElement =
-      config.posts ?
-      getMoreActionPostElement(postElement) :
-      getMoreActionCommentElement(postElement)
-    if (lastElement) {
-      const moreInfoConfig = { posts: config.posts, usersPost: isUsersPost }
-      configureForMoreInfoElement(postElement, lastElement, moreInfoConfig)
+    const saveElement =
+      config.promotedPosts ?
+      getPromotedSaveElement(postElement) :
+      getSaveElement(postElement)
+    if (saveElement) {
+      configureForSaveElement(postElement, saveElement, config)
     } else {
-      configureForSaveElement(postElement, config)
+      const moreElement = config.posts ?
+        getMoreActionPostElement(postElement) :
+        getMoreActionCommentElement(postElement)
+      if (moreElement) {
+        const moreInfoConfig = { posts: config.posts, usersPost: isUsersPost }
+        configureForMoreInfoElement(postElement, moreElement, moreInfoConfig)
+      }
     }
   }
 }
