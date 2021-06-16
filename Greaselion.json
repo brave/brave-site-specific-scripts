@@ -196,10 +196,11 @@
   },
   {
     "urls": [
+      "https://talk.brave.com/*",
       "https://together.brave.com/*"
     ],
     "scripts": [
-      "scripts/brave_together/confabs/oneOnOneMeetings.bundle.js"
+      "scripts/brave_talk/confabs/oneOnOneMeetings.bundle.js"
     ],
     "preconditions": {
       "ads-enabled": true
