@@ -8,7 +8,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
 
 const rewardsDir = 'scripts/brave_rewards'
-const togetherDir = 'scripts/brave_together'
+const togetherDir = 'scripts/brave_talk'
 
 const allEntries = [
   `${rewardsDir}/publisher/github/githubBase`,
