@@ -197,6 +197,7 @@
   {
     "urls": [
       "https://talk.brave.com/*",
+      "https://talk-beta.brave.com/*",
       "https://together.brave.com/*"
     ],
     "scripts": [
