@@ -25,3 +25,7 @@ test('extracts data with missing end param', () => {
 test('extracts data all ok', () => {
   expect(utils.extractData('st/find/me!', '/', '!')).toBe('find/me')
 })
+
+test('decodes HTML entities', () => {
+  expect(utils.decodeHTMLEntities('Tom &amp; Jerry, #include &lt;ranges&gt;, &quot;, &#39;')).toBe('Tom & Jerry, #include <ranges>, ", \'')
+})
