@@ -97,7 +97,7 @@ export const getChannelNameFromResponse = (data: string) => {
 
   const match = utils.extractData(data, '<meta itemprop="name" content="', '"')
   if (match) {
-    return match
+    return utils.decodeHTMLEntities(match)
   }
 
   return ''
