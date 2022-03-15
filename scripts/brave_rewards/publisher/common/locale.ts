@@ -7,8 +7,8 @@ export const getMessage = (
   substitutions?: string[]
 ): string => {
   if (chrome.i18n) {
-    return chrome.i18n.getMessage(message, substitutions)
+    return chrome.i18n.getMessage(message, substitutions) || ''
   }
 
-  return message
+  return ''
 }
