@@ -162,10 +162,15 @@ const getTipMediaMetaData = async (post: Element) => {
 }
 
 const createTipButtonForOldReddit = () => {
+  const text = locale.getMessage('redditTipsIconLabel')
+  if (!text) {
+    return null
+  }
+
   const tipButton = document.createElement('a')
   tipButton.className = 'reddit-actionButton'
   tipButton.href = 'javascript:void(0)'
-  tipButton.textContent = locale.getMessage('redditTipsIconLabel')
+  tipButton.textContent = text
 
   return tipButton
 }
@@ -260,9 +265,14 @@ const createTipActionCount = () => {
 }
 
 const createTipActionCountPresentation = () => {
+  const text = locale.getMessage('redditTipsIconLabel')
+  if (!text) {
+    return null
+  }
+
   const tipActionCountPresentation = document.createElement('span')
   tipActionCountPresentation.className = 'reddit-actionButton'
-  tipActionCountPresentation.textContent = locale.getMessage('redditTipsIconLabel')
+  tipActionCountPresentation.textContent = text
 
   return tipActionCountPresentation
 }
@@ -350,6 +360,10 @@ const createElementTipActionForOldReddit = (post: Element) => {
 
   // Create the tip button
   const tipButton = createTipButtonForOldReddit()
+  if (!tipButton) {
+    return null
+  }
+
   tipButton.appendChild(tipIconContainer)
   tipButton.onclick = function (event) {
     event.stopPropagation()
@@ -401,6 +415,10 @@ const createElementTipAction = (post: Element, isPost: boolean) => {
 
   // Create the tip action count presentation
   const tipActionCountPresentation = createTipActionCountPresentation()
+  if (!tipActionCountPresentation) {
+    return null
+  }
+
   tipActionCount.appendChild(tipActionCountPresentation)
 
   // Create the shadow DOM root
@@ -422,9 +440,10 @@ const configureForSaveElement = (
     return
   }
 
-  saveElement.insertAdjacentElement(
-    'afterend',
-    createElementTipAction(element, config.posts))
+  const tipAction = createElementTipAction(element, config.posts)
+  if (tipAction) {
+    saveElement.insertAdjacentElement('afterend', tipAction)
+  }
 }
 
 const configureForMoreInfoElement = (
@@ -437,11 +456,15 @@ const configureForMoreInfoElement = (
   }
 
   if (!config.usersPost && !config.posts) {
-    lastElement.insertAdjacentElement(
-      'beforebegin', createElementTipAction(element, config.posts))
+    const tipAction = createElementTipAction(element, false)
+    if (tipAction) {
+      lastElement.insertAdjacentElement('beforebegin', tipAction)
+    }
   } else if (lastElement.parentElement) {
-    lastElement.parentElement.insertAdjacentElement(
-      'beforebegin', createElementTipAction(element, config.posts))
+    const tipAction = createElementTipAction(element, config.posts)
+    if (tipAction) {
+      lastElement.parentElement.insertAdjacentElement('beforebegin', tipAction)
+    }
   }
 }
 
@@ -504,7 +527,9 @@ const configureForOldReddit = (postType: string) => {
     }
 
     const tipAction = createElementTipActionForOldReddit(element)
-    ulElement[0].insertAdjacentElement('beforeend', tipAction)
+    if (tipAction) {
+      ulElement[0].insertAdjacentElement('beforeend', tipAction)
+    }
   }
 }
 

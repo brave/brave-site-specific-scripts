@@ -136,6 +136,11 @@ const createTipAction = (
 
   const tipActionCountPresentationLabel =
     locale.getMessage('githubTipsIconLabel')
+
+  if (!tipActionCountPresentationLabel) {
+    return null
+  }
+
   if (tipActionCountPresentationLabel) {
     tipActionCountPresentation.textContent = tipActionCountPresentationLabel
   }
@@ -301,6 +306,9 @@ const starringContainerInsertFunction = (parent: Element) => {
   }
 
   const tipAction = createTipAction(parent, getStarringContainerMetaData)
+  if (!tipAction) {
+    return
+  }
 
   tipAction.classList.add('d-inline-block')
   tipAction.style.minWidth = '60px'
@@ -353,6 +361,10 @@ const pageheadInsertFunction = (parent: Element) => {
   }
 
   const tipAction = createTipAction(parent, getPageHeadMetaData)
+  if (!tipAction) {
+    return
+  }
+
   parent.appendChild(tipAction)
 }
 
@@ -414,6 +426,10 @@ const memberListItemInsertFunction = (parent: Element) => {
 
   const tipAction =
     createTipAction(memberText as Element, getMemberListItemMetaData)
+
+  if (!tipAction) {
+    return
+  }
 
   tipAction.style.paddingLeft = '5px'
 

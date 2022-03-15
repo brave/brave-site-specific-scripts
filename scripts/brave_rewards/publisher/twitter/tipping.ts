@@ -211,11 +211,15 @@ const createTipAction = (
   tipButton.appendChild(tipActionCount)
 
   // Create the tip action count presentation
+  const tipActionText = locale.getMessage('twitterTipsIconLabel')
+  if (!tipActionText) {
+    return null
+  }
+
   const tipActionCountPresentation = document.createElement('span')
   tipActionCountPresentation.className =
     'ProfileTweet-actionCountForPresentation'
-  tipActionCountPresentation.textContent =
-    locale.getMessage('twitterTipsIconLabel')
+  tipActionCountPresentation.textContent = tipActionText
   tipActionCount.appendChild(tipActionCountPresentation)
 
   // Create the shadow DOM root that hosts our injected DOM elements
@@ -301,7 +305,9 @@ export const configure = () => {
       const numActions = actions.querySelectorAll(':scope > div').length || 0
       const hasUserActions = numActions > 3
       const tipAction = createTipAction(tweets[i], tweetId, hasUserActions)
-      actions.appendChild(tipAction)
+      if (tipAction) {
+        actions.appendChild(tipAction)
+      }
     }
   }
 
