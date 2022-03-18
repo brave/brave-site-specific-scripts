@@ -6,7 +6,6 @@ import { getPort } from '../common/messaging'
 import { MediaMetaData } from '../common/types'
 
 import * as commonUtils from '../common/utils'
-import * as locale from '../common/locale'
 import * as styles from '../common/styles'
 
 import * as api from './api'
@@ -128,7 +127,7 @@ const createTipAction = (
   tipAction.setAttribute('tabindex', '0')
   tipAction.setAttribute(
     'data-original-title',
-    locale.getMessage('twitterTipsHoverText'))
+    chrome.i18n.getMessage('twitterTipsHoverText'))
   tipAction.addEventListener('keydown', onTipActionKey)
 
   // Create the tip button
@@ -215,7 +214,7 @@ const createTipAction = (
   tipActionCountPresentation.className =
     'ProfileTweet-actionCountForPresentation'
   tipActionCountPresentation.textContent =
-    locale.getMessage('twitterTipsIconLabel')
+    chrome.i18n.getMessage('twitterTipsIconLabel')
   tipActionCount.appendChild(tipActionCountPresentation)
 
   // Create the shadow DOM root that hosts our injected DOM elements
