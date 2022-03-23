@@ -6,7 +6,6 @@ import { getPort } from '../common/messaging'
 import { MediaMetaData } from '../common/types'
 
 import * as commonUtils from '../common/utils'
-import * as locale from '../common/locale'
 import * as styles from '../common/styles'
 
 import * as types from './types'
@@ -60,7 +59,7 @@ const createTipAction = (
   tipAction.style.display = 'inline-block'
   tipAction.style.minWidth = '40px'
 
-  const tipActionHoverText = locale.getMessage('githubTipsHoverText')
+  const tipActionHoverText = chrome.i18n.getMessage('githubTipsHoverText')
   if (tipActionHoverText) {
     tipAction.className += ' tooltipped tooltipped-sw'
     tipAction.setAttribute('aria-label', tipActionHoverText)
@@ -135,7 +134,7 @@ const createTipAction = (
   tipActionCountPresentation.className = 'GitHubTip-actionCountForPresentation'
 
   const tipActionCountPresentationLabel =
-    locale.getMessage('githubTipsIconLabel')
+    chrome.i18n.getMessage('githubTipsIconLabel')
   if (tipActionCountPresentationLabel) {
     tipActionCountPresentation.textContent = tipActionCountPresentationLabel
   }

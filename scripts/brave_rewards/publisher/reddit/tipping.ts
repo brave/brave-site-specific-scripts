@@ -6,7 +6,6 @@ import { MediaMetaData } from '../common/types'
 import { getPort } from '../common/messaging'
 
 import * as commonUtils from '../common/utils'
-import * as locale from '../common/locale'
 import * as styles from '../common/styles'
 
 import * as types from './types'
@@ -165,7 +164,7 @@ const createTipButtonForOldReddit = () => {
   const tipButton = document.createElement('a')
   tipButton.className = 'reddit-actionButton'
   tipButton.href = 'javascript:void(0)'
-  tipButton.textContent = locale.getMessage('redditTipsIconLabel')
+  tipButton.textContent = chrome.i18n.getMessage('redditTipsIconLabel')
 
   return tipButton
 }
@@ -216,7 +215,7 @@ const createTipAction = (isPost: boolean) => {
 
   tipAction.setAttribute(
     'data-original-title',
-    locale.getMessage('redditTipsHoverText'))
+    chrome.i18n.getMessage('redditTipsHoverText'))
 
   return tipAction
 }
@@ -262,7 +261,8 @@ const createTipActionCount = () => {
 const createTipActionCountPresentation = () => {
   const tipActionCountPresentation = document.createElement('span')
   tipActionCountPresentation.className = 'reddit-actionButton'
-  tipActionCountPresentation.textContent = locale.getMessage('redditTipsIconLabel')
+  tipActionCountPresentation.textContent =
+    chrome.i18n.getMessage('redditTipsIconLabel')
 
   return tipActionCountPresentation
 }
