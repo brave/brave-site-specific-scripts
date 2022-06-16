@@ -61,7 +61,7 @@ export const getUserIdFromPublisherPageResponse = (response: string) => {
     return ''
   }
 
-  const userId = utils.extractData(
+  let userId = utils.extractData(
     response,
     '<meta property="al:ios:url" content="vimeo://app.vimeo.com/users/',
     '"')
@@ -69,9 +69,17 @@ export const getUserIdFromPublisherPageResponse = (response: string) => {
     return userId
   }
 
-  return utils.extractData(
+  userId = utils.extractData(
     response,
     '<meta property="al:android:url" content="vimeo://app.vimeo.com/users/',
+    '"')
+  if (userId) {
+    return userId
+  }
+
+  return utils.extractData(
+    response,
+    '<link rel="canonical" href="/',
     '"')
 }
 
