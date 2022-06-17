@@ -29,7 +29,7 @@ const getPublisherInfoForChannel = async (channelId: string) => {
   const mediaIdAnchor = utils.getMediaIdAnchorFromChannelPage()
   const mediaId = utils.getMediaIdFromAnchor(mediaIdAnchor)
   const mediaKey =
-    commonUtils.buildMediaKey(types.mediaType, mediaId ? mediaId : channelId)
+    commonUtils.buildMediaKey(types.mediaType, mediaId || channelId)
 
   const publisherUrl = utils.buildChannelUrl(channelId)
   const favIconUrl = utils.getFavIconUrlFromPage(document.scripts)
@@ -70,7 +70,7 @@ const getPublisherInfoForUser = async () => {
   const mediaIdAnchor = utils.getMediaIdAnchorFromChannelPage()
   const mediaId = utils.getMediaIdFromAnchor(mediaIdAnchor)
   const mediaKey =
-    commonUtils.buildMediaKey(types.mediaType, mediaId ? mediaId : channelId)
+    commonUtils.buildMediaKey(types.mediaType, mediaId || channelId)
 
   const favIconUrl = utils.getFavIconUrlFromResponse(responseText)
   const publisherUrl = utils.buildChannelUrl(channelId)
@@ -161,7 +161,7 @@ const getPublisherInfoFromResponse = (
   }
 
   const mediaKey =
-    commonUtils.buildMediaKey(types.mediaType, mediaId ? mediaId : channelId)
+    commonUtils.buildMediaKey(types.mediaType, mediaId || channelId)
 
   if (!publisherName) {
     publisherName = utils.getPublisherNameFromResponse(responseText)

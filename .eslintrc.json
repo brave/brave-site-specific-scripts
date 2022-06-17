@@ -56,7 +56,6 @@
     "@typescript-eslint/consistent-type-definitions": 0,
     "multiline-ternary": 0,
     "@typescript-eslint/prefer-readonly": 0,
-    /* TODO(nullhook): ENABLE the below rules in the future */
     "no-useless-call": 0,
     "@typescript-eslint/consistent-type-assertions": 0,
     "@typescript-eslint/no-non-null-assertion": 0,

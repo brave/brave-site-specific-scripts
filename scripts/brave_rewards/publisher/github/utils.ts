@@ -71,7 +71,7 @@ export const isAllowedTab = (queryString: string) => {
     return false
   }
 
-  const allowlist = [ 'stars' ]
+  const allowlist = ['stars']
 
   const searchParams = new URLSearchParams(queryString)
   if (!searchParams || !searchParams.has('tab')) {

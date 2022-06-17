@@ -27,7 +27,7 @@ export const registerOnCompletedWebRequestHandler = (
     type: 'RegisterOnCompletedWebRequest',
     mediaType,
     data: {
-      urlPatterns: [ urlPattern ]
+      urlPatterns: [urlPattern]
     }
   })
 

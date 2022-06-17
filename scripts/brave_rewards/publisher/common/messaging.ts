@@ -31,7 +31,6 @@ export const createPort = (callback: (success: boolean) => void) => {
           types.braveExtensionId,
           { name: 'Greaselion' })
         callback(true)
-        return
       }
     })
 
@@ -41,7 +40,6 @@ export const createPort = (callback: (success: boolean) => void) => {
         types.braveRewardsExtensionId,
         { name: 'Greaselion' })
       callback(true)
-      return
     }
   }, 100)
 }
