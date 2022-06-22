@@ -96,7 +96,9 @@ const getPublisherInfoForUnrecognizedPage = async () => {
     publisherName =
       utils.getPublisherNameFromPublisherPageResponse(responseText)
     if (!publisherName) {
-      throw new Error('Invalid publisher name')
+      // If we can't parse the publisher name from the page response, use the
+      // userId instead
+      publisherName = userId
     }
   } else {
     publisherName = utils.getPublisherNameFromVideoPageResponse(responseText)
