@@ -104,8 +104,8 @@ export const getChannelNameFromResponse = (data: string) => {
 }
 
 export const getChannelNameElementFromChannelPage = () => {
-  return document.
-    querySelector('#channel-container #text-container') as HTMLElement
+  return document
+    .querySelector('#channel-container #text-container') as HTMLElement
 }
 
 export const getChannelNameFromElement = (element: HTMLElement) => {
@@ -117,8 +117,8 @@ export const getChannelNameFromElement = (element: HTMLElement) => {
 }
 
 export const getMediaIdAnchorFromChannelPage = () => {
-  return document.
-    querySelector('#contents .ytp-title-link') as HTMLAnchorElement
+  return document
+    .querySelector('#contents .ytp-title-link') as HTMLAnchorElement
 }
 
 export const getMediaIdFromAnchor = (anchor: HTMLAnchorElement) => {

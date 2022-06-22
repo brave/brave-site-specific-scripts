@@ -37,10 +37,10 @@ test('getCurrentMediaId', () => {
   `)
   expect(utils.getCurrentMediaId()).toBe('')
 
-  mock('/videos/123', `<h1 class='tw-title'></h1>`)
+  mock('/videos/123', '<h1 class=\'tw-title\'></h1>')
   expect(utils.getCurrentMediaId()).toBe('')
 
-  mock('/videos/123', `<h1></h1>`)
+  mock('/videos/123', '<h1></h1>')
   expect(utils.getCurrentMediaId()).toBe('')
 
   // Excluded paths

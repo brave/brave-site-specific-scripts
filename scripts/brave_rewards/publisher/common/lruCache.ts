@@ -3,7 +3,6 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 export class LruCache<T> {
-
   private values: Map<string, T> = new Map<string, T>()
   private maxEntries: number
 

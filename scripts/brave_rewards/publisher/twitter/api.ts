@@ -50,7 +50,8 @@ const sendAPIRequest = (name: string, url: string) => {
           method: 'GET',
           redirect: 'follow'
         }
-      }})
+      }
+    })
 
     port.onMessage.addListener(function onMessageListener (msg: any) {
       if (!port) {
@@ -75,7 +76,6 @@ const sendAPIRequest = (name: string, url: string) => {
             return
           }
           resolve(msg.data.response)
-          return
         }
       }
     })

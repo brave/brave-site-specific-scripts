@@ -147,8 +147,8 @@ const createTipAction = (
 
   // Create style element for hover color
   const style = document.createElement('style')
-  style.appendChild(document.
-    createTextNode('.GitHubTip-actionButton :hover { color: #6781db }'))
+  style.appendChild(document
+    .createTextNode('.GitHubTip-actionButton :hover { color: #6781db }'))
   shadowRoot.appendChild(style)
 
   return tipAction
@@ -156,7 +156,7 @@ const createTipAction = (
 
 const getCommentMetaData = async (elem: Element) => {
   let ancestor = elem.closest('.timeline-comment-header')
-  ancestor = ancestor ? ancestor : elem.closest('.review-comment')
+  ancestor = ancestor || elem.closest('.review-comment')
   if (!ancestor) {
     throw new Error('Failed to parse DOM')
   }
@@ -187,14 +187,14 @@ const commentInsertFunction = (parent: Element) => {
 
   tipAction.style.marginRight = '2px'
 
-  const iconContainer = tipAction.shadowRoot.
-    querySelector<HTMLElement>(`.${tipIconContainerClass}`)
+  const iconContainer = tipAction.shadowRoot
+    .querySelector<HTMLElement>(`.${tipIconContainerClass}`)
   if (iconContainer) {
     iconContainer.style.paddingBottom = '5px'
   }
 
-  const braveTipActionCount = tipAction.shadowRoot.
-    querySelector<HTMLElement>(`.${tipActionCountClass}`)
+  const braveTipActionCount = tipAction.shadowRoot
+    .querySelector<HTMLElement>(`.${tipActionCountClass}`)
   if (braveTipActionCount) {
     braveTipActionCount.style.paddingBottom = '2px'
   }

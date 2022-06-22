@@ -5,5 +5,5 @@
 export const mediaType = 'twitter'
 export const mediaDomain = 'twitter.com'
 
-export const sendHeadersUrls = [ 'https://api.twitter.com/1.1/*' ]
-export const sendHeadersExtra = [ 'requestHeaders', 'extraHeaders' ]
+export const sendHeadersUrls = ['https://api.twitter.com/1.1/*']
+export const sendHeadersExtra = ['requestHeaders', 'extraHeaders']

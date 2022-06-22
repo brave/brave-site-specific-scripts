@@ -27,8 +27,8 @@ const getTipMediaMetaDataForOldReddit = async (post: Element) => {
 
   if (!postTextElements || postTextElements.length === 0) {
     postText =
-      postTitleElement && postTitleElement.innerText ?
-      postTitleElement.innerText : ''
+      postTitleElement && postTitleElement.innerText
+      ? postTitleElement.innerText : ''
   } else {
     const divPostTextElement = (postTextElements[0] as HTMLDivElement)
     if (divPostTextElement && divPostTextElement.innerText) {
@@ -118,8 +118,8 @@ const getTipMediaMetaData = async (post: Element) => {
   for (const anchor of anchors) {
     if (anchor && anchor.textContent) {
       screenName =
-        anchor.textContent.startsWith('u/') ?
-        anchor.textContent.split('/')[1] : anchor.textContent
+        anchor.textContent.startsWith('u/')
+        ? anchor.textContent.split('/')[1] : anchor.textContent
       break
     }
   }
@@ -452,9 +452,9 @@ const configureForPosts = (config: any) => {
 
   // Special case: use this for promoted content when user isn't logged in
   const postElements =
-    config.posts ?
-    document.getElementsByClassName('Post') :
-    document.getElementsByClassName('Comment')
+    config.posts
+    ? document.getElementsByClassName('Post')
+    : document.getElementsByClassName('Comment')
   if (!postElements) {
     return
   }
@@ -462,22 +462,22 @@ const configureForPosts = (config: any) => {
   for (const postElement of postElements) {
     const isUsersPost = isUsersOwnPost(postElement)
     const actions = postElement.querySelectorAll('div.action-brave-tip')
-    const inEditModeElements = postElement.
-      querySelector('div[data-test-id="comment-submission-form-richtext"')
+    const inEditModeElements = postElement
+      .querySelector('div[data-test-id="comment-submission-form-richtext"')
     if (actions.length > 0 || inEditModeElements) {
       continue
     }
 
     const saveElement =
-      config.promotedPosts ?
-      getPromotedSaveElement(postElement) :
-      getSaveElement(postElement)
+      config.promotedPosts
+      ? getPromotedSaveElement(postElement)
+      : getSaveElement(postElement)
     if (saveElement) {
       configureForSaveElement(postElement, saveElement, config)
     } else {
-      const moreElement = config.posts ?
-        getMoreActionPostElement(postElement) :
-        getMoreActionCommentElement(postElement)
+      const moreElement = config.posts
+        ? getMoreActionPostElement(postElement)
+        : getMoreActionCommentElement(postElement)
       if (moreElement) {
         const moreInfoConfig = { posts: config.posts, usersPost: isUsersPost }
         configureForMoreInfoElement(postElement, moreElement, moreInfoConfig)
