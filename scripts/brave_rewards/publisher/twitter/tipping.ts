@@ -121,7 +121,7 @@ const createTipAction = (
   const tipAction = document.createElement('div')
   tipAction.className = 'ProfileTweet-action js-tooltip action-brave-tip'
   tipAction.style.display = 'inline-block'
-  tipAction.style.minWidth = '80px'
+  tipAction.style.minWidth = '60px'
   tipAction.style.textAlign = hasUserActions ? 'right' : 'start'
   tipAction.setAttribute('role', 'button')
   tipAction.setAttribute('tabindex', '0')
@@ -167,7 +167,7 @@ const createTipAction = (
 
   // Thread parents require a slightly larger margin due to layout differences
   if (newTwitter && tweet && isThreadParent(tweet)) {
-    tipButton.style.marginTop = '12px'
+    tipButton.style.marginLeft = '20px'
   }
 
   // Create the tip icon container
@@ -300,7 +300,13 @@ export const configure = () => {
       const numActions = actions.querySelectorAll(':scope > div').length || 0
       const hasUserActions = numActions > 3
       const tipAction = createTipAction(tweets[i], tweetId, hasUserActions)
-      actions.appendChild(tipAction)
+      if (isThreadParent(tweets[i]) &&
+          actions.children &&
+          actions.children.length !== 0) {
+        actions.children[0].appendChild(tipAction)
+      } else {
+        actions.appendChild(tipAction)
+      }
     }
   }
 
