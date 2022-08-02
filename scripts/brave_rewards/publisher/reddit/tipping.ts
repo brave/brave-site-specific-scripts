@@ -172,15 +172,15 @@ const createTipButtonForOldReddit = () => {
 const createTipButton = () => {
   const tipButton = document.createElement('button')
   tipButton.className = 'reddit-actionButton'
-  tipButton.style.display = 'inline-block'
-  tipButton.style.transition = 'color 0.1s ease 0s'
   tipButton.style.background = 'transparent'
   tipButton.style.border = 'none'
+  tipButton.style.borderRadius = '2px'
   tipButton.style.color = 'inherit'
   tipButton.style.cursor = 'pointer'
-  tipButton.style.padding = '2px 10px 0 10px'
-  tipButton.style.borderRadius = '2px'
-  tipButton.style.outline = 'none'
+  tipButton.style.font = 'inherit'
+  tipButton.style.height = '100%'
+  tipButton.style.padding = '8px'
+  tipButton.style.width = 'auto'
   tipButton.type = 'button'
 
   const style = document.createElement('style')
@@ -192,12 +192,8 @@ const createTipButton = () => {
 }
 
 const createIconContainer = () => {
-  const tipIconContainer = document.createElement('div')
+  const tipIconContainer = document.createElement('span')
   tipIconContainer.className = 'IconContainer'
-  tipIconContainer.style.display = 'inline-block'
-  tipIconContainer.style.marginBottom = '-2px'
-  tipIconContainer.style.position = 'relative'
-  tipIconContainer.style.verticalAlign = 'middle'
 
   return tipIconContainer
 }
@@ -208,9 +204,7 @@ const createTipAction = (isPost: boolean) => {
 
   if (isPost) {
     tipAction.style.display = 'flex'
-    tipAction.style.height = '25px'
-    tipAction.style.outline = 'none'
-    tipAction.style.borderRadius = '2px'
+    tipAction.style.alignItems = 'center'
   }
 
   tipAction.setAttribute(
@@ -232,13 +226,9 @@ const createTipIcon = () => {
   tipIcon.className = 'tip-icon--medium'
   tipIcon.style.background = 'transparent'
   tipIcon.style.content = styles.getTippingIconDataURL()
-  tipIcon.style.display = 'inline-block'
-  tipIcon.style.fontSize = '18px'
-  tipIcon.style.fontStyle = 'normal'
-  tipIcon.style.height = '16px'
-  tipIcon.style.position = 'relative'
-  tipIcon.style.verticalAlign = 'baseline'
-  tipIcon.style.width = '16px'
+  tipIcon.style.height = '20px'
+  tipIcon.style.verticalAlign = 'middle'
+  tipIcon.style.width = '20px'
 
   return tipIcon
 }
@@ -247,13 +237,9 @@ const createTipActionCount = () => {
   const tipActionCount = document.createElement('span')
   tipActionCount.className = 'reddit-actionCount'
   tipActionCount.style.color = 'inherit'
-  tipActionCount.style.display = 'inline-block'
-  tipActionCount.style.fontSize = '12px'
-  tipActionCount.style.fontWeight = 'bold'
-  tipActionCount.style.lineHeight = '1'
-  tipActionCount.style.marginLeft = '3px'
-  tipActionCount.style.position = 'relative'
-  tipActionCount.style.verticalAlign = 'text-bottom'
+  tipActionCount.style.lineHeight = '12px'
+  tipActionCount.style.margin = '0'
+  tipActionCount.style.verticalAlign = 'middle'
 
   return tipActionCount
 }
@@ -267,9 +253,9 @@ const createTipActionCountPresentation = () => {
   return tipActionCountPresentation
 }
 
-const createHoverStyleElement = (isPost: boolean) => {
+const createHoverStyleElement = () => {
   const style = document.createElement('style')
-  const css = isPost ? ':host { outline: none } :host(:hover) { background-color: var(--newRedditTheme-navIconFaded10) }' : '.reddit-actionButton { text-decoration: none; color: var(--newCommunityTheme-actionIcon); font-weight: bold; padding: 0px 1px; } .reddit-actionButton:hover { color: var(--newCommunityTheme-bodyText); text-decoration: underline }'
+  const css = ':host { outline: none } :host(:hover) { background-color: var(--newRedditTheme-navIconFaded10) }'
   style.appendChild(document.createTextNode(css))
   return style
 }
@@ -407,7 +393,7 @@ const createElementTipAction = (post: Element, isPost: boolean) => {
   const shadowRoot = tipAction.attachShadow({ mode: 'open' })
   shadowRoot.appendChild(tipButton)
 
-  const hoverStyleElement = createHoverStyleElement(isPost)
+  const hoverStyleElement = createHoverStyleElement()
   shadowRoot.appendChild(hoverStyleElement)
 
   return tipAction
