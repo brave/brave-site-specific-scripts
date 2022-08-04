@@ -84,16 +84,29 @@ Run this command to ensure that it will all compile properly:
         
 All tests must PASS!
 
+When you are satisfied that everything is working as expected,  [create a pull request](https://github.com/brave/brave-site-specific-scripts/pull/new/master) in this repository with your new Greaselion script files and an updated `Greaselion.json` file.
+
+## QA
+
+Always have QA test your changes before pushing them to production. Since Greaselion scripts are managed via the (Local Data Files Updater component)[https://github.com/brave/brave-core-crx-packager], you should create a branch in that repo and update the `package-lock.json` file to use the appropriate commit of `brave-site-specific-scripts` containing your Greaselion changes. Upon creating that branch, run the (dev deployment job)[https://ci.brave.com/view/All/job/brave-core-ext-local-data-files-update-publish-dev/] to create a test build for QA using that branch.
+
+Note: the deployment job automatically runs against master a few times a day, so QA must only test with the specific version run against your branch; if the deployment job kicks off again before QA finishes, you must run it against your branch again.
+
+QA can test with your dev component by running brave with the `--use-dev-goupdater-url` flag and checking for the correct version number in brave://components. It sometimes takes up to 10 minutes or more for the new component to appear here.
+
+Once QA signs off on your changes, you may merge your branch into `master`.
+
 ## Pushing to production
+
+QA tested your changes first, right? See above.
 
 Like tracking lists or adblocking lists, Greaselion scripts can be updated and pushed to users outside of a full application update. On the client side, this is managed by the (Local Data Files service)[https://github.com/brave/brave-core/blob/master/components/brave_component_updater/browser/local_data_files_service.cc]. On the server side, it is managed by uploading a new version of the (Local Data Files Updater component)[https://github.com/brave/brave-core-crx-packager]. In between is this repository.
 
 Thus:
 
- 1. [Create a pull request](https://github.com/brave/brave-site-specific-scripts/pull/new/master) in this repository with your new Greaselion script files and an updated `Greaselion.json` file.
- 2. Once your pull request has been approved and merged, run the [`brave-core-crx-packager`](https://github.com/brave/brave-core-crx-packager) `package-local-data-files` script to create a new version of the Local Data Files Updater component. The new version will include all the Greaselion scripts from this repository.
- 3. Run the `brave-core-crx-packager` `upload-local-data-files` script to upload the newly packaged Local Data Files Updater component to the Brave extension server.
- 4. To test that the process worked, open a release build of Brave and navigate to `brave://components/`. Under `Brave Local Data Updater`, click the `Check for update` button. It should find and download the newly uploaded component.
+ 1. Once your pull request has been approved and merged and QA has tested your changes in a dev environment, run the [`brave-core-crx-packager`](https://github.com/brave/brave-core-crx-packager) `package-local-data-files` script to create a new version of the Local Data Files Updater component. The new version will include all the Greaselion scripts from this repository.
+ 2. Run the `brave-core-crx-packager` `upload-local-data-files` script to upload the newly packaged Local Data Files Updater component to the Brave extension server.
+ 3. To test that the process worked, open a release build of Brave and navigate to `brave://components/`. Under `Brave Local Data Updater`, click the `Check for update` button. It should find and download the newly uploaded component.
 
 Brave automatically checks for updates to its components, so most Brave users should receive your updated Greaselion script within 24 hours. The client-side Greaselion service is designed to refresh itself without relaunching Brave, so changes will go live even if a user is already running Brave at the time. Open tabs will not be refreshed, but the new Greaselion scripts will be active once the user manually refreshes the tab, or when they open a new tab.
 
