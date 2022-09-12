@@ -1,10 +1,10 @@
 {
   "twitterTipsHoverText": {
-    "message": "Przekaż napiwek za ten tweet",
+    "message": "Daj napiwek za ten tweet",
     "description": "Hover text for tip button"
   },
   "twitterTipsIconLabel": {
-    "message": "Napiwek",
+    "message": "Donacja",
     "description": "Icon label for tip button"
   }
 }

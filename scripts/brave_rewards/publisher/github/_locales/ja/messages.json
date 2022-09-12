@@ -1,6 +1,6 @@
 {
   "githubTipsHoverText": {
-    "message": "Send a tip",
+    "message": "チップを送る",
     "description": "Hover text for tip button"
   },
   "githubTipsIconLabel": {
