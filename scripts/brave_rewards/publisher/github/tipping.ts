@@ -360,17 +360,7 @@ const getMemberListItemMetaData = async (elem: Element) => {
     throw new Error('Invalid arguments')
   }
 
-  const ancestor = elem.closest('.table-list-cell')
-  if (!ancestor) {
-    throw new Error('Failed to parse DOM')
-  }
-
-  const anchors = ancestor.getElementsByTagName('A')
-  if (!anchors || anchors.length === 0) {
-    throw new Error('Failed to parse DOM')
-  }
-
-  const anchor = anchors[0] as HTMLAnchorElement
+  const anchor = elem as HTMLAnchorElement
   if (!anchor.href) {
     throw new Error('Failed to parse DOM')
   }
