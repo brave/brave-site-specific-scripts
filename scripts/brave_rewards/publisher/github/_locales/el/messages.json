@@ -1,10 +1,10 @@
 {
   "githubTipsHoverText": {
-    "message": "Send a tip",
+    "message": "Αποστολή φιλοδωρήματος",
     "description": "Hover text for tip button"
   },
   "githubTipsIconLabel": {
-    "message": "Φιλοδώρημα",
+    "message": "Συμβουλή",
     "description": "Icon label for tip button"
   }
 }
