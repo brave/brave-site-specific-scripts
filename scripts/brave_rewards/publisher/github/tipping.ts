@@ -360,17 +360,7 @@ const getMemberListItemMetaData = async (elem: Element) => {
     throw new Error('Invalid arguments')
   }
 
-  const ancestor = elem.closest('.table-list-cell')
-  if (!ancestor) {
-    throw new Error('Failed to parse DOM')
-  }
-
-  const anchors = ancestor.getElementsByTagName('A')
-  if (!anchors || anchors.length === 0) {
-    throw new Error('Failed to parse DOM')
-  }
-
-  const anchor = anchors[0] as HTMLAnchorElement
+  const anchor = elem as HTMLAnchorElement
   if (!anchor.href) {
     throw new Error('Failed to parse DOM')
   }
@@ -406,8 +396,13 @@ const memberListItemInsertFunction = (parent: Element) => {
   }
 
   const path = window.location.pathname
-  const memberText = parent.children[1] as HTMLElement
-  if (!memberText || !path.startsWith('/orgs/')) {
+  const memberTextDiv = parent.children[1] as HTMLElement
+  if (!memberTextDiv || !memberTextDiv.children.length || !path.startsWith('/orgs/')) {
+    return
+  }
+
+  const memberText = memberTextDiv.children[0] as HTMLElement
+  if (!memberText) {
     return
   }
 
@@ -418,12 +413,16 @@ const memberListItemInsertFunction = (parent: Element) => {
 
   if (path.split('/').includes('teams')) {
     // Special case, different styling for same element
-    memberText.appendChild(tipAction)
+    memberTextDiv.insertBefore(tipAction, memberTextDiv.children[1])
+    tipAction.style.paddingLeft = '5px'
+    tipAction.style.paddingRight = '12px'
+    tipAction.style.verticalAlign = 'text-bottom'
   } else {
-    memberText.style.width = '250px'
-    if (memberText.children.length > 0) {
-      memberText.insertBefore(tipAction, memberText.children[1])
-    }
+    const span = document.createElement('span')
+    span.style.display = 'flex'
+    memberTextDiv.insertBefore(span, memberText)
+    span.appendChild(memberText)
+    span.appendChild(tipAction)
   }
 }
 
