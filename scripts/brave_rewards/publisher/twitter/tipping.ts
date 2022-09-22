@@ -120,8 +120,7 @@ const createTipAction = (
   // Create the tip action
   const tipAction = document.createElement('div')
   tipAction.className = 'ProfileTweet-action js-tooltip action-brave-tip'
-  tipAction.style.display = 'inline-block'
-  tipAction.style.minWidth = '60px'
+  tipAction.style.display = 'inline-flex'
   tipAction.style.textAlign = hasUserActions ? 'right' : 'start'
   tipAction.setAttribute('role', 'button')
   tipAction.setAttribute('tabindex', '0')
@@ -142,7 +141,7 @@ const createTipAction = (
   tipButton.style.fontSize = '16px'
   tipButton.style.lineHeight = '1'
   tipButton.style.outline = '0'
-  tipButton.style.padding = '0 2px'
+  tipButton.style.paddingBottom = '2px'
   tipButton.style.position = 'relative'
   tipButton.type = 'button'
   tipButton.onclick = function (event) {
@@ -163,11 +162,6 @@ const createTipAction = (
       }
     }
     event.stopPropagation()
-  }
-
-  // Thread parents require a slightly larger margin due to layout differences
-  if (newTwitter && tweet && isThreadParent(tweet)) {
-    tipButton.style.marginLeft = '20px'
   }
 
   // Create the tip icon container
@@ -285,7 +279,15 @@ export const configure = () => {
     let actions
 
     if (newTwitter) {
-      actions = tweets[i].querySelector('[role="group"]')
+      if (isThreadParent(tweets[i])) {
+        const replyButton = tweets[i].querySelector('[aria-label="Reply"]')
+        if (replyButton) {
+          actions = replyButton.parentElement?.parentElement
+        }
+      }
+      if (!actions) {
+        actions = tweets[i].querySelector('[role="group"]')
+      }
     } else {
       actions = tweets[i].querySelector('.js-actions')
     }
@@ -300,13 +302,7 @@ export const configure = () => {
       const numActions = actions.querySelectorAll(':scope > div').length || 0
       const hasUserActions = numActions > 3
       const tipAction = createTipAction(tweets[i], tweetId, hasUserActions)
-      if (isThreadParent(tweets[i]) &&
-          actions.children &&
-          actions.children.length !== 0) {
-        actions.children[0].appendChild(tipAction)
-      } else {
-        actions.appendChild(tipAction)
-      }
+      actions.appendChild(tipAction)
     }
   }
 
