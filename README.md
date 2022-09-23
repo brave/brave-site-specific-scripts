@@ -88,7 +88,7 @@ When you are satisfied that everything is working as expected,  [create a pull r
 
 ## QA
 
-Always have QA test your changes before pushing them to production. Since Greaselion scripts are managed via the (Local Data Files Updater component)[https://github.com/brave/brave-core-crx-packager], you should create a branch in that repo and update the `package-lock.json` file to use the appropriate commit of `brave-site-specific-scripts` containing your Greaselion changes. Upon creating that branch, run the (dev deployment job)[https://ci.brave.com/view/All/job/brave-core-ext-local-data-files-update-publish-dev/] to create a test build for QA using that branch.
+Always have QA test your changes before pushing them to production. Since Greaselion scripts are managed via the [Local Data Files Updater component](https://github.com/brave/brave-core-crx-packager), you should create a branch in that repo and update the `package-lock.json` file to use the appropriate commit of `brave-site-specific-scripts` containing your Greaselion changes. Upon creating that branch, run the [dev deployment job](https://ci.brave.com/view/All/job/brave-core-ext-local-data-files-update-publish-dev/) to create a test build for QA using that branch.
 
 Note: the deployment job automatically runs against master a few times a day, so QA must only test with the specific version run against your branch; if the deployment job kicks off again before QA finishes, you must run it against your branch again.
 
@@ -100,9 +100,14 @@ Once QA signs off on your changes, you may merge your branch into `master`.
 
 QA tested your changes first, right? See above.
 
-Like tracking lists or adblocking lists, Greaselion scripts can be updated and pushed to users outside of a full application update. On the client side, this is managed by the (Local Data Files service)[https://github.com/brave/brave-core/blob/master/components/brave_component_updater/browser/local_data_files_service.cc]. On the server side, it is managed by uploading a new version of the (Local Data Files Updater component)[https://github.com/brave/brave-core-crx-packager]. In between is this repository.
+Like tracking lists or adblocking lists, Greaselion scripts can be updated and pushed to users outside of a full application update. On the client side, this is managed by the [Local Data Files service](https://github.com/brave/brave-core/blob/master/components/brave_component_updater/browser/local_data_files_service.cc). On the server side, it is managed by uploading a new version of the [Local Data Files Updater component](https://github.com/brave/brave-core-crx-packager). In between is this repository.
 
-Thus:
+### Via Jenkins (you usually want to use this method)
+
+1. Update `package-lock.json` in the `brave-core-crx-packager` repo to use your new version.
+1. Run the [production deployment job](https://ci.brave.com/view/All/job/brave-core-ext-local-data-files-update-publish/) to push your change to production.
+
+### Manually (you almost always will want to use Jenkins, see above)
 
  1. Once your pull request has been approved and merged and QA has tested your changes in a dev environment, run the [`brave-core-crx-packager`](https://github.com/brave/brave-core-crx-packager) `package-local-data-files` script to create a new version of the Local Data Files Updater component. The new version will include all the Greaselion scripts from this repository.
  2. Run the `brave-core-crx-packager` `upload-local-data-files` script to upload the newly packaged Local Data Files Updater component to the Brave extension server.
