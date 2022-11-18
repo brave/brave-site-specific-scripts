@@ -79,19 +79,7 @@ export const formatNetworkError = (message: string, response: Response) => {
   return `${message}: ${response.statusText} (${response.status})`
 }
 
-const htmlEntities = {
-  '&amp;': '&',
-  '&lt;': '<',
-  '&gt;': '>',
-  '&quot;': '"',
-  '&#39;': "'"
-}
-
-const htmlEntity = /&(?:amp|lt|gt|quot|#(0+)?39);/g
-const hasHTMLEntity = RegExp(htmlEntity.source)
-
 export const decodeHTMLEntities = (input: string) => {
-  return (input && hasHTMLEntity.test(input))
-    ? input.replace(htmlEntity, (e) => (htmlEntities[e] || "'"))
-    : (input || '')
+  const doc = new DOMParser().parseFromString(input, 'text/html')
+  return doc.documentElement.textContent || ''
 }
