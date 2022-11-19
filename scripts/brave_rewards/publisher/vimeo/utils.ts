@@ -25,15 +25,15 @@ export const getPublisherNameFromPublisherPageResponse = (response: string) => {
     return ''
   }
 
-  const publisherName = getPublisherNameFromVideoPageResponse(response)
+  let publisherName = getPublisherNameFromVideoPageResponse(response)
   if (!publisherName) {
-    return utils.extractData(
+    publisherName = utils.extractData(
       response,
       '<meta property="og:title" content="',
       '"')
   }
 
-  return publisherName
+  return utils.decodeHTMLEntities(publisherName)
 }
 
 export const getPublisherNameFromVideoPageResponse = (response: string) => {
@@ -53,7 +53,7 @@ export const getPublisherNameFromVideoPageResponse = (response: string) => {
     throw new Error(`Error parsing publisher name from video page: ${error}`)
   }
 
-  return object.brave_publisher
+  return utils.decodeHTMLEntities(object.brave_publisher)
 }
 
 export const getUserIdFromPublisherPageResponse = (response: string) => {
