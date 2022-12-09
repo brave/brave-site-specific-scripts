@@ -99,19 +99,6 @@ const onTipActionKey = (e: KeyboardEvent) => {
   }
 }
 
-const isThreadParent = (tweet: Element) => {
-  if (!tweet || !location.pathname.includes('/status/')) {
-    return false
-  }
-
-  const threadParent = tweet.querySelector("a[href*='how-to-tweet']")
-  if (!threadParent) {
-    return false
-  }
-
-  return true
-}
-
 const createTipAction = (
   tweet: Element,
   tweetId: string,
@@ -279,14 +266,18 @@ export const configure = () => {
     let actions
 
     if (newTwitter) {
-      if (isThreadParent(tweets[i])) {
-        const replyButton = tweets[i].querySelector('[aria-label="Reply"]')
-        if (replyButton) {
-          actions = replyButton.parentElement?.parentElement
+      const groups = tweets[i].querySelectorAll('[role="group"]')
+      for (let group of groups) {
+        const buttons = group.querySelectorAll('[role="button"]')
+        if (!buttons || buttons.length < 3) {
+          continue
+        } else {
+          actions = group
+          break
         }
       }
-      if (!actions) {
-        actions = tweets[i].querySelector('[role="group"]')
+      if (!actions && groups.length > 0) {
+        actions = groups[groups.length - 1]
       }
     } else {
       actions = tweets[i].querySelector('.js-actions')
