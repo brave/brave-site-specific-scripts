@@ -15,13 +15,13 @@ const getMediaMetaData = async (screenName: string, isOldReddit: boolean) => {
     throw new Error('Invalid parameters')
   }
 
-  const response = await utils.getProfileUrlResponse(screenName, isOldReddit)
+  const data = await utils.getProfileData(screenName, isOldReddit)
   return {
     user: {
-      id: utils.getUserIdFromResponse(response),
+      id: data.id,
       screenName: screenName,
-      fullName: utils.getPublisherNameFromResponse(response),
-      favIconUrl: utils.getProfileImageUrlFromResponse(response)
+      fullName: data.name,
+      favIconUrl: data.icon_img
     },
     post: {
       id: '',

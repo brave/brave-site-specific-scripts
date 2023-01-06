@@ -64,13 +64,13 @@ const getTipMediaMetaDataForOldReddit = async (post: Element) => {
     postRelativeDate = postDateElement[0].textContent || ''
   }
 
-  const response = await utils.getProfileUrlResponse(screenName, true)
+  const data = await utils.getProfileData(screenName, true)
   return {
     user: {
-      id: utils.getUserIdFromResponse(response),
+      id: data.id,
       screenName: screenName,
-      fullName: utils.getPublisherNameFromResponse(response),
-      favIconUrl: utils.getProfileImageUrlFromResponse(response)
+      fullName: data.name,
+      favIconUrl: data.icon_img
     },
     post: {
       id: '',
@@ -144,13 +144,13 @@ const getTipMediaMetaData = async (post: Element) => {
     }
   }
 
-  const response = await utils.getProfileUrlResponse(screenName, false)
+  const data = await utils.getProfileData(screenName, false)
   return {
     user: {
-      id: utils.getUserIdFromResponse(response),
+      id: data.id,
       screenName: screenName,
-      fullName: utils.getPublisherNameFromResponse(response),
-      favIconUrl: utils.getProfileImageUrlFromResponse(response)
+      fullName: data.name,
+      favIconUrl: data.icon_img
     },
     post: {
       id: '',
