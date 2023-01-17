@@ -355,77 +355,6 @@ const pageheadInsertFunction = (parent: Element) => {
   parent.appendChild(tipAction)
 }
 
-const getMemberListItemMetaData = async (elem: Element) => {
-  if (!elem) {
-    throw new Error('Invalid arguments')
-  }
-
-  const anchor = elem as HTMLAnchorElement
-  if (!anchor.href) {
-    throw new Error('Failed to parse DOM')
-  }
-
-  const pathname = anchor.href.replace('https://github.com', '')
-  if (!pathname) {
-    throw new Error('Failed to parse DOM')
-  }
-
-  const components = pathname.split('/').filter(item => item)
-  if (components.length < 1) {
-    throw new Error('Failed to parse DOM')
-  }
-
-  let screenName = ''
-
-  if (components[0] === 'orgs') {
-    screenName = components[components.length - 1]
-  } else {
-    screenName = components[0]
-  }
-
-  if (!screenName) {
-    throw new Error('Missing screen name')
-  }
-
-  return utils.getMediaMetaData(screenName)
-}
-
-const memberListItemInsertFunction = (parent: Element) => {
-  if (!parent || !parent.children || parent.children.length < 2) {
-    return
-  }
-
-  const path = window.location.pathname
-  const memberTextDiv = parent.children[1] as HTMLElement
-  if (!memberTextDiv || !memberTextDiv.children.length || !path.startsWith('/orgs/')) {
-    return
-  }
-
-  const memberText = memberTextDiv.children[0] as HTMLElement
-  if (!memberText) {
-    return
-  }
-
-  const tipAction =
-    createTipAction(memberText as Element, getMemberListItemMetaData)
-
-  tipAction.style.paddingLeft = '5px'
-
-  if (path.split('/').includes('teams')) {
-    // Special case, different styling for same element
-    memberTextDiv.insertBefore(tipAction, memberTextDiv.children[1])
-    tipAction.style.paddingLeft = '5px'
-    tipAction.style.paddingRight = '12px'
-    tipAction.style.verticalAlign = 'text-bottom'
-  } else {
-    const span = document.createElement('span')
-    span.style.display = 'flex'
-    memberTextDiv.insertBefore(span, memberText)
-    span.appendChild(memberText)
-    span.appendChild(tipAction)
-  }
-}
-
 const configureTipAction = (
   tipLocationClass: string,
   insertFunction: (parent: Element) => void
@@ -463,10 +392,6 @@ export const configure = () => {
 
   // Format: https://gist.github.com/<user>/<gist_number>
   configureTipAction('pagehead-actions', pageheadInsertFunction)
-
-  // Format: https://github.com/orgs/<org>/people
-  // Format: https://github.com/orgs/<org>/teams/<team_name>/members
-  configureTipAction('member-list-item', memberListItemInsertFunction)
 
   timeout = setTimeout(configure, 3000)
 }
