@@ -21,7 +21,7 @@ export const isOldRedditUrl = (url: URL) => {
   return url.hostname.startsWith('old.') || url.hostname.startsWith('np.')
 }
 
-export const getProfileUrlResponse = async (
+export const getProfileData = async (
   screenName: string,
   isOldReddit: boolean
 ) => {
@@ -34,13 +34,29 @@ export const getProfileUrlResponse = async (
     throw new Error('Invalid profile url')
   }
 
-  const response = await fetch(profileUrl)
+  const profileDataUrl = profileUrl + 'about.json'
+
+  const response = await fetch(profileDataUrl)
   if (!response.ok) {
     const msg = utils.formatNetworkError('Profile request failed', response)
     throw new Error(msg)
   }
 
-  return response.text()
+  const text = await response.text()
+  if (!text) {
+    throw new Error('Profile response is empty')
+  }
+
+  const parsedResponse = JSON.parse(text)
+  if (!parsedResponse) {
+    throw new Error('Unable to parse profile response')
+  }
+
+  if (parsedResponse.kind !== 't2' || !parsedResponse.data) {
+    throw new Error('Unexpected profile response data')
+  }
+
+  return parsedResponse.data
 }
 
 export const getScreenNameFromUrl = (url: URL) => {
@@ -58,45 +74,6 @@ export const getScreenNameFromUrl = (url: URL) => {
   }
 
   return pathComponents[1]
-}
-
-export const getUserIdFromResponse = (response: string) => {
-  if (!response) {
-    return ''
-  }
-
-  // Try new reddit format first, then old reddit format
-  let userId =
-    utils.extractData(response, 'hideFromRobots":false,"id":"t2_', '","isEmployee"') ||
-    utils.extractData(response, 'hideFromRobots":true,"id":"t2_', '","isEmployee"')
-  if (!userId) {
-    userId = utils.extractData(response, 'target_fullname": "t2_', '"')
-  }
-
-  return userId
-}
-
-export const getProfileImageUrlFromResponse = (response: string) => {
-  if (!response) {
-    return ''
-  }
-
-  // Only new reddit supports account icons
-  return utils.extractData(response, 'accountIcon":"', '?')
-}
-
-export const getPublisherNameFromResponse = (response: string) => {
-  if (!response) {
-    return ''
-  }
-
-  // Try new reddit format first, then old reddit format
-  let userName = utils.extractData(response, 'username":"', '"')
-  if (!userName) {
-    userName = utils.extractData(response, 'target_name": "', '"')
-  }
-
-  return userName
 }
 
 export const isExcludedPath = (path: string) => {
