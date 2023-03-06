@@ -111,9 +111,6 @@ const createTipAction = (
   tipAction.style.textAlign = hasUserActions ? 'right' : 'start'
   tipAction.setAttribute('role', 'button')
   tipAction.setAttribute('tabindex', '0')
-  tipAction.setAttribute(
-    'data-original-title',
-    chrome.i18n.getMessage('twitterTipsHoverText'))
   tipAction.addEventListener('keydown', onTipActionKey)
 
   // Create the tip button

@@ -59,12 +59,6 @@ const createTipAction = (
   tipAction.style.display = 'inline-block'
   tipAction.style.minWidth = '40px'
 
-  const tipActionHoverText = chrome.i18n.getMessage('githubTipsHoverText')
-  if (tipActionHoverText) {
-    tipAction.className += ' tooltipped tooltipped-sw'
-    tipAction.setAttribute('aria-label', tipActionHoverText)
-  }
-
   // Create the tip button
   const tipButton = document.createElement('button')
   tipButton.className =
