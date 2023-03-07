@@ -207,10 +207,6 @@ const createTipAction = (isPost: boolean) => {
     tipAction.style.alignItems = 'center'
   }
 
-  tipAction.setAttribute(
-    'data-original-title',
-    chrome.i18n.getMessage('redditTipsHoverText'))
-
   return tipAction
 }
 
