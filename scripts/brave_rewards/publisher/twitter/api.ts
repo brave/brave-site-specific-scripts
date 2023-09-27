@@ -2,101 +2,119 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { getPort } from '../common/messaging'
-import { getAuthHeaders, hasRequiredAuthHeaders } from './auth'
-
 import * as types from './types'
 
-let lastRequestTime = 0
+let cachedXStore: any = null
 
-const sendAPIRequest = (name: string, url: string) => {
-  return new Promise((resolve, reject) => {
-    if (!name || !url) {
-      reject(new Error('Invalid parameters'))
-      return
-    }
+const getXState = () => {
+  if (cachedXStore) {
+    return cachedXStore.getState()
+  }
 
-    if (!hasRequiredAuthHeaders()) {
-      reject(new Error('Missing auth headers'))
-      return
-    }
+  const hostNode = document.querySelector('#react-root > div > div')
+  const descriptors = Object.getOwnPropertyDescriptors(hostNode || {})
 
-    const port = getPort()
-    if (!port) {
-      reject(new Error('Invalid port'))
-      return
-    }
-
-    if ((lastRequestTime !== 0) && (Date.now() - lastRequestTime < 3000)) {
-      reject(new Error('Ignoring API request due to network throttle'))
-      return
-    }
-
-    lastRequestTime = Date.now()
-
-    const authHeaders = getAuthHeaders()
-    port.postMessage({
-      type: 'OnAPIRequest',
-      mediaType: types.mediaType,
-      data: {
-        name,
-        url,
-        init: {
-          credentials: 'include',
-          headers: {
-            ...authHeaders
-          },
-          referrerPolicy: 'no-referrer-when-downgrade',
-          method: 'GET',
-          redirect: 'follow'
+  if (hostNode) {
+    for (const propertyName in descriptors) {
+      if (propertyName.startsWith('__reactProps$')) {
+        const reactProps = hostNode[propertyName]
+        const store = reactProps?.children?.props?.store
+        if (store && typeof store.getState === 'function') {
+          cachedXStore = store
+          return cachedXStore.getState()
         }
       }
-    })
+    }
+  }
 
-    port.onMessage.addListener(function onMessageListener (msg: any) {
-      if (!port) {
-        reject(new Error('Invalid port'))
-        return
-      }
-      if (!msg || !msg.data) {
-        port.onMessage.removeListener(onMessageListener)
-        reject(new Error('Invalid message'))
-        return
-      }
-      if (msg.type === 'OnAPIResponse') {
-        if (!msg.data.name || (!msg.data.response && !msg.data.error)) {
-          port.onMessage.removeListener(onMessageListener)
-          reject(new Error('Invalid message'))
-          return
-        }
-        if (msg.data.name === name) {
-          port.onMessage.removeListener(onMessageListener)
-          if (msg.data.error) {
-            reject(new Error(msg.data.error))
-            return
-          }
-          resolve(msg.data.response)
-        }
-      }
-    })
-  })
+  throw new Error('XStore initialization failed')
 }
 
-export const getTweetDetails = async (tweetId: string) => {
+const getEntities = () => getXState().entities
+
+export const getTweetDetails = async (tweetId: string): Promise<types.TweetDetails> => {
   if (!tweetId) {
-    return Promise.reject(new Error('Invalid parameters'))
+    throw new Error('Invalid parameters')
   }
 
-  const url = `https://api.twitter.com/1.1/statuses/show.json?id=${tweetId}`
-  return sendAPIRequest('GetTweetDetails', url)
+  const entities = getEntities()
+  const tweet = entities.tweets.entities[tweetId]
+  const tweetUser = entities.users.entities[tweet?.user ?? '']
+
+  let response: types.TweetDetails = {}
+
+  /**
+   * We're explicitly checking that these properties both
+   * exist, and have the expected type before adding them
+   * to our response object.
+   */
+
+  if (typeof tweet.created_at === 'string') {
+    response.created_at = tweet.created_at
+  }
+
+  if (typeof tweet.text === 'string') {
+    response.text = tweet.text
+  }
+
+  response.user = {}
+
+  if (typeof tweetUser.id_str === 'string') {
+    response.user.id_str = tweetUser.id_str
+  }
+
+  if (typeof tweetUser.screen_name === 'string') {
+    response.user.screen_name = tweetUser.screen_name
+  }
+
+  if (typeof tweetUser.name === 'string') {
+    response.user.name = tweetUser.name
+  }
+
+  if (typeof tweetUser.profile_image_url_https === 'string') {
+    response.user.profile_image_url_https = tweetUser.profile_image_url_https
+  }
+
+  return response
 }
 
-export const getUserDetails = async (screenName: string) => {
+export const getUserDetails = async (screenName: string): Promise<types.UserDetails> => {
   if (!screenName) {
-    return Promise.reject(new Error('Invalid parameters'))
+    throw new Error('Invalid parameters')
   }
 
-  const url =
-    `https://api.twitter.com/1.1/users/show.json?screen_name=${screenName}`
-  return sendAPIRequest('GetUserDetails', url)
+  let user: types.UserEntity | null = null
+  const users = getEntities().users.entities
+  const userEntities: types.UserEntity[] = Object.values(users)
+
+  for (const value of userEntities) {
+    const nameLowered = value.screen_name.toLowerCase()
+    const screenNameLowered = screenName.toLowerCase()
+    if (nameLowered === screenNameLowered) {
+      user = value
+      break
+    }
+  }
+
+  if (!user) {
+    throw new Error('User not found')
+  }
+
+  let response: types.UserDetails = {}
+
+  /**
+   * We're explicitly checking that these properties both
+   * exist, and have the expected type before adding them
+   * to our response object.
+   */
+
+  if (typeof user.id_str === 'string') {
+    response.id_str = user.id_str
+  }
+
+  if (typeof user.profile_image_url_https === 'string') {
+    response.profile_image_url_https = user.profile_image_url_https
+  }
+
+  return response
 }
