@@ -13,15 +13,12 @@ const togetherDir = 'scripts/brave_talk'
 const allEntries = [
   `${rewardsDir}/publisher/github/githubBase`,
   `${rewardsDir}/publisher/github/githubAutoContribution`,
-  `${rewardsDir}/publisher/github/githubInlineTipping`,
   `${rewardsDir}/publisher/reddit/redditBase`,
   `${rewardsDir}/publisher/reddit/redditAutoContribution`,
-  `${rewardsDir}/publisher/reddit/redditInlineTipping`,
   `${rewardsDir}/publisher/twitch/twitchBase`,
   `${rewardsDir}/publisher/twitch/twitchAutoContribution`,
   `${rewardsDir}/publisher/twitter/twitterBase`,
   `${rewardsDir}/publisher/twitter/twitterAutoContribution`,
-  `${rewardsDir}/publisher/twitter/twitterInlineTipping`,
   `${rewardsDir}/publisher/vimeo/vimeoBase`,
   `${rewardsDir}/publisher/vimeo/vimeoAutoContribution`,
   `${rewardsDir}/publisher/youtube/youtubeBase`,
@@ -41,10 +38,7 @@ module.exports = (env, argv) => {
     plugins: [
       new CopyPlugin({
         patterns: [
-          { from: 'Greaselion.json' },
-          { from: `${rewardsDir}/publisher/github/_locales/**/*` },
-          { from: `${rewardsDir}/publisher/reddit/_locales/**/*` },
-          { from: `${rewardsDir}/publisher/twitter/_locales/**/*` }
+          { from: 'Greaselion.json' }
         ]
       })
     ],

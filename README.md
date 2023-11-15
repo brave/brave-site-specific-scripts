@@ -3,7 +3,7 @@ a.k.a. Greaselion
 
 Site-specific scripts for Brave
 
-This repository provides content scripts that—depending on your browser settings—may be injected into specific sites while you browse the web with Brave. This allows Brave to provide functionality like "tip this tweet" on `twitter.com`.
+This repository provides content scripts that—depending on your browser settings—may be injected into specific sites while you browse the web with Brave.
 
 You can view the [`Greaselion.json`](https://github.com/brave/brave-site-specific-scripts/blob/master/Greaselion.json) master configuration file or view the individual scripts elsewhere in this repository.
 
@@ -56,7 +56,6 @@ There can be multiple preconditions in this object. **All preconditions must be 
 These `preconditions` keys are supported:
 
  - `rewards-enabled` may be `true` or `false`. Corresponds to whether "Brave Rewards" is enabled in this profile.
- - `twitter-tips` may be `true` or `false`. Corresponds to whether "Twitter tips" is enabled in this profile.
 
 This list is exhaustive. No other preconditions are supported.
 
