@@ -20,21 +20,6 @@
       "https://gist.github.com/*"
     ],
     "scripts": [
-      "scripts/brave_rewards/publisher/github/githubInlineTipping.bundle.js"
-    ],
-    "preconditions": {
-      "github-tips-enabled": true
-    },
-    "messages": "scripts/brave_rewards/publisher/github/_locales",
-    "minimum_brave_version": "1.17"
-  },
-  {
-    "urls": [
-      "https://github.com/*",
-      "https://www.github.com/*",
-      "https://gist.github.com/*"
-    ],
-    "scripts": [
       "scripts/brave_rewards/publisher/github/githubAutoContribution.bundle.js"
     ],
     "preconditions": {
@@ -54,21 +39,6 @@
     "preconditions": {
       "rewards-enabled": true
     },
-    "minimum_brave_version": "1.17"
-  },
-  {
-    "urls": [
-      "https://old.reddit.com/*",
-      "https://reddit.com/*",
-      "https://www.reddit.com/*"
-    ],
-    "scripts": [
-      "scripts/brave_rewards/publisher/reddit/redditInlineTipping.bundle.js"
-    ],
-    "preconditions": {
-      "reddit-tips-enabled": true
-    },
-    "messages": "scripts/brave_rewards/publisher/reddit/_locales",
     "minimum_brave_version": "1.17"
   },
   {
