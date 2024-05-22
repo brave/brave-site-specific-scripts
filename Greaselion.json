@@ -81,7 +81,9 @@
   {
     "urls": [
       "https://twitter.com/*",
-      "https://*.twitter.com/*"
+      "https://*.twitter.com/*",
+      "https://x.com/*",
+      "https://*.x.com/*"
     ],
     "scripts": [
       "scripts/brave_rewards/publisher/twitter/twitterBase.bundle.js"
@@ -94,7 +96,9 @@
   {
     "urls": [
       "https://twitter.com/*",
-      "https://*.twitter.com/*"
+      "https://*.twitter.com/*",
+      "https://x.com/*",
+      "https://*.x.com/*"
     ],
     "scripts": [
       "scripts/brave_rewards/publisher/twitter/twitterAutoContribution.bundle.js"
