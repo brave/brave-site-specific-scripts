@@ -87,7 +87,7 @@ export const getTweetDetails = async (tweetId: string) => {
     return Promise.reject(new Error('Invalid parameters'))
   }
 
-  const url = `https://api.twitter.com/1.1/statuses/show.json?id=${tweetId}`
+  const url = `${types.baseApiUrl}/1.1/statuses/show.json?id=${tweetId}`
   return sendAPIRequest('GetTweetDetails', url)
 }
 
@@ -97,6 +97,6 @@ export const getUserDetails = async (screenName: string) => {
   }
 
   const url =
-    `https://api.twitter.com/1.1/users/show.json?screen_name=${screenName}`
+    `${types.baseApiUrl}/1.1/users/show.json?screen_name=${screenName}`
   return sendAPIRequest('GetUserDetails', url)
 }
