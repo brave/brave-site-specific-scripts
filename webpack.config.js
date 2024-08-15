@@ -11,6 +11,7 @@ const rewardsDir = 'scripts/brave_rewards'
 const togetherDir = 'scripts/brave_talk'
 
 const allEntries = [
+  `${rewardsDir}/publisher/common/XHRInterceptor`,
   `${rewardsDir}/publisher/github/githubBase`,
   `${rewardsDir}/publisher/github/githubAutoContribution`,
   `${rewardsDir}/publisher/reddit/redditBase`,

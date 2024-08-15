@@ -11,12 +11,9 @@ import * as types from './types'
 import * as utils from '../common/utils'
 import * as webRequestHandlers from '../common/webRequestHandlers'
 
-const handleOnSendHeadersWebRequest = (mediaType: string, details: any) => {
-  if (mediaType !== types.mediaType || !details || !details.requestHeaders) {
-    return
-  }
-
-  if (auth.processRequestHeaders(details.requestHeaders)) {
+const handleHeaders = (headers: any) => {
+  console.log('handleHeaders', headers)
+  if (auth.processRequestHeaders(headers)) {
     publisherInfo.send()
   }
 }
@@ -59,12 +56,14 @@ const initScript = () => {
       }
     })
 
-    webRequestHandlers.registerOnSendHeadersWebRequest(
-      types.mediaType,
-      types.sendHeadersUrls,
-      types.sendHeadersExtra,
-      handleOnSendHeadersWebRequest)
-    tabHandlers.registerOnUpdatedTab(types.mediaType, handleOnUpdatedTab)
+    // TODO: remove the timeout when XHRInterceptor is injected automatically.
+    setTimeout( () => {
+      webRequestHandlers.registerHeadersHandler(
+        types.sendHeadersUrl,
+        handleHeaders)
+
+      tabHandlers.registerOnUpdatedTab(types.mediaType, handleOnUpdatedTab)
+    }, 5000);
   })
 
   console.info('Greaselion script loaded: twitterBase.ts')

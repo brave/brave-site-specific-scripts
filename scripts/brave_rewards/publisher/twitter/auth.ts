@@ -16,14 +16,18 @@ const authTokenCookieRegex = /[; ]_twitter_sess=([^\s;]*)/
 
 let lastSessionId: SessionId = null
 
-let authHeaders: any = {}
+class AuthHeaders {
+  [header: string]: string;
+}
 
-const readSessionCookie = (cookiesString: string): SessionId => {
-  if (!cookiesString) {
+let authHeaders: AuthHeaders = {}
+
+const readSessionCookie = (): SessionId => {
+  if (!document.cookie) {
     return null
   }
 
-  const match = cookiesString.match(authTokenCookieRegex)
+  const match = document.cookie.match(authTokenCookieRegex)
   if (!match) {
     return null
   }
@@ -41,26 +45,27 @@ export const hasRequiredAuthHeaders = () => {
           (authHeaders['x-csrf-token'] && authHeaders['x-guest-token']))
 }
 
-export const processRequestHeaders = (requestHeaders: any[]) => {
+export const processRequestHeaders = (requestHeaders: {[header: string]: string}) => {
   if (!requestHeaders) {
     return false
   }
 
-  let headers = {}
+  let headers = new AuthHeaders()
 
-  for (const header of requestHeaders) {
+  const currentSessionId = readSessionCookie()
+  const hasAuthChanged = (currentSessionId !== lastSessionId)
+  if (hasAuthChanged) {
+    // Clear cached auth data when session changes
+    lastSessionId = currentSessionId
+    // TODO: why it was headers = {}?
+    authHeaders = {}
+  }
+  for (const name in requestHeaders) {
+    const value = requestHeaders[name]
     // Parse cookies for session id
-    if (header.name === 'Cookie') {
-      const currentSessionId = readSessionCookie(header.value as string)
-      const hasAuthChanged = (currentSessionId !== lastSessionId)
-      if (hasAuthChanged) {
-        // Clear cached auth data when session changes
-        lastSessionId = currentSessionId
-        headers = {}
-      }
-    } else if (authHeaderNames.includes(header.name) ||
-               header.name.startsWith('x-twitter-')) {
-      headers[header.name] = header.value
+    if (authHeaderNames.includes(name) ||
+               name.startsWith('x-twitter-')) {
+      headers[name] = value
     }
   }
 

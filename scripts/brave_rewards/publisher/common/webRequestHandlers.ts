@@ -3,9 +3,9 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { getPort } from '../common/messaging'
+import {HeadersHandlerMessageEvent, RegisterHeadersHandlerEvent} from '../common/XHREvents'
 
 let registeredOnCompletedWebRequestHandler = false
-let registeredOnSendHeadersWebRequest = false
 
 export const registerOnCompletedWebRequestHandler = (
   mediaType: string,
@@ -41,41 +41,12 @@ export const registerOnCompletedWebRequestHandler = (
   })
 }
 
-export const registerOnSendHeadersWebRequest = (
-  mediaType: string,
-  urlPatterns: string[],
-  extra: string[],
-  callback: (mediaType: string, details: any) => void
+
+export const registerHeadersHandler = (
+  urlPattern: string | undefined,
+  callback: (headers: any) => void
 ) => {
-  if (!mediaType || registeredOnSendHeadersWebRequest) {
-    return
-  }
-
-  registeredOnSendHeadersWebRequest = true
-
-  const port = getPort()
-  if (!port) {
-    return
-  }
-
-  port.postMessage({
-    type: 'RegisterOnSendHeadersWebRequest',
-    mediaType,
-    data: {
-      urlPatterns,
-      extra
-    }
-  })
-
-  port.onMessage.addListener(function (msg: any) {
-    if (!msg.data) {
-      return
-    }
-    switch (msg.type) {
-      case 'OnSendHeadersWebRequest': {
-        callback(msg.mediaType, msg.data.details)
-        break
-      }
-    }
-  })
+  HeadersHandlerMessageEvent.subscribe((e) => callback(e.headers))
+  console.log('send RegisterHeadersHandlerEvent')
+  dispatchEvent(RegisterHeadersHandlerEvent.makeEvent({urlPattern}))
 }
