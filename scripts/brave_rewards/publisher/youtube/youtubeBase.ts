@@ -8,22 +8,29 @@ import * as webRequestHandlers from '../common/webRequestHandlers'
 
 import * as mediaDuration from './mediaDuration'
 import * as publisherInfo from './publisherInfo'
-import * as types from './types'
 import * as utils from './utils'
 
-const mediaDurationUrlPattern = 'https://www.youtube.com/api/stats/watchtime?*'
+const mediaDurationUrlPattern = '^https://www.youtube.com/api/stats/watchtime?'
 
-const handleOnCompletedWebRequest = (mediaType: string, details: any) => {
-  if (mediaType !== types.mediaType) {
-    return
-  }
+let onCompletedWebRequestHandlerRegistered = false
+const registerOnCompletedWebRequestHandler = () => {
+  // TODO: remove timeout
+  setTimeout(() => {
+    if (onCompletedWebRequestHandlerRegistered)
+      return
+    onCompletedWebRequestHandlerRegistered = true
+    console.log('registerOnCompletedWebRequestHandler')
 
-  if (!details || !details.url) {
-    return
-  }
-
-  const url = new URL(details.url)
-  mediaDuration.sendMetadataFromUrl(url)
+    webRequestHandlers.registerOnBeforeRequestHandler(
+      mediaDurationUrlPattern, (event) => {
+        if (!event.url)
+          return
+        const url = new URL(event.url)
+        mediaDuration.sendMetadataFromUrl(url)
+      }
+    )
+    publisherInfo.send()
+  }, 5000);
 }
 
 const initScript = () => {
@@ -46,11 +53,7 @@ const initScript = () => {
           document.visibilityState === 'visible' &&
           !utils.isVideoPath(location.pathname)) {
         setTimeout(() => {
-          webRequestHandlers.registerOnCompletedWebRequestHandler(
-            types.mediaType,
-            mediaDurationUrlPattern,
-            handleOnCompletedWebRequest)
-          publisherInfo.send()
+          registerOnCompletedWebRequestHandler()
         }, 200)
       }
     })
@@ -59,11 +62,7 @@ const initScript = () => {
     // on visibility change
     document.addEventListener('visibilitychange', function () {
       if (document.visibilityState === 'visible') {
-        webRequestHandlers.registerOnCompletedWebRequestHandler(
-          types.mediaType,
-          mediaDurationUrlPattern,
-          handleOnCompletedWebRequest)
-        publisherInfo.send()
+        registerOnCompletedWebRequestHandler()
       }
     })
 
@@ -73,11 +72,7 @@ const initScript = () => {
     // finished loading by then
     document.addEventListener('yt-page-data-updated', function () {
       if (document.visibilityState === 'visible') {
-        webRequestHandlers.registerOnCompletedWebRequestHandler(
-          types.mediaType,
-          mediaDurationUrlPattern,
-          handleOnCompletedWebRequest)
-        publisherInfo.send()
+        registerOnCompletedWebRequestHandler()
       }
       mediaDuration.setFirstVisit(true)
     })

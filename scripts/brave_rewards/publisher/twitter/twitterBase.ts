@@ -11,13 +11,6 @@ import * as types from './types'
 import * as utils from '../common/utils'
 import * as webRequestHandlers from '../common/webRequestHandlers'
 
-const handleHeaders = (headers: any) => {
-  console.log('handleHeaders', headers)
-  if (auth.processRequestHeaders(headers)) {
-    publisherInfo.send()
-  }
-}
-
 const handleOnUpdatedTab = (changeInfo: any) => {
   if (!changeInfo || !changeInfo.url) {
     return
@@ -58,9 +51,14 @@ const initScript = () => {
 
     // TODO: remove the timeout when XHRInterceptor is injected automatically.
     setTimeout( () => {
-      webRequestHandlers.registerHeadersHandler(
-        types.sendHeadersUrl,
-        handleHeaders)
+      webRequestHandlers.registerOnBeforeRequestHandler(
+        '^' + types.sendHeadersUrl,
+        (event) => {
+          if (auth.processRequestHeaders(event.headers)) {
+            publisherInfo.send()
+          }
+        }
+      )
 
       tabHandlers.registerOnUpdatedTab(types.mediaType, handleOnUpdatedTab)
     }, 5000);

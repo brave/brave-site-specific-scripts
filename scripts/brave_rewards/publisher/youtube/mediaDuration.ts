@@ -21,6 +21,7 @@ export const sendMetadataFromUrl = (url: URL) => {
   const mediaId = utils.getMediaIdFromParts(searchParams)
   const mediaKey = commonUtils.buildMediaKey(types.mediaType, mediaId)
   const duration = utils.getMediaDurationFromParts(searchParams)
+  console.debug('parsed MediaDurationMetadata', mediaKey, duration, firstVisit)
 
   const port = getPort()
   if (!port) {

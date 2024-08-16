@@ -2,8 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { getPort } from '../common/messaging'
-
 let registeredOnUpdatedTab = false
 
 export const registerOnUpdatedTab = (
@@ -16,25 +14,12 @@ export const registerOnUpdatedTab = (
 
   registeredOnUpdatedTab = true
 
-  const port = getPort()
-  if (!port) {
-    return
+  const runCallback = () => {
+    console.debug('OnUpdatedTab', location.href)
+    // Adapter for registerOnUpdatedTab consumers.
+    callback({status : 'complete', url: location.href})
   }
 
-  port.postMessage({
-    type: 'RegisterOnUpdatedTab',
-    mediaType: mediaType
-  })
-
-  port.onMessage.addListener(function (msg: any) {
-    if (!msg.data) {
-      return
-    }
-    switch (msg.type) {
-      case 'OnUpdatedTab': {
-        callback(msg.data.changeInfo)
-        break
-      }
-    }
-  })
+  // TODO: filter events
+  (window as any).navigation.addEventListener('navigate', runCallback)
 }

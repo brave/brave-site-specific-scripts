@@ -6,4 +6,4 @@ export const mediaType = 'twitter'
 export const mediaDomain = 'twitter.com'
 
 export const baseApiUrl = 'https://api.' + location.hostname
-export const sendHeadersUrl = baseApiUrl + '/1.1/*'
+export const sendHeadersUrl = baseApiUrl + '/1.1/'

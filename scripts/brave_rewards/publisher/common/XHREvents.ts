@@ -12,37 +12,37 @@ export function subscribe<T>(eventName: string, callback: (args: T) => void) {
 }
 
 
-export class HeadersHandlerMessageEvent {
-  static eventName = 'header-handler-message'
+export class RequestHandlerMessageEvent {
+  static eventName = 'request-handler-message'
   url?: string;
   headers: Headers;
 
-  static makeEvent(args: HeadersHandlerMessageEvent) {
-    return new CustomEvent<HeadersHandlerMessageEvent>(
+  static makeEvent(args: RequestHandlerMessageEvent) {
+    return new CustomEvent<RequestHandlerMessageEvent>(
       this.eventName,
       {detail: args}
     )
   }
 
-  static subscribe(callback: (args: HeadersHandlerMessageEvent) => void) {
+  static subscribe(callback: (args: RequestHandlerMessageEvent) => void) {
     addEventListener(this.eventName,
-    (e: CustomEvent<HeadersHandlerMessageEvent>) => callback(e?.detail))
+    (e: CustomEvent<RequestHandlerMessageEvent>) => callback(e?.detail))
   }
 }
 
-export class RegisterHeadersHandlerEvent{
+export class RegisterRequestHandlerEvent{
   urlPattern?: string;
-  static eventName = 'register-header-handler'
+  static eventName = 'register-request-handler'
 
-  static makeEvent(args: RegisterHeadersHandlerEvent) {
-    return new CustomEvent<RegisterHeadersHandlerEvent>(
+  static makeEvent(args: RegisterRequestHandlerEvent) {
+    return new CustomEvent<RegisterRequestHandlerEvent>(
       this.eventName,
       {detail: args}
     )
   }
 
-  static subscribe<T>(callback: (args: RegisterHeadersHandlerEvent) => void) {
+  static subscribe<T>(callback: (args: RegisterRequestHandlerEvent) => void) {
     addEventListener(this.eventName,
-    (e: CustomEvent<RegisterHeadersHandlerEvent>) => callback(e?.detail))
+    (e: CustomEvent<RegisterRequestHandlerEvent>) => callback(e?.detail))
   }
 }
