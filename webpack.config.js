@@ -22,8 +22,7 @@ const allEntries = [
   `${rewardsDir}/publisher/vimeo/vimeoBase`,
   `${rewardsDir}/publisher/vimeo/vimeoAutoContribution`,
   `${rewardsDir}/publisher/youtube/youtubeBase`,
-  `${rewardsDir}/publisher/youtube/youtubeAutoContribution`,
-  `${togetherDir}/confabs/oneOnOneMeetings`
+  `${rewardsDir}/publisher/youtube/youtubeAutoContribution`
 ]
 
 // We use a bundler (webpack) since the browser does
