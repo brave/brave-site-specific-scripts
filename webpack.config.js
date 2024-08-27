@@ -8,7 +8,6 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
 
 const rewardsDir = 'scripts/brave_rewards'
-const togetherDir = 'scripts/brave_talk'
 
 const allEntries = [
   `${rewardsDir}/publisher/github/githubBase`,
@@ -22,8 +21,7 @@ const allEntries = [
   `${rewardsDir}/publisher/vimeo/vimeoBase`,
   `${rewardsDir}/publisher/vimeo/vimeoAutoContribution`,
   `${rewardsDir}/publisher/youtube/youtubeBase`,
-  `${rewardsDir}/publisher/youtube/youtubeAutoContribution`,
-  `${togetherDir}/confabs/oneOnOneMeetings`
+  `${rewardsDir}/publisher/youtube/youtubeAutoContribution`
 ]
 
 // We use a bundler (webpack) since the browser does
