@@ -153,18 +153,5 @@
       "auto-contribution-enabled": true
     },
     "minimum_brave_version": "1.19"
-  },
-  {
-    "urls": [
-      "https://talk.brave.com/*",
-      "https://beta.talk.brave.com/*",
-      "https://together.brave.com/*"
-    ],
-    "scripts": [
-      "scripts/brave_talk/confabs/oneOnOneMeetings.bundle.js"
-    ],
-    "preconditions": {
-      "ads-enabled": true
-    }
   }
 ]
