@@ -63,6 +63,9 @@
     "scripts": [
       "scripts/brave_rewards/publisher/twitch/twitchBase.bundle.js"
     ],
+    "preconditions": {
+      "rewards-enabled": true
+    },
     "minimum_brave_version": "1.19"
   },
   {
@@ -115,6 +118,9 @@
     "scripts": [
       "scripts/brave_rewards/publisher/vimeo/vimeoBase.bundle.js"
     ],
+    "preconditions": {
+      "rewards-enabled": true
+    },
     "minimum_brave_version": "1.18"
   },
   {
