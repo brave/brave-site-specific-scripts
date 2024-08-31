@@ -7,7 +7,7 @@ import { getPort } from '../common/messaging'
 
 import * as commonUtils from '../common/utils'
 
-import * as api from './api'
+import * as detector from './detector'
 import * as types from './types'
 import * as utils from './utils'
 
@@ -71,6 +71,28 @@ const sendForExcludedPage = () => {
   })
 }
 
+const injectDetectionScript = () => {
+  return new Promise<any>((resolve, reject) => {
+    const script = document.createElement('script')
+    script.textContent = detector.scriptText
+    document.head.appendChild(script)
+    const listener = (event: CustomEvent) => {
+      const { user } = event.detail
+      if (!user) {
+        reject(new Error('Unable to find user data in state store'))
+        return
+      }
+      resolve({
+        id_str: user.siteID,
+        profile_image_url_https: user.imageURL
+      })
+      document.removeEventListener('rewards-publisher-detected', listener)
+    }
+    document.addEventListener('rewards-publisher-detected', listener)
+    document.head.removeChild(script)
+  })
+}
+
 const sendForStandardPage = (url: URL) => {
   const screenName = utils.getScreenNameFromUrl(url)
   if (!screenName) {
@@ -83,7 +105,7 @@ const sendForStandardPage = (url: URL) => {
     return
   }
 
-  api.getUserDetails(screenName)
+  injectDetectionScript()
     .then((userDetails: any) => {
       userCache.put(screenName, userDetails)
       savePublisherVisit(screenName, userDetails)
