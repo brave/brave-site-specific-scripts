@@ -3,5 +3,5 @@
   "extends": [
     "local>brave/renovate-config"
   ],
-  "labels": ["CI/skip", "dependencies", "renovate"]
+  "addLabels": ["CI/skip", "dependencies", "renovate"]
 }
