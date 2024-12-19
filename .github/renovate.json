@@ -2,5 +2,6 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "local>brave/renovate-config"
-  ]
+  ],
+  "labels": ["CI/skip", "dependencies", "renovate"]
 }
