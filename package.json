@@ -40,6 +40,6 @@
         "webpack-cli": "4.10.0"
     },
     "dependencies": {
-        "@types/chrome": "0.0.100"
+        "@types/chrome": "0.0.326"
     }
 }
